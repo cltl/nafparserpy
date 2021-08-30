@@ -1,0 +1,14 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<NAF xml:lang="en" version="3.2">
+  <nafHeader>
+    <fileDesc filename="test.naf"/>
+    <linguisticProcessors layer="raw">
+      <lp name="rawLp" version="0.1"/>
+    </linguisticProcessors>
+  </nafHeader>
+  <raw><![CDATA[said Noam Chomsky]]></raw>
+  <topics>
+    <topic source="unk" method="unk" uri="unk" confidence="0"><![CDATA[colorless green ideas sleep furiously]]></topic>
+    <topic><![CDATA[said Noam Chomsky]]></topic>
+  </topics>
+</NAF>
