@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import List
 from lxml import etree
 
-from nafparserpy.utils import AttributeLayer, get_attribute, create_node, AttributeGetter
+from nafparserpy.layers.utils import AttributeLayer, AttributeGetter, create_node
 
 
 @dataclass

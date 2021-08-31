@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import List
 
-from nafparserpy.utils import create_node
-from nafparserpy.classes.span import Span
+from nafparserpy.layers.utils import create_node
+from nafparserpy.layers.sublayers import Span
 
 
 @dataclass
@@ -46,7 +46,7 @@ class Nt:
 
     @staticmethod
     def get_obj(node):
-        return T(node.get('id'), node.get('label'))
+        return Nt(node.get('id'), node.get('label'))
 
 
 @dataclass

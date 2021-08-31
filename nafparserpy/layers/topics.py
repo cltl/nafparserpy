@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
-from lxml import etree
 
-from nafparserpy.utils import create_node, AttributeGetter
+from nafparserpy.layers.utils import AttributeGetter, create_node
 
 
 @dataclass

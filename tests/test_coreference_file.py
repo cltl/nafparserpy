@@ -1,5 +1,3 @@
-import pytest
-
 from nafparserpy.parser import NafParser
 
 testfile = 'tests/data/coreference.naf'

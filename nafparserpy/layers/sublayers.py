@@ -1,8 +1,45 @@
 from dataclasses import dataclass, field
 from typing import List, Any
 
-from nafparserpy.utils import AttributeLayer, create_node, AttributeGetter, IdrefGetter
-from nafparserpy.classes.span import Span
+from nafparserpy.layers.utils import AttributeGetter, AttributeLayer, IdrefGetter, create_node
+
+
+@dataclass
+class Target:
+    id: str
+    head: str = None
+
+    def node(self):
+        attrs = {'id': self.id}
+        if self.head is not None:
+            attrs.update({'head': self.head})
+        return create_node('target', None, [], attrs)
+
+    @staticmethod
+    def get_obj(node):
+        return Target(node.get('id'), node.get('head'))
+
+
+@dataclass
+class Span:
+    targets: List[Target]
+    attrs: dict = field(default_factory=dict)
+
+    def node(self):
+        return create_node('span', None, self.targets, self.attrs)
+
+    @staticmethod
+    def get_obj(node):
+        if node is None:
+            return None
+        return Span([Target.get_obj(n) for n in node], node.attrib)
+
+    @staticmethod
+    def create(target_ids):
+        return Span([Target(i) for i in target_ids])
+
+    def target_ids(self):
+        return [t.id for t in self.targets]
 
 
 @dataclass
@@ -72,57 +109,5 @@ class Component(AttributeGetter, IdrefGetter):
         return Component(node.get('id'),
                          Sentiment.get_obj(node.find('sentiment')),
                          Span.get_obj(node.find('span')),
-                         ExternalReferences.get_obj(node.find('externalReferences')),
+                         ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                          node.attrib)
-
-
-@dataclass
-class Term(AttributeGetter, IdrefGetter):
-    id: str
-    sentiment: Sentiment = None
-    span: Span = None
-    externalReferences: ExternalReferences = None
-    component: Component = None
-    attrs: dict = field(default_factory=dict)
-
-    def node(self):
-        children = []
-        if self.sentiment is not None:
-            children.append(self.sentiment)
-        if self.span is not None:
-            children.append(self.span)
-        if self.externalReferences is not None:
-            children.append(self.externalReferences)
-        if self.component is not None:
-            children.append(self.component)
-        all_attrs = {'id': self.id}
-        all_attrs.update(self.attrs)
-        return create_node('term', None, children, all_attrs)
-
-    @staticmethod
-    def get_obj(node):
-        return Term(node.get('id'),
-                    Sentiment.get_obj(node.find('sentiment')),
-                    Span.get_obj(node.find('span')),
-                    ExternalReferences.get_obj(node.find('externalReferences')),
-                    Component.get_obj(node.find('component')),
-                    node.attrib)
-
-    @staticmethod
-    def create(term_id, term_attrs, target_ids):
-        """creates a basic term with id, attributes and target ids"""
-        return Term(term_id, span=Span.create(target_ids), attrs=term_attrs)
-
-
-@dataclass
-class Terms:
-    items: List[Term]
-
-    def node(self):
-        return create_node('terms', None, self.items, {})
-
-    @staticmethod
-    def get_obj(node):
-        """retrieves list of Term objects"""
-        return [Term.get_obj(n) for n in node]
-

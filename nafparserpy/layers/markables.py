@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List
 
-from nafparserpy.classes.terms import Sentiment, ExternalReferences
-from nafparserpy.utils import AttributeLayer, create_node, AttributeGetter, IdrefGetter
-from nafparserpy.classes.span import Span
+from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
+from nafparserpy.layers.sublayers import Span, ExternalReferences, Sentiment
 
 
 @dataclass

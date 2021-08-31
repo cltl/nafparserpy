@@ -1,8 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
-from lxml import etree
 
-from nafparserpy.utils import create_node, AttributeGetter
+from nafparserpy.layers.utils import AttributeGetter, create_node
 
 
 @dataclass
@@ -13,7 +12,7 @@ class Tunit(AttributeGetter):
     attrs: dict = field(default_factory=dict)
 
     def node(self):
-        return create_node('tunit', self.text, [], self.attrs)
+        return create_node('tunit', None, [], self.attrs)
 
     @staticmethod
     def get_obj(node):

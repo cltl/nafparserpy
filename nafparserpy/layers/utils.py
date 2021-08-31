@@ -12,9 +12,13 @@ class AttributeGetter:
 class IdrefGetter:
     """provides a target ids getter for layers with a U{Span} field"""
     def target_ids(self):
-        if self.span is None:
-            return []
-        return [t.id for t in self.span.targets]
+        return get_span_target_ids(self)
+
+
+def get_span_target_ids(layer):
+    if layer.span is None:
+        return []
+    return [t.id for t in layer.span.targets]
 
 
 @dataclass
@@ -55,5 +59,3 @@ def create_node(name, text, children, attributes):
     for k, v in attributes.items():
         node.set(k, v)
     return node
-
-

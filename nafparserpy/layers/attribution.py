@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
-from nafparserpy.utils import create_node, IdrefGetter
-from nafparserpy.classes.span import Span
+from nafparserpy.layers.utils import IdrefGetter, create_node
+from nafparserpy.layers.sublayers import Span
 
 
 @dataclass
@@ -58,6 +58,7 @@ class Statement:
 
 @dataclass
 class Attribution:
+    """Attribution class. """
     items: List[Statement]
 
     def node(self):

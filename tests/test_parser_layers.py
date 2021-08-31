@@ -1,9 +1,9 @@
 import pytest
 
-from nafparserpy.classes.terms import Term
+from nafparserpy.layers.terms import Term
 from nafparserpy.parser import NafParser
-from nafparserpy.classes.topics import *
-from nafparserpy.classes.text import *
+from nafparserpy.layers.topics import *
+from nafparserpy.layers.text import *
 import os
 text = 'colorless green ideas sleep furiously'
 text2 = 'said Noam Chomsky'

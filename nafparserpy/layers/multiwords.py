@@ -1,8 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.classes.terms import Component, ExternalReferences
-from nafparserpy.utils import create_node, AttributeGetter
+from nafparserpy.layers.sublayers import ExternalReferences, Component
+from nafparserpy.layers.utils import AttributeGetter, create_node
 
 
 @dataclass

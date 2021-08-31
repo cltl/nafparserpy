@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.classes.terms import ExternalReferences
-from nafparserpy.utils import create_node, AttributeGetter
-from nafparserpy.classes.span import Span
+from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.sublayers import Span, ExternalReferences
 
 
 @dataclass
@@ -20,10 +19,10 @@ class Role(AttributeGetter):
 
     @staticmethod
     def get_obj(node):
-        return Predicate(node.get('id'),
-                         [Span.get_obj(n) for n in node.findall('span')],
-                         [ExternalReferences.get_obj(n) for n in node.findall('externalReferences')],
-                         node.attrib)
+        return Role(node.get('id'),
+                    [Span.get_obj(n) for n in node.findall('span')],
+                    [ExternalReferences.get_obj(n) for n in node.findall('externalReferences')],
+                    node.attrib)
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.utils import create_node
+from nafparserpy.layers.utils import create_node
 
 
 @dataclass
