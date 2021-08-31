@@ -1,8 +1,5 @@
 """
-This module implements a parser for NAF files and is based on the KafNafParserPy.
-Compared to KafNafParserPy, the module: only supports NAF; supports a more recent version
-of NAF; is compatible with Python 3.7+.
-
+Wraps lxml to facilitate handling of NAF documents
 """
 from typing import Any
 
