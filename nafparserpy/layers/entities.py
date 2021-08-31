@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Any
 
 from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
 from nafparserpy.layers.sublayers import Span, ExternalReferences
@@ -9,32 +9,41 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences
 class Entity(AttributeGetter, IdrefGetter):
     """Entity class
 
-    The implementation differs from the current DTD, and follows
-    ELEMENT entity (span,externalReferences?)
+    The implementation differs from the current DTD, and follows:
+    ```ELEMENT entity (span,externalReferences?)```
     rather than:
-    ELEMENT entity (span|externalReferences)+
+    ```ELEMENT entity (span|externalReferences)+```
     """
     id: str
-    span: Span      # the current DTD sees span as optional
-    external_references: ExternalReferences = None
+    # Entity id
+    span: Span
+    # Span of idrefs covered by the entity.
+    external_references: ExternalReferences = ExternalReferences([])
+    # An optional list of external references
     attrs: dict = field(default_factory=dict)
+    # optional entity attributes
 
     def node(self):
         attrib = {'id': self.id}
         attrib.update(self.attrs)
-        return create_node('entity', None, [self.span] + [self.external_references], attrib)
+        children = [self.span]
+        if self.external_references.items:
+            children.append(self.external_references)
+        return create_node('entity', None, children, attrib)
 
     @staticmethod
     def get_obj(node):
         return Entity(node.get('id'),
                       Span.get_obj(node.find('span')),
-                      [o for o in ExternalReferences.get_obj(node.find('externalReferences'))],
+                      ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                       node.attrib)
 
 
 @dataclass
 class Entities:
+    """Entities layer class"""
     items: List[Entity]
+    # list of entities in the layer
 
     def node(self):
         return create_node('entities', None, self.items, {})

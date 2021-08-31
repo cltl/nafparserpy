@@ -111,3 +111,4 @@ class Component(AttributeGetter, IdrefGetter):
                          Span.get_obj(node.find('span')),
                          ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                          node.attrib)
+

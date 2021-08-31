@@ -6,6 +6,7 @@ from nafparserpy.layers.utils import create_node
 
 @dataclass
 class CLink:
+    """Causal link class"""
     id: str
     from_idref: str
     to_idref: str
@@ -29,6 +30,7 @@ class CLink:
 
 @dataclass
 class CausalRelations:
+    """CausalRelations layer class"""
     clinks: List[CLink] = field(default_factory=list)
 
     def node(self):

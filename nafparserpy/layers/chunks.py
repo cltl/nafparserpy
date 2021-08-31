@@ -27,7 +27,7 @@ class Chunks:
     items: List[Chunk]
 
     def node(self):
-        return create_node('deps', None, self.items, {})
+        return create_node('chunks', None, self.items, {})
 
     @staticmethod
     def get_obj(node):

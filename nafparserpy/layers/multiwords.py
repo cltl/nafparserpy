@@ -10,18 +10,18 @@ class Mw(AttributeGetter):
     id: str
     type: str
     components: List[Component]
-    externalRefs: List[ExternalReferences]
+    externalRefs: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
 
     def node(self):
-        return create_node('mw', None, self.components + self.externalRefs, self.attrs)
+        return create_node('mw', None, self.components + [self.externalRefs], self.attrs)
 
     @staticmethod
     def get_obj(node):
         return Mw(node.get('id'),
                   node.get('type'),
                   [Component.get_obj(n) for n in node.findall('component')],
-                  [ExternalReferences.get_obj(n) for n in node.findall('externalReferences')],
+                  ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                   node.attrib)
 
 

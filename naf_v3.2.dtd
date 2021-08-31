@@ -458,13 +458,13 @@
 
 <!ELEMENT srl (predicate)+>
 
-<!ELEMENT predicate (span,externalReferences?,role*)>
+<!ELEMENT predicate (externalReferences|span|role)+>
 <!ATTLIST predicate
           id ID #REQUIRED
           confidence CDATA #IMPLIED
           status CDATA #IMPLIED>
 
-<!ELEMENT role (span,externalReferences?)>
+<!ELEMENT role (externalReferences|span)+>
 <!ATTLIST role
           id ID #REQUIRED
           confidence CDATA #IMPLIED
@@ -493,11 +493,11 @@
     <opinion_holder> and <opinion_target> elements have the following sub-element:
         -   span: this element spans the target  term. Target elements are used to refer to the target term,, using term ids. If the term is a multiword, multiple target elements are used.
         -->
-<!ELEMENT opinion_holder (span)>
+<!ELEMENT opinion_holder (span)+>
 <!ATTLIST opinion_holder
           type CDATA #IMPLIED>
 
-<!ELEMENT opinion_target (span)>
+<!ELEMENT opinion_target (span)+>
 <!ATTLIST opinion_target
           type CDATA #IMPLIED>
 
@@ -510,7 +510,7 @@
       - sentiment_semantic_type:  refers to sentiment related semantic types like emotion, judgment, belief, speculation
       - sentiment_product_feature :  refers to specific features of entities, to be used in feature/aspect-based sentiment analysis
       -->
-<!ELEMENT opinion_expression (span)>
+<!ELEMENT opinion_expression (span)+>
 <!ATTLIST opinion_expression
           polarity CDATA #IMPLIED
           strength CDATA #IMPLIED

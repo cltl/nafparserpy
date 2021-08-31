@@ -2,8 +2,8 @@
 [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
 Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and
-provides convenience classes for handling NAF layers. `nafparserpy` is implemented in python 3.7,
-and should be compatible with Python 3.6+. The currently supported NAF version is 3.2.
+provides convenience classes for handling NAF layers. `nafparserpy` is compatible with Python 3.7 (for Python 3.6 you 
+will need to install [dataclasses](https://pypi.org/project/dataclasses/)). The currently supported NAF version is 3.2.
 
 
 ## Naf tree handling
@@ -28,7 +28,7 @@ Attributes and subelements are represented as fields in layer objects. NAF
 attributes are stored as a dictionary in an `attrs` field; besides, compulsory attributes
 have their own field.
 
-Objects are created by specifying their compusory attributes, subelements (as objects of the corresponding class),
+Objects are created by specifying their compulsory attributes, subelements (as objects of the corresponding class),
 and a dictionary of optional attributes.
 
 #### Replacing layers

@@ -6,37 +6,38 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class OpinionObj(AttributeGetter):
+    """TODO test me"""
     type: str
-    span: List[Span]    # FIXME is this right? shouldn't there be a single span?
+    span: Span
     attrs: dict = field(default_factory=dict)
 
     def node(self):
         return create_node(self.type, None, self.span, self.attrs)
 
     @staticmethod
-    def _get_obj(type, node):
-        return OpinionObj(type, [Span.get_obj(n) for n in node], node.attrib)
+    def get_obj(type, node):
+        return OpinionObj(type, Span.get_obj(node.find('span')), node.attrib)
 
 
 @dataclass
 class OpinionHolder(OpinionObj):
     @staticmethod
     def get_obj(node):
-        return OpinionObj._get_obj('opinion_holder', node)
+        return OpinionObj.get_obj('opinion_holder', node)
 
 
 @dataclass
 class OpinionTarget(OpinionObj):
     @staticmethod
     def get_obj(node):
-        return OpinionObj._get_obj('opinion_target', node)
+        return OpinionObj.get_obj('opinion_target', node)
 
 
 @dataclass
 class OpinionExpression(OpinionObj):
     @staticmethod
     def get_obj(node):
-        return OpinionObj._get_obj('opinion_expression', node)
+        return OpinionObj.get_obj('opinion_expression', node)
 
 
 @dataclass
