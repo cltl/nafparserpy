@@ -186,7 +186,7 @@
     compound_type: endocentric or exocentric
 
   -->
-<!ELEMENT term (sentiment?|span|externalReferences|component)+>
+<!ELEMENT term (span,externalReferences?,component?,sentiment?)+>
 <!ATTLIST term
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -460,11 +460,7 @@
 
 <!ELEMENT srl (predicate)+>
 
-<<<<<<< HEAD
-<!ELEMENT predicate (span,externalReferences?,role*)>
-=======
 <!ELEMENT predicate (span,role,externalReferences?)>
->>>>>>> wip
 <!ATTLIST predicate
           id ID #REQUIRED
           confidence CDATA #IMPLIED
@@ -544,7 +540,7 @@ TODO can there be several spans?-->
           anchorTimeID IDREF #IMPLIED>
 
 <!-- time relations -->
-
+<!-- TODO can element have more than 1 tlink and more than 1 predicateAnchor? -->
 <!ELEMENT temporalRelations (tlink|predicateAnchor)*>
 <!ELEMENT tlink EMPTY>
 <!ATTLIST tlink
@@ -555,6 +551,7 @@ TODO can there be several spans?-->
           toType CDATA #REQUIRED
           relType CDATA #REQUIRED>
 
+<!-- TODO can predicateAnchor have more than 1 span? -->
 <!ELEMENT predicateAnchor (span)+>
 <!ATTLIST predicateAnchor
           id ID #IMPLIED

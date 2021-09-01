@@ -30,6 +30,7 @@ class Mw(AttributeGetter):
 class Multiwords:
     """Multiwords layer class"""
     items: List[Mw]
+    """list of multiwords"""
 
     def node(self):
         return create_node('multiwords', None, self.items, {})

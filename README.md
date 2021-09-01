@@ -45,4 +45,5 @@ with a few differences:
 `Entity` class implements `ELEMENT entity (span,externalReferences?)` instead of
 `ELEMENT entity (span|externalReferences)+`
 
+These differences are recorded in [NAF v3.2.1](naf_v3.2.1.dtd)
 

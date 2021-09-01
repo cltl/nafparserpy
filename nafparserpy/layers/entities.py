@@ -9,13 +9,13 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences
 class Entity(AttributeGetter, IdrefGetter):
     """Represents a named entity"""
     id: str
-    # Entity id
+    """Entity id"""
     span: Span
-    # Span of idrefs covered by the entity.
+    """Span of idrefs covered by the entity"""
     external_references: ExternalReferences = field(default_factory=ExternalReferences([]))
-    # An optional list of external references
+    """An optional list of external references"""
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('type', 'status', 'source')
+    """optional attributes ('type', 'status', 'source')"""
 
     def node(self):
         attrib = {'id': self.id}
@@ -34,14 +34,14 @@ class Entity(AttributeGetter, IdrefGetter):
 
     @staticmethod
     def create(entity_id, entity_type, target_ids):
-        return Entity(entity_id, Span.create(target_ids), [], {'type': entity_type})
+        return Entity(entity_id, Span.create(target_ids), ExternalReferences([]), {'type': entity_type})
 
 
 @dataclass
 class Entities:
     """Entities layer class"""
     items: List[Entity]
-    # list of entities in the layer
+    """list of entities in the layer"""
 
     def node(self):
         return create_node('entities', None, self.items, {})

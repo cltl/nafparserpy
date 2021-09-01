@@ -8,9 +8,9 @@ from nafparserpy.layers.sublayers import Span
 class StatementObj(IdrefGetter):
     """Generic statement object class for statement sources, targets and cues"""
     type: str
-    # type of the statement object
+    """type of the statement object"""
     span: Span
-    # span covered by the statement
+    """span covered by the statement"""
 
     def node(self):
         return create_node(self.type, None, [self.span], {})
@@ -64,7 +64,7 @@ class Statement:
 class Attribution:
     """Attribution-layer class """
     items: List[Statement]
-    # list of attribution statements
+    """list of attribution statements"""
 
     def node(self):
         return create_node('attribution', None, self.items, {})

@@ -11,7 +11,7 @@ class Tunit(AttributeGetter):
     offset: str
     length: str
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('type', 'xpath')
+    """optional attributes ('type', 'xpath')"""
 
     def node(self):
         attrib = {'id': self.id, 'offset': self.offset, 'length': self.length}
@@ -27,7 +27,7 @@ class Tunit(AttributeGetter):
 class Tunits:
     """Tunits layer class"""
     items: List[Tunit]
-    # list of text units
+    """list of text units"""
 
     def node(self):
         return create_node('tunits', None, self.items, {})

@@ -25,7 +25,7 @@ class Target:
 class Span:
     targets: List[Target]
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('primary', 'status')
+    """optional attributes ('primary', 'status')"""
 
     def node(self):
         return create_node('span', None, self.targets, self.attrs)
@@ -64,9 +64,9 @@ class ExternalRef(AttributeGetter):
     reference: str
     sentiment: Sentiment = None
     externalRefs: List[Any] = field(default_factory=list)
-    # list of ExternalRef objects (declared as Any because of circularity of definition)
+    """list of ExternalRef objects (declared as Any because of circularity of definition)"""
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('resource', 'reftype', 'status', 'source', 'confidence', 'timestamp')
+    """optional attributes ('resource', 'reftype', 'status', 'source', 'confidence', 'timestamp')"""
 
     def node(self):
 
@@ -81,7 +81,7 @@ class ExternalRef(AttributeGetter):
 
     @staticmethod
     def get_obj(node):
-        # FIXME does lxml includes the node itself in 'findall' ?
+        """FIXME does lxml includes the node itself in 'findall' ?"""
         return ExternalRef(node.get('reference'),
                            Sentiment.get_obj(node.find('sentiment')),
                            [ExternalRef.get_obj(n) for n in node.findall('externalRef')],
@@ -92,7 +92,7 @@ class ExternalRef(AttributeGetter):
 class ExternalReferences:
     """ExternalReferences container"""
     items: List[ExternalRef] = field(default_factory=list)
-    # list of external references
+    """optional list of external references"""
 
     def node(self):
         return create_node('externalRefs', None, self.items, {})
@@ -113,7 +113,7 @@ class Component(AttributeGetter, IdrefGetter):
     sentiment: Sentiment = None
     externalReferences: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head')
+    """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head')"""
 
     def node(self):
         children = list()
@@ -135,7 +135,3 @@ class Component(AttributeGetter, IdrefGetter):
                          Sentiment.get_obj(node.find('sentiment')),
                          ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                          node.attrib)
-<<<<<<< HEAD
-
-=======
->>>>>>> wip

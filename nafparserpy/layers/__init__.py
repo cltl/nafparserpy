@@ -15,6 +15,7 @@ Classes are implemented as dataclasses with the following fields:
 ## Naming
 
 Naming follows the NAF element/attribute names as much as possible
+
 * Classes are named after their corresponding NAF element
 * compulsory NAF element attributes appear as fields with the same name in the element class. Exceptions to this are:
 * optional elements appear as keys with the same name in the 'attrs' class field
@@ -40,9 +41,9 @@ allows to create an entity from its id, type, and covered tokens/terms:
 # create an Entity object with id='e1', type='PER' and covered elements 'w1' and 'w2'
 e = Entity.create('e1', 'PER', ['w1', 'w2'])
 ```
-Creating the same entity with the class constructor takes:
+Creating the same entity with the class constructor requires:
 ```
-e = Entity('e1', Span([Target(i) for in ['w1', 'w2']]), attrs={'type': 'PER'})
+e = Entity('e1', Span([Target(i) for in ['w1', 'w2']]), ExternalReferences([]), attrs={'type': 'PER'})
 ```
 
 """

@@ -6,19 +6,15 @@ from nafparserpy.layers.utils import create_node
 
 @dataclass
 class CLink:
-<<<<<<< HEAD
-    """Causal link class"""
-=======
     """Represents a causal link"""
->>>>>>> wip
     id: str
-    # causal link if
+    """causal link if"""
     from_idref: str
-    # field for NAF attribute 'from' (note difference in name)
+    """field for NAF attribute 'from' (note difference in name)"""
     to: str
-    # field for NAF attribute 'to'
+    """field for NAF attribute 'to'"""
     relType: str = None
-    # causal relation type (optional)
+    """causal relation type (optional)"""
 
     def node(self):
         attrib = {'id': self.id,
@@ -38,14 +34,9 @@ class CLink:
 
 @dataclass
 class CausalRelations:
-<<<<<<< HEAD
-    """CausalRelations layer class"""
-    clinks: List[CLink] = field(default_factory=list)
-=======
     """Causal Relations layer class"""
     items: List[CLink] = field(default_factory=list)
-    # list of causal links
->>>>>>> wip
+    """list of causal links"""
 
     def node(self):
         return create_node('causalRelations', None, self.items, {})

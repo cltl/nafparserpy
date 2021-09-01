@@ -8,13 +8,13 @@ from nafparserpy.layers.utils import create_node
 class Dep:
     """Represents a Dependency"""
     from_idref: str
-    # id of 'from' node
+    """id of 'from' node"""
     to: str
-    # id of 'to' node
+    """id of 'to' node"""
     rfunc: str
-    # dependency relation
+    """dependency relation"""
     case: str = None
-    # FIXME document this
+    """optional case"""
 
     def node(self):
         attrs = {'from': self.from_idref, 'to': self.to, 'rfunc': self.rfunc}
@@ -31,6 +31,7 @@ class Dep:
 class Deps:
     """Deps (dependencies) layer class"""
     items: List[Dep]
+    """list of dependencies"""
 
     def node(self):
         return create_node('deps', None, self.items, {})

@@ -9,7 +9,7 @@ class Topic(AttributeGetter):
     """Represents a topic"""
     text: str
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('source', 'method', 'confidence', 'uri')
+    """optional attributes ('source', 'method', 'confidence', 'uri')"""
 
     def node(self):
         return create_node('topic', self.text, [], self.attrs)
@@ -23,7 +23,7 @@ class Topic(AttributeGetter):
 class Topics:
     """Topics layer class"""
     items: List[Topic]
-    # list of topics
+    """list of topics"""
 
     def node(self):
         return create_node('topics', None, self.items, {})

@@ -10,7 +10,7 @@ class TLink:
     """Represents a temporal link"""
     id: str
     from_idref: str
-    # represents the 'from' NAF attribute
+    """represents the 'from' NAF attribute"""
     fromType: str
     to: str
     toType: str
@@ -39,6 +39,7 @@ class TLink:
 class PredicateAnchor(AttributeGetter):
     spans: List[Span]
     attrs: dict = field(default_factory=dict)
+    """optional attributes ('id', 'anchorTime', 'beginPoint', 'endPoint')"""
 
     def node(self):
         create_node('predicateAnchor', None, self.spans, self.attrs)

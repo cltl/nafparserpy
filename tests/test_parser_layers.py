@@ -60,7 +60,7 @@ def test_text_layer():
 
 
 def test_term_layer():
-    t1 = Term.create('t1', {'lemma': 'in', 'pos': 'ADP'}, ['w1'])
+    t1 = Term.create('t1', ['w1'], {'lemma': 'in', 'pos': 'ADP'})
     naf.add_container_layer('terms', [t1])
     terms = naf.get('terms')
     assert len(terms) == 1

@@ -11,6 +11,7 @@ class Chunk:
     head: str
     phrase: str
     case: str = None
+    """optional case"""
 
     def node(self):
         attrs = {'id': self.id, 'head': self.head, 'phrase': self.phrase}

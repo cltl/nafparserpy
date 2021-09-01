@@ -13,8 +13,12 @@ class AttributeGetter:
 def get_attribute(layer, key: str):
     """Return attribute value, or None if there is no such attribute.
 
-    :param layer: the layer object carrying the attribute
-    :param key: attribute name
+    Parameters
+    ----------
+    layer
+        the layer object carrying the attribute
+    key : str
+        attribute name
     """
     if layer.attrs is not None and key in layer.attrs.keys():
         return layer.attrs[key]
@@ -33,7 +37,10 @@ def get_span_target_ids(layer):
     """Return the list of target ids covered by the span of a layer.
 
     Defaults to empty list, also if span is missing.
-    :param layer: the layer object"""
+    Parameters
+    ----------
+    layer
+        the layer object"""
     if layer.span is None:
         return []
     return [t.id for t in layer.span.targets]
@@ -44,6 +51,7 @@ class AttributeLayer(AttributeGetter):
     """A layer containing only attributes"""
     layer: str
     attrs: dict = field(default_factory=dict)
+    """optional attributes (keys are subclass dependent)"""
 
     def node(self):
         return create_node(self.layer, None, [], self.attrs)
@@ -56,10 +64,16 @@ class AttributeLayer(AttributeGetter):
 def create_node(layer, text, children, attributes):
     """Create an etree Element node from NAF objects
 
-    :param layer:layer name
-    :param text: text of node
-    :param children: list of NAF objects to add as subelements in the node
-    :param attributes: node attributes (whether compulsory or optional)
+    Parameters
+    ----------
+    layer : str
+        layer name
+    text : str
+        text of node
+    children : list
+        list of NAF objects to add as subelements in the node
+    attributes : dict
+        node attributes (whether compulsory or optional)
     """
     node = etree.Element(layer)
     if text is not None:

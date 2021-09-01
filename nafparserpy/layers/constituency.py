@@ -9,11 +9,11 @@ from nafparserpy.layers.sublayers import Span
 class Edge:
     """Represents an edge"""
     from_idref: str
-    # id of 'from' node (note that the field name differs from the NAF attribute 'from')
+    """id of 'from' node (note that the field name differs from the NAF attribute 'from')"""
     to: str
-    # id of 'to' node
+    """id of 'to' node"""
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('id' and 'head')
+    """optional attributes ('id' and 'head')"""
 
     def node(self):
         attrib = {'from': self.from_idref, 'to': self.to}
@@ -57,11 +57,11 @@ class Nt:
 class Tree:
     """Represents a tree"""
     nts: List[Nt]
-    # nonterminals
+    """nonterminals"""
     ts: List[T]
-    # terminals
+    """terminals"""
     edges: List[Edge]
-    # edges
+    """edges"""
 
     def node(self):
         return create_node('tree', None, self.nts + self.ts + self.edges, {})
@@ -77,6 +77,7 @@ class Tree:
 class Constituency:
     """Constituency layer class"""
     items: List[Tree]
+    """list of trees"""
 
     def node(self):
         return create_node('constituency', None, self.items, {})

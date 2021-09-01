@@ -7,7 +7,7 @@ from nafparserpy.layers.utils import create_node
 class Raw:
     """Raw layer class"""
     text: str
-    # raw text
+    """raw text"""
 
     def node(self):
         return create_node('raw', self.text, [], {})

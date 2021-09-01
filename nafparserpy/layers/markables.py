@@ -7,12 +7,16 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences, Sentiment
 
 @dataclass
 class Mark(AttributeGetter, IdrefGetter):
+    """Represents a mark"""
     id: str
     span: Span
+    """span of covered target ids"""
     sentiment: Sentiment = None
+    """optional sentiment"""
     externalReferences: ExternalReferences = ExternalReferences([])
+    """optional externalReferences"""
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')
+    """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')"""
 
     def node(self):
         children = [self.span]
@@ -29,11 +33,7 @@ class Mark(AttributeGetter, IdrefGetter):
         return Mark(node.get('id'),
                     Span.get_obj(node.find('span')),
                     Sentiment.get_obj(node.find('sentiment')),
-<<<<<<< HEAD
-                    ExternalReferences(ExternalReferences.get_obj(node.findall('externalReferences'))),
-=======
                     ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
->>>>>>> wip
                     node.attrib)
 
 

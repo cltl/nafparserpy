@@ -11,7 +11,7 @@ class FactVal(AttributeGetter):
     value: str
     resource: str
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('confidence', 'source')
+    """optional attributes ('confidence', 'source')"""
 
     def node(self):
         attrib = {'value': self.value, 'resource': self.resource}
@@ -46,6 +46,7 @@ class Factuality(IdrefGetter):
 class Factualities:
     """Factualities layer class"""
     items: List[Factuality]
+    """list of factualities"""
 
     def node(self):
         return create_node('factualities', None, self.items, {})

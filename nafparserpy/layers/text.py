@@ -28,8 +28,9 @@ class Wf(AttributeGetter):
     offset: str
     length: str
     subtokens: List[Subtoken] = field(default_factory=list)
+    """optional list of subtokens"""
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('sent', 'para', 'page', 'xpath')
+    """optional attributes ('sent', 'para', 'page', 'xpath')"""
 
     def node(self):
         all_attrs = {'id': self.id, 'offset': self.offset, 'length': self.length}
@@ -47,7 +48,7 @@ class Wf(AttributeGetter):
 class Text:
     """Text layer class"""
     items: List[Wf]
-    # list of word forms
+    """list of word forms"""
 
     def node(self):
         return create_node('text', None, self.items, {})

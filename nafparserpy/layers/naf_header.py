@@ -31,7 +31,7 @@ class LP(AttributeGetter):
     name: str
     version: str
     attrs: dict = field(default_factory=dict)
-    # optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')
+    """optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')"""
 
     def node(self):
         all_attrs = {'name': self.name, 'version': self.version}
@@ -48,7 +48,7 @@ class LinguisticProcessors:
     """Represents a linguisticProcessors element: the list of linguistic processors for a given layer."""
     layer_name: str
     items: List[LP]
-    # list of linguistic processors
+    """list of linguistic processors"""
 
     def node(self):
         return create_node('linguisticProcessors', None, self.items, {'layer': self.layer_name})
