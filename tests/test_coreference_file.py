@@ -13,6 +13,6 @@ def test_parse():
     assert len(naf.get('coreferences')) == 1
     assert naf.get('coreferences')[0].target_ids() == ['t7']
     coref = naf.get('coreferences')[0]
-    ext_ref = naf.get('coreferences')[0].externalReferences[0]
-    assert 'wikidata' in ext_ref.get('reference')
+    ext_ref = naf.get('coreferences')[0].externalReferences.items[0]
+    assert 'wikidata' in ext_ref.reference 
 

@@ -6,18 +6,26 @@ from nafparserpy.layers.utils import create_node
 
 @dataclass
 class CLink:
+<<<<<<< HEAD
     """Causal link class"""
+=======
+    """Represents a causal link"""
+>>>>>>> wip
     id: str
+    # causal link if
     from_idref: str
-    to_idref: str
-    rel_type: str = None
+    # field for NAF attribute 'from' (note difference in name)
+    to: str
+    # field for NAF attribute 'to'
+    relType: str = None
+    # causal relation type (optional)
 
     def node(self):
         attrib = {'id': self.id,
                   'from': self.from_idref,
-                  'to': self.to_idref}
-        if self.rel_type is not None:
-            attrib.update({'relType': self.rel_type})
+                  'to': self.to}
+        if self.relType is not None:
+            attrib.update({'relType': self.relType})
         return create_node('clink', None, [], attrib)
 
     @staticmethod
@@ -30,11 +38,17 @@ class CLink:
 
 @dataclass
 class CausalRelations:
+<<<<<<< HEAD
     """CausalRelations layer class"""
     clinks: List[CLink] = field(default_factory=list)
+=======
+    """Causal Relations layer class"""
+    items: List[CLink] = field(default_factory=list)
+    # list of causal links
+>>>>>>> wip
 
     def node(self):
-        return create_node('causalRelations', None, self.clinks, {})
+        return create_node('causalRelations', None, self.items, {})
 
     @staticmethod
     def get_obj(node):

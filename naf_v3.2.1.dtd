@@ -126,7 +126,7 @@
         - xpath: in case of source xml files, the xpath expression identifying the original word form (optional)
 
         -->
-<!ELEMENT wf (#PCDATA|subtoken)*>
+<!ELEMENT wf (#PCDATA,subtoken*)>
 <!ATTLIST wf
           id ID #REQUIRED
           sent CDATA #IMPLIED
@@ -306,7 +306,7 @@
        ``SPA-16-017403-v'', etc.
        - confidence: a floating number between 0 and 1. Indicates the confidence weight of the association
        -->
-<!ELEMENT externalRef (sentiment|externalRef)*>
+<!ELEMENT externalRef (sentiment,externalRef*)>
 <!ATTLIST externalRef
           resource CDATA #IMPLIED
           reference CDATA #REQUIRED
@@ -329,7 +329,7 @@
     -   pos: part of speech (REQUIRED)
     -   case: declension case (optional)
   -->
-<!ELEMENT component (sentiment?|span|externalReferences)+>
+<!ELEMENT component (span,sentiment?,externalReferences?)>
 <!ATTLIST component
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -344,7 +344,7 @@
 
 <!ELEMENT markables (mark)+>
 
-<!ELEMENT mark (sentiment?|span|externalReferences)+>
+<!ELEMENT mark (span,sentiment?,externalReferences?)>
 <!ATTLIST mark
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -420,11 +420,13 @@
 
 <!-- COREF ELEMENT -->
 <!--
-    <coref> element has the following attribute:
+    <coref> element has the following attributes:
       - id: unique id, starting with the prefix "co"
-      -       type: type of the coref set (entity, event, etc)
+      - status: FIXME
+      - type: type of the coref set (entity, event, etc)
+      coref subelements are a span and optionally an externalReferences element
       -->
-<!ELEMENT coref (span|externalReferences)+>
+<!ELEMENT coref (span,externalReferences?)>
 <!ATTLIST coref
           id ID #REQUIRED
           status CDATA #REQUIRED
@@ -458,7 +460,11 @@
 
 <!ELEMENT srl (predicate)+>
 
+<<<<<<< HEAD
 <!ELEMENT predicate (span,externalReferences?,role*)>
+=======
+<!ELEMENT predicate (span,role,externalReferences?)>
+>>>>>>> wip
 <!ATTLIST predicate
           id ID #REQUIRED
           confidence CDATA #IMPLIED
@@ -520,7 +526,8 @@
 
 <!ELEMENT timeExpressions (timex3)*>
 
-<!-- timex3 expressions -->
+<!-- timex3 expressions
+TODO can there be several spans?-->
 <!ELEMENT timex3 (span)*>
 <!ATTLIST timex3
           id ID #REQUIRED

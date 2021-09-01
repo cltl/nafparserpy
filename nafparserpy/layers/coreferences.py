@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 from nafparserpy.layers.utils import IdrefGetter, create_node
@@ -7,6 +7,7 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences
 
 @dataclass
 class Coref(IdrefGetter):
+<<<<<<< HEAD
     """Coreference class
 
     Note that the implementation differs from the current DTD, and follows
@@ -18,6 +19,13 @@ class Coref(IdrefGetter):
     status: str
     span: Span      # the current DTD sees span as optional
     externalReferences: ExternalReferences = ExternalReferences([])   # the DTD is not clear about this
+=======
+    """Represents a coreference"""
+    id: str
+    status: str
+    span: Span
+    externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
+>>>>>>> wip
     type: str = None
 
     def node(self):
@@ -25,8 +33,14 @@ class Coref(IdrefGetter):
         if self.type is not None:
             attrs.update({'type': self.type})
         children = [self.span]
+<<<<<<< HEAD
         if self.externalReferences.items:
             children.append(self.externalReferences)
+=======
+        if self.externalReferences is not None:
+            children.append(self.externalReferences)
+
+>>>>>>> wip
         return create_node('coref', None, children, attrs)
 
     @staticmethod

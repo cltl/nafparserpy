@@ -7,6 +7,7 @@ from nafparserpy.layers.utils import AttributeGetter, create_node
 
 @dataclass
 class Mw(AttributeGetter):
+    """Represents a multiword"""
     id: str
     type: str
     components: List[Component]
@@ -27,6 +28,7 @@ class Mw(AttributeGetter):
 
 @dataclass
 class Multiwords:
+    """Multiwords layer class"""
     items: List[Mw]
 
     def node(self):

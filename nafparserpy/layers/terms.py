@@ -8,12 +8,17 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences, Sentiment
 
 @dataclass
 class Term(AttributeGetter, IdrefGetter):
+    """Represents a term.
+
+    TODO check the DTD"""
     id: str
     sentiment: Sentiment = None
     span: Span = None
-    externalReferences: ExternalReferences = None
+    externalReferences: ExternalReferences = ExternalReferences([])
     component: Component = None
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head', 'component_of',
+    # 'compound_type')
 
     def node(self):
         children = []
@@ -46,7 +51,9 @@ class Term(AttributeGetter, IdrefGetter):
 
 @dataclass
 class Terms:
+    """Terms layer class"""
     items: List[Term]
+    # list of terms
 
     def node(self):
         return create_node('terms', None, self.items, {})

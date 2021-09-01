@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
 from nafparserpy.layers.utils import create_node
@@ -7,16 +7,18 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class Edge:
+    """Represents an edge"""
     from_idref: str
-    to_idref: str
-    id: str
-    head: str = None
+    # id of 'from' node (note that the field name differs from the NAF attribute 'from')
+    to: str
+    # id of 'to' node
+    attrs: dict = field(default_factory=dict)
+    # optional attributes ('id' and 'head')
 
     def node(self):
-        attrs = {'from': self.from_idref, 'to': self.to_idref, 'id': self.id}
-        if self.head is not None:
-            attrs.update({'head': self.head})
-        return create_node('edge', None, [], attrs)
+        attrib = {'from': self.from_idref, 'to': self.to}
+        attrib.update(self.attrs)
+        return create_node('edge', None, [], attrib)
 
     @staticmethod
     def get_obj(node):
@@ -25,19 +27,21 @@ class Edge:
 
 @dataclass
 class T:
-    span: Span
+    """Represents a terminal"""
     id: str
+    span: Span
 
     def node(self):
         return create_node('t', None, [self.span], {'id': self.id})
 
     @staticmethod
     def get_obj(node):
-        return T(Span.get_obj(node.find('span')), node.get('id'))
+        return T(node.get('id'), Span.get_obj(node.find('span')))
 
 
 @dataclass
 class Nt:
+    """Represents a nonterminal"""
     id: str
     label: str
 
@@ -51,9 +55,13 @@ class Nt:
 
 @dataclass
 class Tree:
+    """Represents a tree"""
     nts: List[Nt]
+    # nonterminals
     ts: List[T]
+    # terminals
     edges: List[Edge]
+    # edges
 
     def node(self):
         return create_node('tree', None, self.nts + self.ts + self.edges, {})
@@ -67,6 +75,7 @@ class Tree:
 
 @dataclass
 class Constituency:
+    """Constituency layer class"""
     items: List[Tree]
 
     def node(self):

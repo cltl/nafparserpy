@@ -12,6 +12,7 @@ class Mark(AttributeGetter, IdrefGetter):
     sentiment: Sentiment = None
     externalReferences: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')
 
     def node(self):
         children = [self.span]
@@ -28,12 +29,17 @@ class Mark(AttributeGetter, IdrefGetter):
         return Mark(node.get('id'),
                     Span.get_obj(node.find('span')),
                     Sentiment.get_obj(node.find('sentiment')),
+<<<<<<< HEAD
                     ExternalReferences(ExternalReferences.get_obj(node.findall('externalReferences'))),
+=======
+                    ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+>>>>>>> wip
                     node.attrib)
 
 
 @dataclass
 class Markables:
+    """Markables layer class"""
     items: List[Mark]
 
     def node(self):
