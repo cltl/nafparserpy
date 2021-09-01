@@ -7,6 +7,7 @@ from nafparserpy.layers.utils import AttributeLayer, AttributeGetter, create_nod
 
 @dataclass
 class FileDesc(AttributeLayer):
+    """Represents a fileDesc element"""
     @staticmethod
     def get_obj(node):
         if node is None:
@@ -16,6 +17,7 @@ class FileDesc(AttributeLayer):
 
 @dataclass
 class Public(AttributeLayer):
+    """Represents a public element"""
     @staticmethod
     def get_obj(node):
         if node is None:
@@ -25,9 +27,11 @@ class Public(AttributeLayer):
 
 @dataclass
 class LP(AttributeGetter):
+    """Represents a linguistic processor"""
     name: str
     version: str
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')
 
     def node(self):
         all_attrs = {'name': self.name, 'version': self.version}
@@ -41,8 +45,10 @@ class LP(AttributeGetter):
 
 @dataclass
 class LinguisticProcessors:
+    """Represents a linguisticProcessors element: the list of linguistic processors for a given layer."""
     layer_name: str
     items: List[LP]
+    # list of linguistic processors
 
     def node(self):
         return create_node('linguisticProcessors', None, self.items, {'layer': self.layer_name})

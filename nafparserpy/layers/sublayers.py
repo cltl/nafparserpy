@@ -6,6 +6,7 @@ from nafparserpy.layers.utils import AttributeGetter, AttributeLayer, IdrefGette
 
 @dataclass
 class Target:
+    """Defines target id for the Span class"""
     id: str
     head: str = None
 
@@ -24,6 +25,7 @@ class Target:
 class Span:
     targets: List[Target]
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('primary', 'status')
 
     def node(self):
         return create_node('span', None, self.targets, self.attrs)
@@ -44,6 +46,11 @@ class Span:
 
 @dataclass
 class Sentiment(AttributeLayer):
+    """Represents a sentiment.
+
+    Optional attributes are: 'resource', 'polarity', 'strength', 'subjectivity', 'sentiment_semantic_type',
+    'sentiment_product_feature', 'sentiment_modifier', 'sentiment_marker'
+    """
     @staticmethod
     def get_obj(node):
         if node is None:
@@ -53,30 +60,46 @@ class Sentiment(AttributeLayer):
 
 @dataclass
 class ExternalRef(AttributeGetter):
+    """Represents an external reference"""
+    reference: str
     sentiment: Sentiment = None
     externalRefs: List[Any] = field(default_factory=list)
+    # list of ExternalRef objects (declared as Any because of circularity of definition)
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('resource', 'reftype', 'status', 'source', 'confidence', 'timestamp')
 
     def node(self):
-        return create_node('externalRef', None, self.sentiment + self.externalRefs, self.attrs)
+
+        children = []
+        if self.sentiment is not None:
+            children.append(self.sentiment)
+        if self.externalRefs:
+            children.extend(self.externalRefs)
+        attrib = {'reference': self.reference}
+        attrib.update(self.attrs)
+        return create_node('externalRef', None, children, attrib)
 
     @staticmethod
     def get_obj(node):
         # FIXME does lxml includes the node itself in 'findall' ?
-        return ExternalRef(Sentiment.get_obj(node.find('sentiment')),
+        return ExternalRef(node.get('reference'),
+                           Sentiment.get_obj(node.find('sentiment')),
                            [ExternalRef.get_obj(n) for n in node.findall('externalRef')],
                            node.attrib)
 
 
 @dataclass
 class ExternalReferences:
+    """ExternalReferences container"""
     items: List[ExternalRef] = field(default_factory=list)
+    # list of external references
 
     def node(self):
         return create_node('externalRefs', None, self.items, {})
 
     @staticmethod
     def get_obj(node):
+        """Returns the list of external references"""
         if node is None:
             return None
         return [ExternalRef.get_obj(n) for n in node]
@@ -84,19 +107,20 @@ class ExternalReferences:
 
 @dataclass
 class Component(AttributeGetter, IdrefGetter):
+    """Represents a component"""
     id: str
+    span: Span
     sentiment: Sentiment = None
-    span: Span = None
-    externalReferences: ExternalReferences = None
+    externalReferences: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head')
 
     def node(self):
-        children = []
+        children = list()
+        children.append(self.span)
         if self.sentiment is not None:
             children.append(self.sentiment)
-        if self.span is not None:
-            children.append(self.span)
-        if self.externalReferences is not None:
+        if self.externalReferences.items:
             children.append(self.externalReferences)
         all_attrs = {'id': self.id}
         all_attrs.update(self.attrs)
@@ -107,7 +131,7 @@ class Component(AttributeGetter, IdrefGetter):
         if node is None:
             return None
         return Component(node.get('id'),
-                         Sentiment.get_obj(node.find('sentiment')),
                          Span.get_obj(node.find('span')),
+                         Sentiment.get_obj(node.find('sentiment')),
                          ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                          node.attrib)

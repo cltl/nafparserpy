@@ -6,6 +6,7 @@ from nafparserpy.layers.utils import create_node
 
 @dataclass
 class Chunk:
+    """Represents a chunk"""
     id: str
     head: str
     phrase: str
@@ -24,10 +25,11 @@ class Chunk:
 
 @dataclass
 class Chunks:
+    """Chunks layer class"""
     items: List[Chunk]
 
     def node(self):
-        return create_node('deps', None, self.items, {})
+        return create_node('chunks', None, self.items, {})
 
     @staticmethod
     def get_obj(node):

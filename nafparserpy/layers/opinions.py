@@ -6,12 +6,13 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class OpinionObj(AttributeGetter):
+    """Generic representation of opinion object (holder, target or expression)"""
     type: str
-    span: List[Span]    # FIXME is this right? shouldn't there be a single span?
+    spans: List[Span]    # FIXME is this right? shouldn't there be a single span?
     attrs: dict = field(default_factory=dict)
 
     def node(self):
-        return create_node(self.type, None, self.span, self.attrs)
+        return create_node(self.type, None, self.spans, self.attrs)
 
     @staticmethod
     def _get_obj(type, node):
@@ -41,6 +42,7 @@ class OpinionExpression(OpinionObj):
 
 @dataclass
 class Opinion:
+    """Represents an opinion"""
     id: str
     holders: List[OpinionHolder]
     targets: List[OpinionTarget]
@@ -60,7 +62,9 @@ class Opinion:
 
 @dataclass
 class Opinions:
+    """Opinions layer class"""
     items: List[Opinion]
+    # list of opinions
 
     def node(self):
         return create_node('opinions', None, self.items, {})

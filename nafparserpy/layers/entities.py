@@ -7,17 +7,12 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences
 
 @dataclass
 class Entity(AttributeGetter, IdrefGetter):
-    """Entity class
-
-    The implementation differs from the current DTD, and follows
-    ELEMENT entity (span,externalReferences?)
-    rather than:
-    ELEMENT entity (span|externalReferences)+
-    """
+    """Represents a named entity"""
     id: str
-    span: Span      # the current DTD sees span as optional
-    external_references: ExternalReferences = None
+    span: Span
+    external_references: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('type', 'status', 'source')
 
     def node(self):
         attrib = {'id': self.id}
@@ -28,12 +23,17 @@ class Entity(AttributeGetter, IdrefGetter):
     def get_obj(node):
         return Entity(node.get('id'),
                       Span.get_obj(node.find('span')),
-                      [o for o in ExternalReferences.get_obj(node.find('externalReferences'))],
+                      ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                       node.attrib)
+
+    @staticmethod
+    def create(entity_id, entity_type, target_ids):
+        return Entity(entity_id, Span.create(target_ids), [], {'type': entity_type})
 
 
 @dataclass
 class Entities:
+    """Entities layer class"""
     items: List[Entity]
 
     def node(self):

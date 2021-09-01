@@ -7,20 +7,22 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class TLink:
+    """Represents a temporal link"""
     id: str
     from_idref: str
-    from_type: str
-    to_idref: str
-    to_type: str
-    rel_type: str
+    # represents the 'from' NAF attribute
+    fromType: str
+    to: str
+    toType: str
+    reTlype: str
 
     def node(self):
         attrib = {'id': self.id,
                   'from': self.from_idref,
-                  'fromType': self.from_type,
-                  'to': self.to_idref,
-                  'toType': self.to_type,
-                  'relType': self.rel_type}
+                  'fromType': self.fromType,
+                  'to': self.to,
+                  'toType': self.toType,
+                  'relType': self.relType}
         return create_node('tlink', None, [], attrib)
 
     @staticmethod
@@ -48,6 +50,9 @@ class PredicateAnchor(AttributeGetter):
 
 @dataclass
 class TemporalRelations:
+    """Temporal Relations layer class
+
+    TODO check the specification (is the DTD too liberal?)"""
     tlinks: List[TLink] = field(default_factory=list)
     predicate_anchors: List[PredicateAnchor] = field(default_factory=list)
 

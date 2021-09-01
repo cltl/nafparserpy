@@ -7,15 +7,19 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class Timex3(AttributeGetter):
+    """Represents a time expression"""
     id: str
     type: str
-    span: List[Span] = field(default_factory=list)
+    spans: List[Span] = field(default_factory=list)
+    # TODO can there be several spans?
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('beginPoint', 'endPoint', 'quant', 'freq', 'functionInDocument', 'temporalFunction',
+    # 'value', 'valueFromFunction', 'mod', 'anchorTimeID')
 
     def node(self):
         attrib = {'id': self.id, 'type': self.type}
         attrib.update(self.attrs)
-        return create_node('timex3', None, self.span, attrib)
+        return create_node('timex3', None, self.spans, attrib)
 
     @staticmethod
     def get_obj(node):
@@ -27,7 +31,9 @@ class Timex3(AttributeGetter):
 
 @dataclass
 class TimeExpressions:
+    """TimeExpressions layer class"""
     items: List[Timex3] = field(default_factory=list)
+    # list of time expressions
 
     def node(self):
         return create_node('timeExpressions', None, self.items, {})

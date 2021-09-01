@@ -7,9 +7,11 @@ from nafparserpy.layers.sublayers import Span
 
 @dataclass
 class FactVal(AttributeGetter):
+    """Represents a factuality value"""
     value: str
     resource: str
     attrs: dict = field(default_factory=dict)
+    # optional attributes ('confidence', 'source')
 
     def node(self):
         attrib = {'value': self.value, 'resource': self.resource}
@@ -23,6 +25,7 @@ class FactVal(AttributeGetter):
 
 @dataclass
 class Factuality(IdrefGetter):
+    """Represents a factuality"""
     id: str
     span: Span
     fact_vals: List[FactVal]
@@ -41,6 +44,7 @@ class Factuality(IdrefGetter):
 
 @dataclass
 class Factualities:
+    """Factualities layer class"""
     items: List[Factuality]
 
     def node(self):

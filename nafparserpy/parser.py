@@ -65,7 +65,8 @@ class NafParser:
             self.root = self.tree.getroot()
             self.root.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             self.root.set('version', naf_version)
-            self.add_naf_header(fileDesc_attrs={'filename': filename})
+            if self.filename is not None:
+                self.add_naf_header(fileDesc_attrs={'filename': filename})
         else:
             self.tree = tree
             self.root = self.tree.getroot()

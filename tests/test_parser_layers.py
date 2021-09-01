@@ -1,10 +1,12 @@
 import pytest
 
+from nafparserpy.layers.causal_relations import CLink
 from nafparserpy.layers.terms import Term
 from nafparserpy.parser import NafParser
 from nafparserpy.layers.topics import *
 from nafparserpy.layers.text import *
 import os
+
 text = 'colorless green ideas sleep furiously'
 text2 = 'said Noam Chomsky'
 
@@ -52,7 +54,7 @@ def test_topics_layer():
 
 
 def test_text_layer():
-    wf1 = Wf('colorless', 'w1', str(0), str(9), {'sent': str(1)})
+    wf1 = Wf('colorless', 'w1', str(0), str(9), attrs={'sent': str(1)})
     naf.add_container_layer('text', [wf1])
     assert naf.get('text')[0].get('id') == 'w1'
 
@@ -71,3 +73,11 @@ def test_term_layer():
     assert naf.get('terms')[0].span.targets[0].id == 'w1'
     assert naf.get('terms')[0].target_ids() == ['w1']
 
+
+def test_single_optional_attribute():
+    clink = CLink('a', 'b', 'c')
+    node = clink.node()
+    assert 'relType' not in node.attrib.keys()
+    clink = CLink('a', 'b', 'c', relType='some')
+    node2 = clink.node()
+    assert 'relType' in node2.attrib.keys()
