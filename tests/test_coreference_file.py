@@ -11,7 +11,7 @@ def test_parse():
     assert naf.get('nafHeader').public.get('filename') is None
     assert len(naf.get('text')) == 17
     assert len(naf.get('coreferences')) == 1
-    assert naf.get('coreferences')[0].target_ids() == ['t7']
+    assert naf.get('coreferences')[0].target_ids() == [['t7']]
     coref = naf.get('coreferences')[0]
     ext_ref = naf.get('coreferences')[0].externalReferences.items[0]
     assert 'wikidata' in ext_ref.reference 

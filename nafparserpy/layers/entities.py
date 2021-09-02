@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import List, Any
 
 from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
-from nafparserpy.layers.sublayers import Span, ExternalReferences
+from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass

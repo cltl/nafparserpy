@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from nafparserpy.layers.utils import IdrefGetter, create_node
-from nafparserpy.layers.sublayers import Span, ExternalReferences
+from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
@@ -10,26 +10,30 @@ class Coref(IdrefGetter):
     """Represents a coreference"""
     id: str
     status: str
-    span: Span
+    spans: List[Span]
+    """list of coreferent mention spans"""
     externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
     """optional external references"""
-    type: str = None
-    """optional type"""
+    attrs: dict = field(default_factory=dict)
+    """optional attributes: 'type', 'status'"""
+
+    def target_ids(self):
+        """Returns list of target ids covered for each of the layer's spans"""
+        return [span.target_ids() for span in self.spans]
 
     def node(self):
-        attrs = {'id': self.id, 'status': self.status}
-        if self.type is not None:
-            attrs.update({'type': self.type})
-        children = [self.span]
+        attrib = {'id': self.id}
+        attrib.update(self.attrs)
+        children = self.spans
         if self.externalReferences.items:
             children.append(self.externalReferences)
-        return create_node('coref', None, children, attrs)
+        return create_node('coref', None, children, attrib)
 
     @staticmethod
     def get_obj(node):
         return Coref(node.get('id'),
                      node.get('status'),
-                     Span.get_obj(node.find('span')),
+                     [Span.get_obj(n) for n in node.findall('span')],
                      ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
                      node.get('type'))
 

@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.sublayers import Component
 from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
-from nafparserpy.layers.sublayers import Span, ExternalReferences, Sentiment
+from nafparserpy.layers.elements import Component, Span, ExternalReferences, Sentiment
 
 
 @dataclass
@@ -46,7 +45,7 @@ class Term(AttributeGetter, IdrefGetter):
     @staticmethod
     def create(term_id, target_ids, term_attrs):
         """creates a basic term with id, attributes and target ids"""
-        return Term(term_id, Span.create(target_ids), ExternalReferences([]), attrs=term_attrs)
+        return Term(term_id, Span.create(target_ids), externalReferences=ExternalReferences([]), attrs=term_attrs)
 
 
 @dataclass

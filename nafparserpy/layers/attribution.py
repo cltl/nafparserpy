@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
 from nafparserpy.layers.utils import IdrefGetter, create_node
-from nafparserpy.layers.sublayers import Span
+from nafparserpy.layers.elements import Span
 
 
 @dataclass

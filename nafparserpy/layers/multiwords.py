@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.sublayers import ExternalReferences, Component
+from nafparserpy.layers.elements import ExternalReferences, Component
 from nafparserpy.layers.utils import AttributeGetter, create_node
 
 

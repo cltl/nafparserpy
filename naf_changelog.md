@@ -12,13 +12,13 @@
 
 ### Changed
 
-* element declaration of: 'wf', 'opinion', 'causalRelations', 'mw', 'opinion_target', 'opinion_holder', 'opinion_expression'
+* element declaration of: 'coreferences', 'wf', 'opinion', 'causalRelations', 'entity', 'mw', 'opinion_target', 'opinion_holder', 'opinion_expression'
 * documentation of elements: 'wf', 'term', 'opinion', 'sentiment'
 
 
 ### Removed
 
-* 'factualityLayer' layer
+* 'factualityLayer' element
 
 ## NAF 3.2
 
@@ -38,7 +38,7 @@ Release date: June 26, 2020
 
 ### Deprecated
 
-* 'factualityLayer' layer
+* 'factualityLayer' element
 
 ### Removed
 

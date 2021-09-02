@@ -58,7 +58,7 @@ class LP(AttributeGetter):
 
     @staticmethod
     def get_obj(node):
-        return LP(node.get('name'), node.get('version'), node.attrib)
+        return LP(node.get('name'), node.get('version'), [LPDependency.get_obj(n) for n in node], node.attrib)
 
 
 @dataclass

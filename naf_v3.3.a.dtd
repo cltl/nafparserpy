@@ -1,6 +1,15 @@
 <!-- DTD NAF -->
 <!-- NAF is a document-level format for NLP annotations.
-	See https://github.com/newsreader/NAF for additional documentation.
+
+	NAF 3.3.a (documented in this DTD) is a *development* version for NAF v3.3.
+
+	Compared to NAF 3.2, this version:
+	- adds a <lpDependency> element to represent data/tool dependencies of <lp> elements
+	- provides restrictive element declarations, aiming at precising counts of subelements
+	of different types: declarations like (a|b|c)+ are replaced by declarations like (a,b?,c+)
+	- complements and tidies the documentation of elements; part of this documentation is copied or adapted from
+	 https://github.com/newsreader/NAF
+	- removes <factualityLayer>, which was marked as deprecated in v3.2
 	-->
 <!ELEMENT NAF (nafHeader|raw|topics|text|terms|multiwords|deps|chunks|entities|coreferences|constituency|srl|opinions|timeExpressions|tunits|locations|dates|temporalRelations|causalRelations|markables|attribution|factualities)*>
 
@@ -14,10 +23,10 @@
 <!ELEMENT nafHeader (fileDesc?,public?,linguisticProcessors*)>
 
 <!-- FILEDESC ELEMENT -->
-<!--
-    <fileDesc> is an empty element containing information about the
-      computer document itself. It has the following attributes:
+<!-- <fileDesc> is an empty element containing information about the
+      computer document itself.
 
+      Attributes:
       - title: the title of the document (optional).
       - author: the author of the document (optional).
       - creationtime: when the document was created. In ISO 8601. (optional)
@@ -36,13 +45,12 @@
           pages CDATA #IMPLIED>
 
 <!-- PUBLIC ELEMENT -->
-<!--
-     <public> is an empty element which stores public information about
-       the document, such as its URI. It has the following attributes:
+<!-- <public> is an empty element which stores public information about
+       the document, such as its URI.
 
+       Attributes:
        - publicId: a public identifier (for instance, the number inserted by the capture server) (optional).
        - uri: a public URI of the document (optional).
-
        -->
 
 <!ELEMENT public EMPTY>
@@ -52,12 +60,10 @@
 
 
 <!-- LINGUISTICPROCESSORS ELEMENT -->
-<!--
-      <linguisticProcessors> elements store the information about which linguistic processors
+<!-- <linguisticProcessors> elements store the information about which linguistic processors
         produced the NAF document. There can be several <linguisticProcessors> elements, one
           per NAF layer. NAF layers correspond to the top-level elements of the
           documents, such as "text", "terms", "deps" etc.
-
           -->
 
 <!ELEMENT linguisticProcessors (lp)+>
@@ -66,10 +72,9 @@
 
 
 <!-- LP ELEMENT -->
-<!--
-     <lp> elements describe one specific linguistic processor. <lp> elements
-         have the following attributes:
+<!-- <lp> elements describe one specific linguistic processor
 
+    Attributes:
          - name: the name of the processor
          - version: processor's version
          - timestamp: a timestamp, denoting the date/time at which the processor was
@@ -88,7 +93,6 @@
          xs:dateTime format.
 		 - hostname (optional)
          -->
-
 <!ELEMENT lp (lpDependency)+>
 <!ATTLIST lp
           name CDATA #REQUIRED
@@ -99,9 +103,8 @@
           hostname CDATA #IMPLIED>
 
 <!-- LPDEPENDENCY ELEMENT -->
-<!--
-	<lpDependency> elements describe tool/data/model dependencies of linguistic processors.
-	attributes:
+<!-- <lpDependency> elements describe tool/data/model dependencies of linguistic processors.
+	Attributes:
 		- name: name of the dependency
 		- version: version of the dependency
 		- type: type of the dependency, e.g., 'tool', 'data', 'model'
@@ -120,20 +123,21 @@
 
 <!-- TOPIC ELEMENT
 	<topic> elements describe topics associated with a text.
-	Their text content is the topic descriptor, and their attributes are:
-	-  source (optional): A reference to the entity/tool
+
+	Text content: topic descriptor
+
+	Attributes:
+		- source (optional): A reference to the entity/tool
   		responsible for creating the annotation.
- 	- method (optional): The name of the method used to
+ 		- method (optional): The name of the method used to
   		create the annotation. This attribute is usually used in conjunction
   		with the source attribute.
- 	- confidence (optional): this attribute is optional but
-  		its presence is highly recommended. It gives a value of
-  		``confidence'' for the annotation. The confidence value can be in
+ 		- confidence (optional): confidence value for the annotation. The confidence value can be in
   		fact almost anything (similarity score, the value of the margin on a
   		SVM based classification, etc), as long as it can be used to sort
-  		all annotations sharing the source and \texttt{method}
+  		all annotations sharing the source and method
   		attributes.
-	- uri (optional): if the topic is a resource
+		- uri (optional): if the topic is a resource
   		from an external reference, an URI to this resource. For instace, it
   		could be a URI pointing to a Wikipedia category page, etc
 	-->
@@ -151,7 +155,10 @@
 <!-- WORDFORM ELEMENT -->
 <!--
     <wf> elements describe and contain all word forms generated after the tokenization step.
-    <wf> elements can contain (optionally) a list of subtokens, and they have the following attributes:
+    <wf> elements can contain (optionally) a list of subtokens (these provide reference ids for morphological parts in
+    decomposible terms)
+
+    Attributes:
         - id: the id of the word form (REQUIRED and UNIQUE)
         - sent: sentence id of the word form (optional)
         - para: paragraph id of the word form (optional)
@@ -172,11 +179,13 @@
 
 
 <!-- SUBTOKEN ELEMENT -->
-<!--
-    <subtoken> elements describe a subtoken of a wf element. They are meant to be referenced by compound terms.
-    attributes:
-    	- id: the id of the subtoken (REQUIRED and UNIQUE). The syntax of the id is WF_ID.SUBTOKEN_ID, e.g., "w1.sub1", "w1.sub2", etc.
-    	- offset: the offset (in characters) of the subtoken
+<!-- <subtoken> elements describe a subtoken of a wf element. They are meant to be referenced by compound terms.
+
+	Recommended id form:
+		- WF_ID.SUBTOKEN_ID, e.g., "w1.sub1", "w1.sub2"
+
+    Attributes:
+    	- id: the id of the subtoken (REQUIRED and UNIQUE).     	- offset: the offset (in characters) of the subtoken
     	- length: the length (in characters) of the subtoken
         -->
 
@@ -191,12 +200,14 @@
 
 <!-- TERM ELEMENT -->
 <!-- terms provide morphological information about word forms.
-	subelements:
+
+	Subelements:
 	 	- span: token ids covered by term (REQUIRED)
 	 	- components: list of morphemes in term (optional)
 	 	- externalReferences (optional)
 	 	- sentiment (optional)
-	attributes:
+
+	Attributes:
 		- id: unique identifier (REQUIRED AND UNIQUE)
 		- type: type of the term (open/close) (IMPLIED)
 		- lemma: lemma of the term (IMPLIED).
@@ -228,11 +239,12 @@
 
 <!-- MW ELEMENT -->
 <!-- Represents multiword expressions.
-	subelements:
+
+	Subelements:
 		- components: list of <component> elements (REQUIRED)
 		- externalReferences (optional)
 
-    attributes:
+    Attributes:
 		- id: unique identifier (REQUIRED AND UNIQUE)
 		- lemma: lemma of the term (optional).
 		- pos: part of speech. (optional)
@@ -241,7 +253,6 @@
 		- status: manual | system | deprecated (optional)
 		- type: phrasal | idiom (optional)
   -->
-
 <!ELEMENT mw (component+,externalReferences?)>
 <!ATTLIST mw
           id ID #REQUIRED
@@ -253,9 +264,9 @@
 		  type CDATA #REQUIRED>
 
 <!-- SENTIMENT ELEMENT -->
-<!--
-	<sentiment> elements allow to attach a sentiment to an <externalRef> or <component> element
-    attributes
+<!-- <sentiment> elements allow to attach a sentiment to an <externalRef> or <component> element
+
+    Attributes:
       - resource: identifier and reference to an external sentiment resource (optional)
       - polarity: e.g., positive, negative or neutral (optional)
       - strength: refers to the strength of the polarity, e.g. weak, average, strong, or numerical value (optional)
@@ -282,8 +293,7 @@
 
 
 <!-- EXTERNALREFERENCES ELEMENT -->
-<!--
-    The <externalReferences> element is used to associate terms to
+<!-- The <externalReferences> element is used to associate terms to
     external resources, such as elements of a Knowledge base, an ontology,
     etc. It consists of several <externalRef> elements, one per
     association.
@@ -293,10 +303,11 @@
 
 <!-- EXTERNALREF ELEMENT -->
 <!--
-	subelements:
+	Subelements:
 		- sentiment (optional)
 		- externalRefs: a list of externalRef (externalRefs can be recursive) (optional)
-	attributes:
+
+	Attributes:
        	- reference (REQUIRED): code of the referred element. If the element is a
        	synset of some version of WordNet, it follows the pattern:
 
@@ -332,18 +343,33 @@
 
 <!-- COMPONENT ELEMENT -->
 <!--
-    Compound and multiword terms can be represented in NAF by including <component> elements within <term> elements.
-    The <component> elements have the following attributes:
-    -   id: unique identifier (REQUIRED and UNIQUE).
-    If the component is part of a multiword, i.e., a multiwords/mw element, the syntax for the identifier is MW_ID.C_ID
-    e.g., mw1.c1 and mw1.c2 for the two components of the multiwords/mw element with the identifier mw1
-    If the component is part of a compound, i.e., a terms/term element, the syntax for the identifier is T_ID.C_ID
-    e.g., t1.c1 and t1.c2 for the two components of the terms/term element with the identifier t1.
-    -   lemma: lemma of the term (REQUIRED)
-    -   pos: part of speech (REQUIRED)
-    -   case: declension case (optional)
+    Represents parts of compound terms and multiword expressions.
+
+    Recommended id form:
+    	- If the component is part of a multiword, i.e., a multiwords/mw element, the preferred naming is MW_ID.C_ID
+    	e.g., mw1.c1 and mw1.c2 for the two components of the multiwords/mw element with the identifier mw1
+    	- If the component is part of a compound, i.e., a terms/term element, the preferred naming is T_ID.C_ID
+    	e.g., t1.c1 and t1.c2 for the two components of the terms/term element with the identifier t1.
+
+    Subelements:
+    	- span (REQUIRED)
+    	- sentiment (optional)
+    	- externalReferences (optional)
+
+    Element ordering:
+    	- span first, no other constraints
+
+    Attributes:
+    	- id: unique identifier (REQUIRED and UNIQUE).
+    	- lemma: lemma of the term (REQUIRED)	FIXME is lemma also required in the case of multiword expressions?
+    	- pos: part of speech (REQUIRED)		FIXME idem
+        - morphofeat (optional)		FIXME document
+        - netype (optional)			FIXME idem
+    	- case: declension case (optional)
+    	- head (optional)			FIXME idem
   -->
-<!ELEMENT component (span,sentiment?,externalReferences?)>
+<!ELEMENT component ((span,sentiment?,externalReferences?)
+					|(span,externalReferences?,sentiment?))>
 <!ATTLIST component
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -363,8 +389,22 @@
 	Subelements:
 		- span (REQUIRED)
 		- sentiment (optional)
-		- externalReferences (optional) -->
-<!ELEMENT mark (span,sentiment?,externalReferences?)>
+		- externalReferences (optional)
+
+	Element ordering:
+		- span first, no other constraints
+
+	Attributes:
+    	- id: unique identifier (REQUIRED and UNIQUE)
+    	- type (optional) 		FIXME document
+    	- lemma: lemma of the term (optional)
+    	- pos: part of speech (optional)
+        - morphofeat (optional)		FIXME idem
+    	- case: declension case (optional)	FIXME idem
+    	- source (optional)			FIXME idem
+    	-->
+<!ELEMENT mark ((span,sentiment?,externalReferences?)
+				|(span,externalReferences?,sentiment?))>
 <!ATTLIST mark
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -380,11 +420,13 @@
 
 <!-- DEP ELEMENT -->
 <!--
-    <dep> elements have the following attributes:
-    - from: id of the source element (REQUIRED)
-    - to: id of the target element (REQUIRED)
-    - rfunc: relational function.(REQUIRED)
-    - case: declension case (optional)
+    <dep> elements represent syntactic dependencies.
+
+    Attributes:
+    	- from: id of the source element (REQUIRED)
+    	- to: id of the target element (REQUIRED)
+    	- rfunc: relational function.(REQUIRED)
+    	- case: declension case (optional)
   -->
 <!ELEMENT dep EMPTY>
 <!ATTLIST dep
@@ -396,8 +438,9 @@
 <!-- CHUNKS ELEMENT -->
 <!ELEMENT chunks (chunk)+>
 <!-- CHUNK ELEMENT -->
-<!--
-    The <chunk> elements have the following attributes:
+<!-- represents a syntactic chunk
+
+    Attributes:
     -   id: unique identifier (REQUIRED)
     -   head: the chunk head’s term id  (REQUIRED)
     -   phrase: type of the phrase (REQUIRED)
@@ -414,20 +457,22 @@
 <!ELEMENT entities (entity)+>
 
 <!-- ENTITY ELEMENT -->
-<!--
-    A named entity element has the following attributes:
-    -   id: the id for the named entity (REQUIRED)
-    -   type:  type of the named entity. (IMPLIED) Currently, 8 values are possible:
-    -   Person
-    -   Organization
-    -   Location
-    -   Date
-    -   Time
-    -   Money
-    -   Percent
-    -   Misc
+<!-- Represents a named entity
+
+	Subelements:
+		- span: elements spanned by the named entity (REQUIRED)
+		- externalReferences (optional)
+
+	Element ordering:
+		- (span, externalReferences)
+
+    Attributes:
+   	 	- id: the id for the named entity (REQUIRED)
+    	- type: type of the named entity. (optional)
+    	- status: e.g., manual, system (optional)
+    	- source (optional) FIXME document
   -->
-<!ELEMENT entity (span,externalReferences)+>
+<!ELEMENT entity (span,externalReferences?)>
 <!ATTLIST entity
           id ID #REQUIRED
           type CDATA #IMPLIED
@@ -435,40 +480,83 @@
 		  source CDATA #IMPLIED>
 
 <!-- COREFERENCES ELEMENT -->
-
 <!ELEMENT coreferences (coref)+>
 
 <!-- COREF ELEMENT -->
 <!--
-    <coref> element has the following attributes:
-      - id: unique id, starting with the prefix "co"
-      - status: FIXME
-      - type: type of the coref set (entity, event, etc)
-      coref subelements are a span and optionally an externalReferences element
+	<coref> elements represent clusters of mention, each of which is represented by a <span> element
+
+	Subelements:
+		- spans: list of coreferent mention spans (REQUIRED)
+		- externalReference (optional)
+
+	Element ordering:
+		- span first
+
+	Recommended id form:
+		- CO_ID, e.g. 'co1', 'co2', etc
+
+    Attributes:
+      - id: unique id (REQUIRED)	FIXME should it be unique in the layer or in the document?
+      - status: e.g., 'manual', 'system' (optional)	FIXME verify documentation
+      - type: type of the coref set ('entity', 'event', etc)
       -->
-<!ELEMENT coref (span,externalReferences?)>
+<!ELEMENT coref (span+,externalReferences?)>
 <!ATTLIST coref
           id ID #REQUIRED
           status CDATA #REQUIRED
           type CDATA #IMPLIED>
 
 
-<!-- CONSITUENCY PARSING -->
-
+<!-- CONSTITUENCY LAYER -->
+<!-- represents constituency trees for sentences in the document -->
 <!ELEMENT constituency (tree)+>
+
+<!-- TREE ELEMENT -->
+<!-- lists the terminal nodes, nonterminal nodes and edges in the tree.
+	A constituency tree consists at least of one nonterminal, but will have elements of each type in general.
+
+	Subelements consist of at least one element from one of the following types:
+		- nt: nonterminal node
+		- t: terminal node
+		- edge: edge between nodes
+
+	Attributes:
+		- type: (optional) FIXME document-->
 <!ELEMENT tree (nt|t|edge)+>
 <!ATTLIST tree
           type CDATA #IMPLIED>
 
+<!-- NT ELEMENT -->
+<!-- represents a nonterminal node
+
+	Attributes:
+		- id (REQUIRED)
+		- label: syntactic label (REQUIRED)-->
 <!ELEMENT nt EMPTY>
 <!ATTLIST nt
           id ID #REQUIRED
           label CDATA #REQUIRED>
 
+<!-- T ELEMENT -->
+<!-- represents a terminal node
+
+	Subelements:
+		- span (REQUIRED)
+	Attributes:
+   		- id (REQUIRED)
+	-->
 <!ELEMENT t (span)>
 <!ATTLIST t
           id ID #REQUIRED>
 
+<!-- EDGE ELEMENT -->
+<!-- represents a tree edge
+	Attributes:
+		- from: id of edge's tail (child node) (REQUIRED)
+		- to: id of edge's head (parent node) (REQUIRED)
+		- id (optional)
+		- head: marks whether edge's tail is the head of syntactic phrase (optional) -->
 <!ELEMENT edge EMPTY>
 <!ATTLIST edge
           id ID #IMPLIED
@@ -480,11 +568,22 @@
 <!ELEMENT srl (predicate)+>
 
 <!-- PREDICATE ELEMENT -->
-<!-- subelements:
+<!--
+	Subelements:
 		- span (REQUIRED)
 		- externalReferences (optional)
-		- roles: list of predicate arguments (optional) -->
-<!ELEMENT predicate (span,externalReferences?,role*)>
+		- roles: list of predicate arguments (optional)
+
+	Element ordering:
+		- span first, no other constraints
+
+	Attributes:
+		- id (REQUIRED)
+		- confidence: confidence score (optional)
+		- status: e.g., 'manual', 'system'-->
+<!ELEMENT predicate ((span,externalReferences?,role*)
+					|(span,role*,externalReferences?))>
+
 <!ATTLIST predicate
           id ID #REQUIRED
           confidence CDATA #IMPLIED
@@ -492,9 +591,17 @@
 
 <!-- ROLE ELEMENT -->
 <!-- roles represent arguments of a predicate
-	subelements:
+	Subelements:
 		- span (REQUIRED)
-		- externalReferences (optional) -->
+		- externalReferences (optional)
+
+	Element ordering:
+		- span first
+
+	Attributes:
+		- id (REQUIRED)
+		- confidence: confidence score (optional)
+		- status: e.g., 'manual', 'system'-->
 <!ELEMENT role (span,externalReferences?)>
 <!ATTLIST role
           id ID #REQUIRED
@@ -506,14 +613,17 @@
 
 <!-- OPINION ELEMENT -->
 <!--
-    The <opinion> layer has one attribute:
-    -   id:  the unique identifier of the opinion
+    Subelements:
+    	- opinion_expression: the expression (REQUIRED)
+    	- opinion_holder: speaker or actor in the text that expresses the opinion (optional)
+    	- opinion_target: the object of the opinion (optional)
 
-    The <opinion> layer consists of the following subelements (without order)/op:
-    -   opinion_expression: the expression (REQUIRED)
-    -   opinion_holder: speaker or actor in the text that expresses the opinion (optional)
-    -   opinion_target: the object of the opinion (optional)
-  -->
+    Element ordering:
+    	- all orderings allowed
+
+    Attributes:
+    	- id:  the unique identifier of the opinion
+  	-->
 <!ELEMENT opinion ( (opinion_holder?,opinion_expression,opinion_target?)
 		| (opinion_expression,opinion_holder?,opinion_target?)
 		| (opinion_expression,opinion_target?,opinion_holder?)
@@ -523,29 +633,42 @@
 <!ATTLIST opinion
           id ID #REQUIRED>
 
-<!-- OPINION_HOLDER AND OPINION_TARGET ELEMENT -->
+<!-- OPINION_HOLDER ELEMENT -->
 <!--
-    <opinion_holder> and <opinion_target> elements have the following sub-element:
+    Subelements:
         - span: target ids covered by the element (REQUIRED).
-    attributes:
-    	- type: type of holder (e.g., 'speaker' or 'writer') or target (optional)
+
+    Attributes:
+    	- type: type of holder (e.g., 'speaker' or 'writer') (optional)
         -->
 <!ELEMENT opinion_holder (span)>
 <!ATTLIST opinion_holder
           type CDATA #IMPLIED>
 
+<!-- OPINION_TARGET ELEMENT -->
+<!--
+    Subelements:
+        - span: target ids covered by the element (REQUIRED).
+
+    Attributes:
+    	- type: type of target (optional) FIXME give examples
+        -->
 <!ELEMENT opinion_target (span)>
 <!ATTLIST opinion_target
           type CDATA #IMPLIED>
 
 <!-- OPINION_EXPRESSION -->
 <!--
-    <opinion_expression> has the following attributes:
-      - polarity:  refers to the positive or negative orientation of the expression
-      - strength:  refers to the strength of the expression
-      - subjectivity:  refers to whether an expression is subjective or not
-      - sentiment_semantic_type:  refers to sentiment related semantic types like emotion, judgment, belief, speculation
-      - sentiment_product_feature :  refers to specific features of entities, to be used in feature/aspect-based sentiment analysis
+	Subelements:
+		- span: elements covered by the expression (REQUIRED)
+
+    Attributes:
+      - polarity: orientation of the opinion, e.g., positive, negative, neutral (optional)
+      - strength: strength of the expression, e.g., weak, strong, or numerical value (optional)
+      - subjectivity: whether the expression is subjective or not (optional)
+      - sentiment_semantic_type: related semantic types, e.g., emotion, judgment, belief, speculation (optional)
+      - sentiment_product_feature : refers to features attached to the opinion. For the tourist domain,
+      for example: staff, cleanliness, beds, bathroom, transportation, location, etc..  (optional)
       -->
 <!ELEMENT opinion_expression (span)>
 <!ATTLIST opinion_expression
@@ -562,11 +685,13 @@
 
 <!-- TIMEX3 ELEMENT -->
 <!-- represent a temporal expression
-	subelements:
+
+	Subelements:
 		- spans: a list of <span> elements
 		FIXME can there be several spans?
 		FIXME: does not this double up with beginPoint/endPoint?
-	attributes:
+
+	Attributes:
 		- id (REQUIRED)
         - type: date/time/duration/set (REQUIRED)
         - beginPoint: id of first element of expression (optional)
@@ -651,6 +776,7 @@
 <!ELEMENT statement (statement_target, statement_source?, statement_cue?)>
 <!ATTLIST statement
           id ID #REQUIRED>
+
 <!ELEMENT statement_target (span)>
 <!ELEMENT statement_source (span)>
 <!ELEMENT statement_cue (span)>
@@ -663,15 +789,23 @@ statement about the future (implying speculation).  -->
 <!ELEMENT factualities (factuality)+>
 <!-- FACTUALITY ELEMENT
   	 Represents elements for which we have information concerning their factuality.
+
   	 Subelements:
   	 	- span (REQUIRED)
-  	 	- a list of <factVal> elements that provide information about the factuality of the expression in the span.-->
+  	 	- a list of <factVal> elements that provide information about the factuality of the expression in the span.
+
+  	 Element ordering:
+  	 	- span first
+
+  	 Attributes:
+  	 	- id (REQUIRED) -->
 <!ELEMENT factuality (span,factVal+)>
 <!ATTLIST factuality
           id ID #REQUIRED>
 
 <!-- FACTVAL ELEMENT -->
 <!-- <factVal> elements provide information about the factuality of the expression.
+
 	Attributes:
 		- value: factuality value (REQUIRED)
 		- resource: points to the ontology or theory that introduced the value (REQUIRED)
@@ -689,6 +823,7 @@ statement about the future (implying speculation).  -->
 <!-- SPAN ELEMENT -->
 <!-- <span> elements have one or more <target> subelements, each one pointing to an element of another
 	layer.
+
 	Attributes:
 		- primary: identifies a primary span for elements that contain several <span> subelements
 		- status: manual/system/deprecated (optional)-->
@@ -699,6 +834,7 @@ statement about the future (implying speculation).  -->
 
 <!-- TARGET ELEMENT -->
 <!-- <target> elements refer to the id of a target element.
+
 	Attributes:
 		- id: the id of the target element (REQUIRED and UNIQUE)
 		- head: indicates whether the target is the head of a list of targets-->
@@ -713,6 +849,7 @@ statement about the future (implying speculation).  -->
 
 <!-- TUNIT ELEMENT -->
 <!-- <tunit> elements represent the structure of a document.
+
 	Attributes:
 		- id (REQUIRED)
 		- offset: character index of start of text unit (REQUIRED)
