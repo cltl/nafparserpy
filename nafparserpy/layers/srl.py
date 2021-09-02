@@ -7,9 +7,11 @@ from nafparserpy.layers.sublayers import Span, ExternalReferences
 
 @dataclass
 class Role(AttributeGetter):
+    """Represents a predicate argument"""
     id: str
     span: Span
     external_references: ExternalReferences = field(default_factory=ExternalReferences([]))
+    """optional external references"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence' and 'status')"""
 
@@ -31,23 +33,29 @@ class Predicate(AttributeGetter):
     """Represents a predicate"""
     id: str
     span: Span
-    role: Role
-    external_references: ExternalReferences = field(default_factory=ExternalReferences([]))
-    """an optional (list of) external references"""
+    externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
+    """optional external references"""
+    roles: List[Role] = field(default_factory=list)
+    """optional list of predicate arguments"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence', 'status')"""
 
     def node(self):
         attrib = {'id': self.id}
         attrib.update(self.attrs)
-        return create_node('predicate', None, [self.span] + [self.external_references] + [self.role], attrib)
+        children = [self.span]
+        if self.externalReferences.items:
+            children.append(self.externalReferences)
+        if self.roles:
+            children.extend(self.roles)
+        return create_node('predicate', None, children, attrib)
 
     @staticmethod
     def get_obj(node):
         return Predicate(node.get('id'),
                          Span.get_obj(node.find('span')),
-                         Role.get_obj(node.find('role')),
                          ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                         [Role.get_obj(n) for n in node.findall('role')],
                          node.attrib)
 
 

@@ -3,7 +3,7 @@
 
 Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and
 provides convenience classes for handling NAF layers. `nafparserpy` is compatible with Python 3.7 (for Python 3.6 you 
-will need to install [dataclasses](https://pypi.org/project/dataclasses/)). The currently supported NAF version is 3.2.
+will need to install [dataclasses](https://pypi.org/project/dataclasses/)). The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd)
 
 
 ## Naf tree handling
@@ -45,5 +45,5 @@ with a few differences:
 `Entity` class implements `ELEMENT entity (span,externalReferences?)` instead of
 `ELEMENT entity (span|externalReferences)+`
 
-These differences are recorded in [NAF v3.2.1](naf_v3.2.1.dtd)
+These differences are recorded in [NAF v3.3.a](naf_v3.3.a.dtd)
 

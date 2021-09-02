@@ -55,19 +55,25 @@ class OpinionExpression(OpinionObj):
 class Opinion:
     """Represents an opinion"""
     id: str
-    holders: List[OpinionHolder]
-    targets: List[OpinionTarget]
-    expressions: List[OpinionExpression]
+    expression: OpinionExpression
+    holder: OpinionHolder = None
+    target: OpinionTarget = None
 
     def node(self):
-        return create_node('opinion', None, self.holders + self.targets + self.expressions, {})
+        children = [self.expression]
+        if self.holder is not None:
+            children.append(self.holder)
+        if self.target is not None:
+            children.append(self.target)
+        return create_node('opinion', None, children, {})
 
     @staticmethod
     def get_obj(node):
+        # TODO test me
         return Opinion(node.get('id'),
-                       [OpinionHolder.get_obj(n) for n in node.findall('opinion_holder')],
-                       [OpinionTarget.get_obj(n) for n in node.findall('opinion_target')],
-                       [OpinionExpression.get_obj(n) for n in node.findall('opinion_expression')],
+                       OpinionHolder.get_obj(node.find('opinion_holder')),
+                       OpinionTarget.get_obj(node.find('opinion_target')),
+                       OpinionExpression.get_obj(node.find('opinion_expression')),
                        node.attrib)
 
 

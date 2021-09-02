@@ -26,10 +26,28 @@ class Public(AttributeLayer):
 
 
 @dataclass
+class LPDependency(AttributeGetter):
+    """Represents a dependency (tool/model/data) of a linguistic processor"""
+    name: str
+    attrs: dict = field(default_factory=dict)
+    """optional attributes ('version', 'type')"""
+
+    def node(self):
+        all_attrs = {'name': self.name}
+        all_attrs.update(self.attrs)
+        return create_node('lpDependency', None, [], all_attrs)
+
+    @staticmethod
+    def get_obj(node):
+        return LPDependency(node.get('name'), node.attrib)
+
+
+@dataclass
 class LP(AttributeGetter):
     """Represents a linguistic processor"""
     name: str
     version: str
+    lpDependencies: List[LPDependency]
     attrs: dict = field(default_factory=dict)
     """optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')"""
 

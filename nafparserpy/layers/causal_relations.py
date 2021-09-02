@@ -35,7 +35,7 @@ class CLink:
 @dataclass
 class CausalRelations:
     """Causal Relations layer class"""
-    items: List[CLink] = field(default_factory=list)
+    items: List[CLink]
     """list of causal links"""
 
     def node(self):

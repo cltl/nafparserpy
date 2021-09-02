@@ -1,0 +1,45 @@
+# Changelog
+*The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).*
+
+## [Unreleased]
+
+### Added
+
+* 'lpDependency' element (linguistic processor dependencies)
+* documentation to elements: 'topic', 'span', 'target', 'tunit', 'markables', 'factualities', 'attribution', 'predicate',
+'role', 'timeExpressions'/'timex3', 'temporalRelations'/'tlink'/'predicateAnchor', 'causalRelations'/'clink',
+'multiwords'/'mw', 'externalRef'
+
+### Changed
+
+* element declaration of: 'wf', 'opinion', 'causalRelations', 'mw', 'opinion_target', 'opinion_holder', 'opinion_expression'
+* documentation of elements: 'wf', 'term', 'opinion', 'sentiment'
+
+
+### Removed
+
+* 'factualityLayer' layer
+
+## NAF 3.2
+
+Release date: January 19, 2021
+
+### Added
+
+* 'tunits' layer
+
+## NAF 3.1
+
+Release date: June 26, 2020
+
+### Added
+
+*
+
+### Deprecated
+
+* 'factualityLayer' layer
+
+### Removed
+
+* 'events' layer

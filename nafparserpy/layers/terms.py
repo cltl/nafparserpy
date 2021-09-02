@@ -12,10 +12,10 @@ class Term(AttributeGetter, IdrefGetter):
     id: str
     span: Span
     """span of covered idrefs"""
+    components: List[Component] = field(default_factory=list)
+    """optional list of morphemes in term"""
     externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
     """optional ExternalReferences"""
-    component: Component = None
-    """optional component"""
     sentiment: Sentiment = None
     """optional sentiment"""
     attrs: dict = field(default_factory=dict)
@@ -28,8 +28,8 @@ class Term(AttributeGetter, IdrefGetter):
             children.append(self.sentiment)
         if self.externalReferences is not None:
             children.append(self.externalReferences)
-        if self.component is not None:
-            children.append(self.component)
+        if self.components:
+            children.extend(self.components)
         all_attrs = {'id': self.id}
         all_attrs.update(self.attrs)
         return create_node('term', None, children, all_attrs)
@@ -38,8 +38,8 @@ class Term(AttributeGetter, IdrefGetter):
     def get_obj(node):
         return Term(node.get('id'),
                     Span.get_obj(node.find('span')),
+                    [Component.get_obj(n) for n in node.findall('component')],
                     ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
-                    Component.get_obj(node.find('component')),
                     Sentiment.get_obj(node.find('sentiment')),
                     node.attrib)
 
