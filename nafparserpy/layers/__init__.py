@@ -1,5 +1,6 @@
 """
-Layer modules provide convenience classes for NAF elements.
+Layer modules provide convenience classes for NAF layers and their elements.
+
 The objects instantiated from these classes are decoupled from the NAF tree:
 each class provides a factory method to create objects from nodes, and a method to
 create nodes from objects.
@@ -9,25 +10,25 @@ Classes are implemented as dataclasses with the following fields:
 
 * compulsory attributes, e.g., 'id'
 * compulsory elements, e.g., 'span'
-* optional elements, e.g., 'externalReferences' with default value
+* optional elements, e.g., 'externalReferences'
 * optional attributes; these appear together in a dict field, 'attrs'
 
 ## Naming
 
 Naming follows the NAF element/attribute names as much as possible
 
-* Classes are named after their corresponding NAF element
-* compulsory NAF element attributes appear as fields with the same name in the element class. Exceptions to this are:
+* classes are named after their corresponding NAF element
+* compulsory NAF element attributes appear as fields with the same name in the element class, with one
+exception (because the attribute name is a python keyword):
+
+    * 'from' attributes appear as fields named 'from_idref'
+
 * optional elements appear as keys with the same name in the 'attrs' class field
 
 Some class fields do not directly correspond to a NAF element or attribute, but are
-list of NAF elements. These are named 'items' when they are the sole NAF subelements in a given layer; otherwise they
-take the plural of the NAF element name, e.g., 'factVals' for a list of FactVal objects.
-
-#### Exceptions
-* NAF attribute names which collide with python:
-
-    * 'from' appears as a field named 'from_idref'
+lists of NAF elements. These are named 'items' when they are elements of a container layer (most NAF layers,
+ExternalReferences); otherwise they take the plural of the NAF element name, e.g., 'factVals' for a list of FactVal
+objects.
 
 
 ## Class instantiation

@@ -65,11 +65,11 @@ class LP(AttributeGetter):
 class LinguisticProcessors:
     """Represents a linguisticProcessors element: the list of linguistic processors for a given layer."""
     layer_name: str
-    items: List[LP]
+    lps: List[LP]
     """list of linguistic processors"""
 
     def node(self):
-        return create_node('linguisticProcessors', None, self.items, {'layer': self.layer_name})
+        return create_node('linguisticProcessors', None, self.lps, {'layer': self.layer_name})
 
     @staticmethod
     def get_obj(node):
@@ -103,4 +103,10 @@ class NafHeader:
     def create(filedesc_attr, public_attr, linguistic_processors):
         return NafHeader(AttributeLayer('fileDesc', filedesc_attr), AttributeLayer('public', public_attr), linguistic_processors)
 
+    def get_lps(self, layer_name):
+        lprocessors = [x for x in self.linguisticProcessors if x.layer_name == layer_name]
+        if lprocessors:
+            return lprocessors[0].lps
+        else:
+            raise ValueError('Layer {} has no linguisticProcessors element')
 

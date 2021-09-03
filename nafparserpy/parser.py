@@ -40,8 +40,38 @@ layers = {'nafHeader': NafHeader, 'fileDesc': FileDesc, 'public': Public, 'lingu
           'factualities': Factualities}
 
 
+def split_naf_header_attrs(attrs):
+    """Split input attributes in public or fileDesc attributes
+
+    Parameters
+    ----------
+    attrs : dict
+        dictionary of public/fileDesc attributes
+
+    Returns
+    -------
+    a tuple of attribute dictionaries for fileDesc and public
+
+    Raises
+    ------
+    KeyError: if the input dictionary contains keywords not pertaining to public/fileDesc attributes
+        """
+    public_attrs = {}
+    filedesc_attrs = {}
+    public_keys = ['publicId', 'uri']
+    filedesc_keys = ['title', 'author', 'creationtime', 'filename', 'filetype', 'pages']
+    for k in attrs:
+        if k in public_keys:
+            public_attrs.update({k: attrs[k]})
+        elif k in filedesc_keys:
+            filedesc_attrs.update({k: attrs[k]})
+        else:
+            raise KeyError('unknown public/fileDesc key: {}'.format(k))
+    return filedesc_attrs, public_attrs
+
+
 class NafParser:
-    def __init__(self, tree=None, lang='en', version=None, filename=None):
+    def __init__(self, tree=None, lang='en', version=None, **attrs):
         """
         Create a NAF document.
 
@@ -53,11 +83,11 @@ class NafParser:
             document language, defaults to `en` if not specified by input `tree`
         version : str
             NAF version, defaults to `parser.NAF_VERSION` if not specified by input `tree`
-        filename : str
-            NAF filename; triggers creation of nafHeader layer when creating document from scratch
+        attrs : dict
+            nafHeader fileDesc and public attributes. This parameter is ignored if tree is not None 
         """
         naf_version = NAF_VERSION
-        self.filename = filename
+        
         if version is not None:
             naf_version = version
         if tree is None:
@@ -65,24 +95,25 @@ class NafParser:
             self.root = self.tree.getroot()
             self.root.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             self.root.set('version', naf_version)
-            if self.filename is not None:
-                self.add_naf_header(fileDesc_attrs={'filename': filename})
+            if attrs:
+                filedesc_attrs, public_attrs = split_naf_header_attrs(attrs)
+                self.add_naf_header(fileDesc_attrs=filedesc_attrs, public_attrs=public_attrs)
         else:
             self.tree = tree
             self.root = self.tree.getroot()
 
     @staticmethod
-    def parse(filename):
+    def load(filename):
         filename = filename
         tree = etree.parse(filename, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
         return NafParser(tree)
 
-    def write(self, filename=None):
-        """Write NAF tree to file or stdout if no file-name is given"""
-        if filename is None:
+    def write(self, file_path):
+        """Write NAF tree to file or stdout if no file path is given"""
+        if file_path is None:
             print(etree.tostring(self.root, encoding='UTF-8', pretty_print=True, xml_declaration=True))
         else:
-            self.tree.write(filename, encoding='UTF-8', pretty_print=True, xml_declaration=True)
+            self.tree.write(file_path, encoding='UTF-8', pretty_print=True, xml_declaration=True)
 
     def has_layer(self, layer: str):
         """Returns True if layer with given name exists"""
@@ -128,7 +159,7 @@ class NafParser:
                 self.root.remove(self.root.find(layer_name))
             self.root.append(element.node())
 
-    def add_container_layer(self, layer_name: str, elements: list, exist_ok=False):
+    def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
         """Create container layer from its elements.
 
         This method can be applied to non-empty layers without attributes. This concerns almost all layers,

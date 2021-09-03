@@ -47,7 +47,7 @@ def test_topics_layer():
     assert topic1.get('confidence') == '0'
     topic2 = Topic(text2)
     assert topic2.get('confidence') is None
-    naf.add_container_layer('topics', [topic1, topic2])
+    naf.add_layer_from_elements('topics', [topic1, topic2])
     assert naf.get('topics') == [topic1, topic2]
     os.makedirs('tests/out', exist_ok=True)
     naf.write('tests/out/test.naf')
@@ -55,13 +55,13 @@ def test_topics_layer():
 
 def test_text_layer():
     wf1 = Wf('colorless', 'w1', str(0), str(9), attrs={'sent': str(1)})
-    naf.add_container_layer('text', [wf1])
+    naf.add_layer_from_elements('text', [wf1])
     assert naf.get('text')[0].get('id') == 'w1'
 
 
 def test_term_layer():
     t1 = Term.create('t1', ['w1'], {'lemma': 'in', 'pos': 'ADP'})
-    naf.add_container_layer('terms', [t1])
+    naf.add_layer_from_elements('terms', [t1])
     terms = naf.get('terms')
     assert len(terms) == 1
     term = terms[0]

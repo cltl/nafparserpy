@@ -4,7 +4,7 @@ testfile = 'tests/data/coreference.naf'
 
 
 def test_parse():
-    naf = NafParser.parse(testfile)
+    naf = NafParser.load(testfile)
     for layer in ['nafHeader', 'raw', 'text', 'terms', 'coreferences']:
         assert naf.has_layer(layer)
     assert len(naf.get('nafHeader').linguisticProcessors) == 4

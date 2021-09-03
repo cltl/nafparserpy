@@ -1,49 +1,170 @@
-`nafparserpy` is a simple [NAF](https://github.com/newsreader/NAF) parser, that follows on
+`nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
 [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
+## Introduction
 Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and
-provides convenience classes for handling NAF layers. `nafparserpy` is compatible with Python 3.7 (for Python 3.6 you 
-will need to install [dataclasses](https://pypi.org/project/dataclasses/)). The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd)
+provides convenience classes for handling NAF layers.
+Compared to KafNafParserPy, layer objects are decoupled from the underlying lxml etree, allowing for a clear separation
+between object and tree manipulation.
+
+`nafparserpy` is compatible with Python 3.7 (for Python 3.6 you
+will need to install [dataclasses](https://pypi.org/project/dataclasses/)).
+
+The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd).
 
 
-## Naf tree handling
-Compared to KafNafParserPy, `nafparserpy` is restrictive when it comes to tree manipulation:
+### NAF tree handling and layer objects
+`nafparserpy` is restrictive when it comes to tree manipulation:
 
-* the parser only creates layer objects when retrieving layers, but the created objects are decoupled from
+* the parser allows the addition of full NAF layer objects to the NAF tree (`linguisticProcessors` excepted). The user
+application is responsible for creating these objects; the parser recursively creates and adds nodes for the full layer.
+* the parser creates layer objects when retrieving layers; these objects are decoupled from
 the lxml tree
-* the parser only allows the addition to the NAF tree of full NAF layers (`linguisticProcessors` excepted).
 
-The recommended workflow to modify a given layer consists in:
+Layer and element classes follow closely the NAF DTD:
 
- * [retrieving the given layer](#retrieving_layers)
- * [modifying the object(s) in that layer](#modifying_objects)
- * [replacing the layer](#replacing_layers)
-
-
-#### Retrieving layers
-The parser allows to retrieve layers from the NAF tree as layer objects.
-
-#### Modifying objects
-Attributes and subelements are represented as fields in layer objects. NAF
-attributes are stored as a dictionary in an `attrs` field; besides, compulsory attributes
-have their own field.
-
-Objects are created by specifying their compulsory attributes, subelements (as objects of the corresponding class),
-and a dictionary of optional attributes.
-
-#### Replacing layers
-The parser allows to add new layers, and to control for destructive replacement
+* compulsory NAF attributes appear as fields (object attributes)
+* NAF subelements appear as fields of the corresponding class
+* all attributes (compulsory and optional) appear in an `attrs` dict attribute
 
 
-## DTD
-The parser implementation follows the
-[NAF v3.2 DTD](https://github.com/cltl/NAF-4-Development/blob/master/res/naf_development/naf_v3.2.dtd),
-with a few differences:
+### Documentation
+Run `pdoc` to generate the documentation:
 
-* `factualityValue` is not implemented, since it is marked as old in the DTD
-* some layer classes are more strict than the DTD in their sublayer declarations. For instance, the
-`Entity` class implements `ELEMENT entity (span,externalReferences?)` instead of
-`ELEMENT entity (span|externalReferences)+`
+```pdoc --html nafparserpy``` will generate html doc in `./html/nafparserpy`
 
-These differences are recorded in [NAF v3.3.a](naf_v3.3.a.dtd)
+## Example
 
+
+### Adding and modifying layers
+
+In this example we will look at the file `tests/data/coreference.naf` and
+
+* add an `entities` layer to the tree
+* modify the `coreferences` layer by adding a new span to the 'co1' `coref` element
+
+We will start by loading the NAF document:
+```python
+naf = NafParser.load('tests/data/coreference.naf')
+```
+
+#### Adding layers
+
+We want to add two entities, for the location *USA* and the person *Kitty Genovese*.
+
+The `Entity` class provides a factory method to create entities from their id, type and target ids:
+
+```python
+e1 = Entity.create('e1', 'LOC', ['w10'])
+e2 = Entity.create('e2', 'PER', ['w12', 'w13'])
+```
+
+Now create the `entities` layer and add it to the tree:
+```python
+entities = Entities([e1, e2])
+naf.add_layer('entities', entities)
+```
+Alternatively, and because the `entities` layer is a container layer, it can be created directly from its elements list:
+```python
+naf.add_layer_from_elements('entities', [e1, e2])
+```
+
+To verify that the layer has been added:
+```python
+> naf.has_layer('entities')
+True
+```
+
+We should also add a linguistic processor to the NAF header to explain how we came about these entities:
+Our linguistic processor is called 'linguistic intuition', version 1.0:
+```python
+naf.add_linguistic_processor('entities', 'linguistic intuition', '1.0')
+```
+We could also have passed tool/data dependencies to this processor, and optional attributes like a timestamp.
+
+The NAF header now holds one linguistic processor for the `entities` layer:
+```python
+> len(naf.get('nafHeader').get_lps('entities'))
+1
+```
+
+#### Modifying layers
+
+The `coreferences` layer links the term 'murder' to the event *murder of Kitty Genovese*.
+We will add 'Kitty Genovese' as corefering to the event.
+
+Retrieve the `coreferences` layer:
+```python
+coreferences = naf.get('coreferences')
+```
+Like `entities` and most NAF layers, the `coreferences` is a container element. The `get` method returns
+the list of `Coref` objects in the layer:
+```python
+co1 = coreferences[0]
+```
+`Coref` objects have a `spans` attribute listing their `span` subelements.
+Let us add a span over the terms 't12' and 't13':
+```python
+co1.spans.append(Span.create(['t12', 't13']))
+```
+NAF objects are decoupled from the tree, we need now to replace the existing `coreferences` layer with a new one
+constructed from our modified 'co1' `coref`. We will simply create a new layer object from its elements, and
+allow it to replace the existing layer:
+```python
+naf.add_layer_from_elements('coreferences', [co1], exist_ok=True)
+```
+
+Let us add a linguistic processor to record this modification
+```python
+naf.add_linguistic_processor('coreferences', 'linguistic intuition', '1.0')
+```
+
+We now have 2 spans in the first `coref` element in the `coreferences` layer:
+```python
+> len(naf.get('coreferences')[0].spans)
+2
+```
+
+### Creating a NAF document from scratch
+What if you have no NAF document yet, only text?
+We will create a NAF document, with the text "Colorless green ideas sleep furiously". The author is Noam Chomsky,
+and we will call this document 'chomsky_colorless.naf'.
+
+Initiate a NAF document:
+```python
+naf = NafParser(author='Noam Chomsky', filename='chomsky_colorless.naf')
+```
+
+Author name and filename are `fileDesc` attributes. Let us verify that they are now in the NAF header:
+```python
+header = naf.get('nafHeader')
+> header.fileDesc.get('author')
+Noam Chomsky
+> header.fileDesc.get('filename')
+chomsky_colorless.naf
+```
+Alternatively, and because `fileDesc` is the only element of its kind in NAF documents, we can directly retrieve it:
+```python
+> naf.get('fileDesc').get('author')
+Noam Chomsky
+```
+
+Now we can add a raw text layer:
+```python
+naf.add_raw_layer('colorless green ideas sleep furiously')
+```
+
+Add the corresponding linguistic processor:
+```python
+naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
+```
+
+Let us record this NAF document and write it to file:
+```
+naf.write('tests/chomsky_colorless.naf')
+```
+
+To write to stdout:
+```
+> naf.write()
+```

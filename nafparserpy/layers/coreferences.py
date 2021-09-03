@@ -35,7 +35,7 @@ class Coref(IdrefGetter):
                      node.get('status'),
                      [Span.get_obj(n) for n in node.findall('span')],
                      ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
-                     node.get('type'))
+                     node.attrib)
 
 
 @dataclass
