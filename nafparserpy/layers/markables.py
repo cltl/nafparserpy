@@ -18,22 +18,26 @@ class Mark(AttributeGetter, IdrefGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
+        """Create etree node from object"""
         children = [self.span]
         if self.sentiment is not None:
             children.append(self.sentiment)
         if self.externalReferences.items:
             children.append(self.externalReferences)
-        all_attrs = {'id': self.id}
-        all_attrs.update(self.attrs)
-        return create_node('mark', None, children, all_attrs)
+        return create_node('mark', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Mark(node.get('id'),
-                    Span.get_obj(node.find('span')),
-                    Sentiment.get_obj(node.find('sentiment')),
-                    ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                    Span.object(node.find('span')),
+                    Sentiment.object(node.find('sentiment')),
+                    ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                     node.attrib)
 
 
@@ -43,10 +47,11 @@ class Markables:
     items: List[Mark]
 
     def node(self):
+        """Create etree node from object"""
         return create_node('markables', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        """retrieves list of Mark objects"""
-        return [Mark.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Mark` objects from etree node"""
+        return [Mark.object(n) for n in node]
 

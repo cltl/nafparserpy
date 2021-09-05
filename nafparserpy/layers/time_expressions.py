@@ -18,16 +18,20 @@ class Timex3(AttributeGetter):
     """optional attributes ('beginPoint', 'endPoint', 'quant', 'freq', 'functionInDocument', 'temporalFunction',
     'value', 'valueFromFunction', 'mod', 'anchorTimeID')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id, 'type': self.type})
+
     def node(self):
-        attrib = {'id': self.id, 'type': self.type}
-        attrib.update(self.attrs)
-        return create_node('timex3', None, self.spans, attrib)
+        """Create etree node from object"""
+        return create_node('timex3', None, self.spans, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Timex3(node.get('id'),
                       node.get('type'),
-                      [Span.get_obj(n) for n in node.findall('span')],
+                      [Span.object(n) for n in node.findall('span')],
                       node.attrib)
 
 
@@ -38,8 +42,10 @@ class TimeExpressions:
     """list of time expressions"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('timeExpressions', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Timex3.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Timex3` objects from etree node"""
+        return [Timex3.object(n) for n in node]

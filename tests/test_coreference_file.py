@@ -8,7 +8,7 @@ def test_parse():
     for layer in ['nafHeader', 'raw', 'text', 'terms', 'coreferences']:
         assert naf.has_layer(layer)
     assert len(naf.get('nafHeader').linguisticProcessors) == 4
-    assert naf.get('nafHeader').public.get('filename') is None
+    assert not naf.get('public').has('filename')
     assert len(naf.get('text')) == 17
     assert len(naf.get('coreferences')) == 1
     assert naf.get('coreferences')[0].target_ids() == [['t7']]

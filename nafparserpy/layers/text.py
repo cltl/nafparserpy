@@ -13,10 +13,12 @@ class Subtoken:
     length: str
 
     def node(self):
+        """Create etree node from object"""
         return create_node('subtoken', self.text, [], {'id': self.id, 'offset': self.offset, 'length': self.length})
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Subtoken(node.text, node.get('id'), node.get('offset'), node.get('length'))
 
 
@@ -32,15 +34,19 @@ class Wf(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('sent', 'para', 'page', 'xpath')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id, 'offset': self.offset, 'length': self.length})
+
     def node(self):
-        all_attrs = {'id': self.id, 'offset': self.offset, 'length': self.length}
-        all_attrs.update(self.attrs)
-        return create_node('wf', self.text, self.subtokens, all_attrs)
+        """Create etree node from object"""
+        return create_node('wf', self.text, self.subtokens, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Wf(node.text, node.get('id'), node.get('offset'), node.get('length'),
-                  [Subtoken.get_obj(n) for n in node],
+                  [Subtoken.object(n) for n in node],
                   node.attrib)
 
 
@@ -51,9 +57,10 @@ class Text:
     """list of word forms"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('text', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        """returns list of Wf objects in Text layer"""
-        return [Wf.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Wf` objects from etree node"""
+        return [Wf.object(n) for n in node]

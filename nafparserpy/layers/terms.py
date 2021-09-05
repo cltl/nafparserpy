@@ -21,7 +21,12 @@ class Term(AttributeGetter, IdrefGetter):
     """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head', 'component_of',
     'compound_type')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
+        """Create etree node from object"""
         children = [self.span]
         if self.sentiment is not None:
             children.append(self.sentiment)
@@ -29,17 +34,16 @@ class Term(AttributeGetter, IdrefGetter):
             children.append(self.externalReferences)
         if self.components:
             children.extend(self.components)
-        all_attrs = {'id': self.id}
-        all_attrs.update(self.attrs)
-        return create_node('term', None, children, all_attrs)
+        return create_node('term', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Term(node.get('id'),
-                    Span.get_obj(node.find('span')),
-                    [Component.get_obj(n) for n in node.findall('component')],
-                    ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
-                    Sentiment.get_obj(node.find('sentiment')),
+                    Span.object(node.find('span')),
+                    [Component.object(n) for n in node.findall('component')],
+                    ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
+                    Sentiment.object(node.find('sentiment')),
                     node.attrib)
 
     @staticmethod
@@ -55,10 +59,11 @@ class Terms:
     """list of terms"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('terms', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        """retrieves list of Term objects"""
-        return [Term.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Term` objects from etree node"""
+        return [Term.object(n) for n in node]
 

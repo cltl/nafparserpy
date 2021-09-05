@@ -73,18 +73,18 @@ def split_naf_header_attrs(attrs):
 class NafParser:
     def __init__(self, tree=None, lang='en', version=None, **attrs):
         """
-        Create a NAF document.
+        Create a NAF document from an existing tree or from scratch.
 
         Parameters
         ----------
         tree : etree
             input tree
         lang : str
-            document language, defaults to `en` if not specified by input `tree`
+            document language, defaults to `en`. This parameter is ignored if tree is not None
         version : str
-            NAF version, defaults to `parser.NAF_VERSION` if not specified by input `tree`
+            NAF version, defaults to `parser.NAF_VERSION`; ignored if tree is not None
         attrs : dict
-            nafHeader fileDesc and public attributes. This parameter is ignored if tree is not None 
+            nafHeader fileDesc and public attributes; ignored if tree is not None
         """
         naf_version = NAF_VERSION
         
@@ -104,6 +104,7 @@ class NafParser:
 
     @staticmethod
     def load(filename):
+        """Create a NAF document from a NAF file"""
         filename = filename
         tree = etree.parse(filename, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
         return NafParser(tree)
@@ -126,7 +127,7 @@ class NafParser:
         if not self.has_layer(layer_name):
             raise ValueError("layer {} does not exist".format(layer_name))
         nodes = self.root.findall('.//{}'.format(layer_name))
-        return layers[layer_name].get_obj(nodes[0])
+        return layers[layer_name].object(nodes[0])
 
     def getall(self, layer_name: str):
         """Return a list of layer objects for each layer carrying the given layer-name
@@ -134,7 +135,7 @@ class NafParser:
         if not self.has_layer(layer_name):
             raise ValueError("layer {} does not exist".format(layer_name))
         nodes = self.root.findall('.//{}'.format(layer_name))
-        return [layers[layer_name].get_obj(node) for node in nodes]
+        return [layers[layer_name].object(node) for node in nodes]
 
     def add_layer(self, layer_name: str, element: Any, exist_ok=False):
         """Add a layer to the NAF xml tree
@@ -202,7 +203,7 @@ class NafParser:
     def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={}):
         """Add a `linguistic processor` element to the linguistic processors list for the given layer.
 
-        Creates a `nafHeader` layer and/or a `linguisticProcessors` layer there is not already one.
+        Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
 
         Parameters
         ----------
@@ -237,4 +238,25 @@ class NafParser:
             allows replacement of existing layer"""
         self.add_layer('raw', Raw(text), exist_ok)
 
+    def get_lps(self, layer_name):
+        """Return list of linguistic processors for a given layer
+
+        Parameters
+        ----------
+        layer_name: str
+            layer name
+
+        Returns
+        -------
+        list of Lp objects
+
+        Raises
+        ------
+        ValueError: if the NAF header has no linguisticProcessors element for that layer"""
+
+        lprocessors = [x for x in self.getall('linguisticProcessors') if x.layer_name == layer_name]
+        if lprocessors:
+            return lprocessors[0].lps
+        else:
+            raise ValueError('Layer {} has no linguisticProcessors element')
 

@@ -13,32 +13,37 @@ class StatementObj(IdrefGetter):
     """span covered by the statement"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node(self.type, None, [self.span], {})
 
     @staticmethod
-    def get_obj(type, node):
-        return StatementObj(type, Span.get_obj(node.find('span')))
+    def object(type, node):
+        """Create object from etree node"""
+        return StatementObj(type, Span.object(node.find('span')))
 
 
 @dataclass
 class StatementSource(StatementObj):
     @staticmethod
-    def get_obj(node):
-        return StatementObj.get_obj('statement_source', node)
+    def object(node):
+        """Create object from etree node"""
+        return StatementObj.object('statement_source', node)
 
 
 @dataclass
 class StatementTarget(StatementObj):
     @staticmethod
-    def get_obj(node):
-        return StatementObj.get_obj('statement_target', node)
+    def object(node):
+        """Create object from etree node"""
+        return StatementObj.object('statement_target', node)
 
 
 @dataclass
 class StatementCue(StatementObj):
     @staticmethod
-    def get_obj(node):
-        return StatementObj.get_obj('statement_cue', node)
+    def object(node):
+        """Create object from etree node"""
+        return StatementObj.object('statement_cue', node)
 
 
 @dataclass
@@ -50,14 +55,16 @@ class Statement:
     cues: List[StatementObj]
 
     def node(self):
+        """Create etree node from object"""
         return create_node('statement', None, self.sources + self.targets + self.cues, {})
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Statement(node.get('id'),
-                         [StatementTarget.get_obj(n) for n in node.findall('statement_target')],
-                         [StatementSource.get_obj(n) for n in node.findall('statement_source')],
-                         [StatementCue.get_obj(n) for n in node.findall('statement_cue')])
+                         [StatementTarget.object(n) for n in node.findall('statement_target')],
+                         [StatementSource.object(n) for n in node.findall('statement_source')],
+                         [StatementCue.object(n) for n in node.findall('statement_cue')])
 
 
 @dataclass
@@ -67,8 +74,10 @@ class Attribution:
     """list of attribution statements"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('attribution', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Statement.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Statement` objects from etree node"""
+        return [Statement.object(n) for n in node]

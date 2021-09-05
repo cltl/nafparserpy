@@ -15,16 +15,20 @@ class Role(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence' and 'status')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
-        attrib = {'id': self.id}
-        attrib.update(self.attrs)
-        return create_node('role', None, [self.span] + [self.external_references], attrib)
+        """Create etree node from object"""
+        return create_node('role', None, [self.span] + [self.external_references], self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Role(node.get('id'),
-                    Span.get_obj(node.find('span')),
-                    ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                    Span.object(node.find('span')),
+                    ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                     node.attrib)
 
 
@@ -40,22 +44,26 @@ class Predicate(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence', 'status')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
-        attrib = {'id': self.id}
-        attrib.update(self.attrs)
+        """Create etree node from object"""
         children = [self.span]
         if self.externalReferences.items:
             children.append(self.externalReferences)
         if self.roles:
             children.extend(self.roles)
-        return create_node('predicate', None, children, attrib)
+        return create_node('predicate', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Predicate(node.get('id'),
-                         Span.get_obj(node.find('span')),
-                         ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
-                         [Role.get_obj(n) for n in node.findall('role')],
+                         Span.object(node.find('span')),
+                         ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
+                         [Role.object(n) for n in node.findall('role')],
                          node.attrib)
 
 
@@ -66,8 +74,10 @@ class Srl:
     """list of predicates"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('srl', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Predicate.get_obj(n) for n in node]
+    def object(node):
+        """Create object from etree node"""
+        return [Predicate.object(n) for n in node]

@@ -22,7 +22,7 @@ def test_coreference():
 
     naf.add_linguistic_processor('entities', 'linguistic intuition', '1.0')
 
-    assert len(naf.get('nafHeader').get_lps('entities')) == 1
+    assert len(naf.get_lps('entities')) == 1
 
     # modifying a layer
     coreferences = naf.get('coreferences')

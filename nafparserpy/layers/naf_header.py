@@ -9,7 +9,8 @@ from nafparserpy.layers.utils import AttributeLayer, AttributeGetter, create_nod
 class FileDesc(AttributeLayer):
     """Represents a fileDesc element"""
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         if node is None:
             return None
         return AttributeLayer('fileDesc', node.attrib)
@@ -19,7 +20,8 @@ class FileDesc(AttributeLayer):
 class Public(AttributeLayer):
     """Represents a public element"""
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         if node is None:
             return None
         return AttributeLayer('public', node.attrib)
@@ -32,13 +34,17 @@ class LPDependency(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('version', 'type')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'name': self.name})
+
     def node(self):
-        all_attrs = {'name': self.name}
-        all_attrs.update(self.attrs)
-        return create_node('lpDependency', None, [], all_attrs)
+        """Create etree node from object"""
+        return create_node('lpDependency', None, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return LPDependency(node.get('name'), node.attrib)
 
 
@@ -51,14 +57,18 @@ class LP(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'name': self.name, 'version': self.version})
+
     def node(self):
-        all_attrs = {'name': self.name, 'version': self.version}
-        all_attrs.update(self.attrs)
-        return create_node('lp', None, [], all_attrs)
+        """Create etree node from object"""
+        return create_node('lp', None, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        return LP(node.get('name'), node.get('version'), [LPDependency.get_obj(n) for n in node], node.attrib)
+    def object(node):
+        """Create object from etree node"""
+        return LP(node.get('name'), node.get('version'), [LPDependency.object(n) for n in node], node.attrib)
 
 
 @dataclass
@@ -69,11 +79,13 @@ class LinguisticProcessors:
     """list of linguistic processors"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('linguisticProcessors', None, self.lps, {'layer': self.layer_name})
 
     @staticmethod
-    def get_obj(node):
-        return LinguisticProcessors(node.get('layer'), [LP.get_obj(n) for n in node])
+    def object(node):
+        """Create object from etree node"""
+        return LinguisticProcessors(node.get('layer'), [LP.object(n) for n in node])
 
 
 @dataclass
@@ -83,6 +95,7 @@ class NafHeader:
     linguisticProcessors: List[LinguisticProcessors] = field(default_factory=list)
 
     def node(self):
+        """Create etree node from object"""
         node = etree.Element('nafHeader')
         if self.fileDesc.attrs:
             node.append(self.fileDesc.node())
@@ -94,19 +107,13 @@ class NafHeader:
         return node
 
     @staticmethod
-    def get_obj(node):
-        return NafHeader(FileDesc.get_obj(node.find('fileDesc')),
-                         Public.get_obj(node.find('public')),
-                         [LinguisticProcessors.get_obj(n) for n in node.findall('linguisticProcessors')])
+    def object(node):
+        """Create object from etree node"""
+        return NafHeader(FileDesc.object(node.find('fileDesc')),
+                         Public.object(node.find('public')),
+                         [LinguisticProcessors.object(n) for n in node.findall('linguisticProcessors')])
 
     @staticmethod
     def create(filedesc_attr, public_attr, linguistic_processors):
         return NafHeader(AttributeLayer('fileDesc', filedesc_attr), AttributeLayer('public', public_attr), linguistic_processors)
-
-    def get_lps(self, layer_name):
-        lprocessors = [x for x in self.linguisticProcessors if x.layer_name == layer_name]
-        if lprocessors:
-            return lprocessors[0].lps
-        else:
-            raise ValueError('Layer {} has no linguisticProcessors element')
 

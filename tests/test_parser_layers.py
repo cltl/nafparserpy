@@ -24,7 +24,8 @@ def test_naf_header():
     naf.add_linguistic_processor('raw', 'rawLp', '0.1')
     naf.write('tests/out/test.naf')
     assert naf.has_layer('linguisticProcessors')
-    lp1 = naf.getall('linguisticProcessors')[0].items[0]
+    lp1 = naf.getall('linguisticProcessors')[0].lps[0]
+
     # NOTE compulsory attributes appear both as fields and attributes
     assert lp1.name == 'rawLp'
     assert lp1.get('name') == 'rawLp'
@@ -46,7 +47,7 @@ def test_topics_layer():
     topic1 = Topic(text, {'source': 'unk', 'method': 'unk', 'uri': 'unk', 'confidence': '0'})
     assert topic1.get('confidence') == '0'
     topic2 = Topic(text2)
-    assert topic2.get('confidence') is None
+    assert not topic2.has('confidence')
     naf.add_layer_from_elements('topics', [topic1, topic2])
     assert naf.get('topics') == [topic1, topic2]
     os.makedirs('tests/out', exist_ok=True)
@@ -78,6 +79,9 @@ def test_single_optional_attribute():
     clink = CLink('a', 'b', 'c')
     node = clink.node()
     assert 'relType' not in node.attrib.keys()
-    clink = CLink('a', 'b', 'c', relType='some')
+    assert not clink.has('relType')
+
+    clink = CLink('a', 'b', 'c', {'relType': 'some'})
     node2 = clink.node()
     assert 'relType' in node2.attrib.keys()
+    assert clink.has('relType')

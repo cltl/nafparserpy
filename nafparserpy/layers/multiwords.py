@@ -7,22 +7,28 @@ from nafparserpy.layers.utils import AttributeGetter, create_node
 
 @dataclass
 class Mw(AttributeGetter):
-    """Represents a multiword"""
+    """Represents a multiword expression"""
     id: str
     type: str
     components: List[Component]
     externalRefs: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id, 'type': self.type})
+
     def node(self):
+        """Create etree node from object"""
         return create_node('mw', None, self.components + [self.externalRefs], self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Mw(node.get('id'),
                   node.get('type'),
-                  [Component.get_obj(n) for n in node.findall('component')],
-                  ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                  [Component.object(n) for n in node.findall('component')],
+                  ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                   node.attrib)
 
 
@@ -33,9 +39,11 @@ class Multiwords:
     """list of multiwords"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('multiwords', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Mw.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Mw` objects from etree node"""
+        return [Mw.object(n) for n in node]
 

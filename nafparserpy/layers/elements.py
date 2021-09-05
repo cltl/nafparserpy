@@ -8,17 +8,21 @@ from nafparserpy.layers.utils import AttributeGetter, AttributeLayer, IdrefGette
 class Target:
     """Defines target id for the Span class"""
     id: str
-    head: str = None
+    attrs: dict = field(default_factory=dict)
+    """optional attributes: 'head'"""
+
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
 
     def node(self):
-        attrs = {'id': self.id}
-        if self.head is not None:
-            attrs.update({'head': self.head})
-        return create_node('target', None, [], attrs)
+        """Create etree node from object"""
+        return create_node('target', None, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        return Target(node.get('id'), node.get('head'))
+    def object(node):
+        """Create object from etree node"""
+        return Target(node.get('id'), node.attrib)
 
 
 @dataclass
@@ -28,13 +32,15 @@ class Span:
     """optional attributes ('primary', 'status')"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('span', None, self.targets, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         if node is None:
             return None
-        return Span([Target.get_obj(n) for n in node], node.attrib)
+        return Span([Target.object(n) for n in node], node.attrib)
 
     @staticmethod
     def create(target_ids):
@@ -52,7 +58,13 @@ class Sentiment(AttributeLayer):
     'sentiment_product_feature', 'sentiment_modifier', 'sentiment_marker'
     """
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node
+
+        Parameters
+        ----------
+        node : etree
+            node may be None as `sentiment` elements are optional subelements"""
         if node is None:
             return None
         return AttributeLayer('sentiment', node.attrib)
@@ -68,23 +80,27 @@ class ExternalRef(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('resource', 'reftype', 'status', 'source', 'confidence', 'timestamp')"""
 
-    def node(self):
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'reference': self.reference})
 
+    def node(self):
+        """Create etree node from object"""
         children = []
         if self.sentiment is not None:
             children.append(self.sentiment)
         if self.externalRefs:
             children.extend(self.externalRefs)
-        attrib = {'reference': self.reference}
-        attrib.update(self.attrs)
-        return create_node('externalRef', None, children, attrib)
+        return create_node('externalRef', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        """FIXME does lxml includes the node itself in 'findall' ?"""
+    def object(node):
+        """Create object from etree node
+
+        FIXME does lxml includes the node itself in 'findall' ?"""
         return ExternalRef(node.get('reference'),
-                           Sentiment.get_obj(node.find('sentiment')),
-                           [ExternalRef.get_obj(n) for n in node.findall('externalRef')],
+                           Sentiment.object(node.find('sentiment')),
+                           [ExternalRef.object(n) for n in node.findall('externalRef')],
                            node.attrib)
 
 
@@ -95,14 +111,20 @@ class ExternalReferences:
     """optional list of external references"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('externalRefs', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        """Returns the list of external references"""
+    def object(node):
+        """Creates list of `ExternalRef` objects from node
+
+        Parameters
+        ----------
+        node : etree
+            node may be None as `ExternalReferences` elements are optional subelements"""
         if node is None:
-            return None
-        return [ExternalRef.get_obj(n) for n in node]
+            return []
+        return [ExternalRef.object(n) for n in node]
 
 
 @dataclass
@@ -115,23 +137,25 @@ class Component(AttributeGetter, IdrefGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
+        """Create etree node from object"""
         children = list()
         children.append(self.span)
         if self.sentiment is not None:
             children.append(self.sentiment)
         if self.externalReferences.items:
             children.append(self.externalReferences)
-        all_attrs = {'id': self.id}
-        all_attrs.update(self.attrs)
-        create_node('component', None, children, all_attrs)
+        create_node('component', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        if node is None:
-            return None
+    def object(node):
+        """Create object from etree node"""
         return Component(node.get('id'),
-                         Span.get_obj(node.find('span')),
-                         Sentiment.get_obj(node.find('sentiment')),
-                         ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                         Span.object(node.find('span')),
+                         Sentiment.object(node.find('sentiment')),
+                         ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                          node.attrib)

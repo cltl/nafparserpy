@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import List, Any
+from typing import List
 
 from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
 from nafparserpy.layers.elements import Span, ExternalReferences
@@ -17,19 +17,23 @@ class Entity(AttributeGetter, IdrefGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'status', 'source')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id})
+
     def node(self):
-        attrib = {'id': self.id}
-        attrib.update(self.attrs)
+        """Create etree node from object"""
         children = [self.span]
         if self.external_references.items:
             children.append(self.external_references)
-        return create_node('entity', None, children, attrib)
+        return create_node('entity', None, children, self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Entity(node.get('id'),
-                      Span.get_obj(node.find('span')),
-                      ExternalReferences(ExternalReferences.get_obj(node.find('externalReferences'))),
+                      Span.object(node.find('span')),
+                      ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                       node.attrib)
 
     @staticmethod
@@ -44,8 +48,10 @@ class Entities:
     """list of entities in the layer"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('entities', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Entity.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Entity` objects from etree node"""
+        return [Entity.object(n) for n in node]

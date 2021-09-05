@@ -11,7 +11,11 @@ Classes are implemented as dataclasses with the following fields:
 * compulsory attributes, e.g., 'id'
 * compulsory elements, e.g., 'span'
 * optional elements, e.g., 'externalReferences'
-* optional attributes; these appear together in a dict field, 'attrs'
+* optional attributes; these are stored together with compulsory attributes in a dict field, 'attrs'
+
+Classes that have both compulsory and optional attributes implement the `AttributeGetter` class, that provides
+`has`/`get` methods to test attribute existence and retrieve them. Compulsory attributes are copied to the 'attrs' dict
+field after class instantiation, to make these methods available for both compulsory and optional attributes.
 
 ## Naming
 
@@ -26,15 +30,15 @@ exception (because the attribute name is a python keyword):
 * optional elements appear as keys with the same name in the 'attrs' class field
 
 Some class fields do not directly correspond to a NAF element or attribute, but are
-lists of NAF elements. These are named 'items' when they are elements of a container layer (most NAF layers,
-ExternalReferences); otherwise they take the plural of the NAF element name, e.g., 'factVals' for a list of FactVal
+lists of NAF elements. These are named 'items' when they are elements of a container layer (`ExternalReferences` and
+most NAF layers); otherwise they take the plural of the NAF element name, e.g., 'factVals' for a list of `FactVal`
 objects.
 
 
 ## Class instantiation
 Classes can be instantiated through their (dataclass) constructor.
 You should pass (in order): compulsory attributes, compulsory subelements (as objects),
-optional subelements (as objects), optional attributes (as a dict)
+optional subelements (as objects), optional attributes (as a dict).
 
 Additionally, some classes provide a higher-level `create` method. For instance, the `Entity` class `create` method
 allows to create an entity from its id, type, and covered tokens/terms:

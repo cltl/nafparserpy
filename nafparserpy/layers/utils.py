@@ -6,44 +6,33 @@ from lxml import etree
 class AttributeGetter:
     """Provides an attribute getter"""
     def get(self, attribute):
-        """Get attribute from `attrs` field"""
-        return get_attribute(self, attribute)
+        """Get attribute from `attrs` field
 
+        Parameters
+        ----------
+        attribute : str
+            attribute name
 
-def get_attribute(layer, key: str):
-    """Return attribute value, or None if there is no such attribute.
+        Raises
+        ------
+        KeyError: if the layer has no such attribute"""
+        if self.has(attribute):
+            return self.attrs[attribute]
+        else:
+            raise KeyError('Attribute {} is not present in layer:\n{}'.format(attribute, self))
 
-    Parameters
-    ----------
-    layer
-        the layer object carrying the attribute
-    key : str
-        attribute name
-    """
-    if layer.attrs is not None and key in layer.attrs.keys():
-        return layer.attrs[key]
-    else:
-        return None
+    def has(self, attribute):
+        """Test if attribute appears in `attrs` field"""
+        return self.attrs is not None and attribute in self.attrs.keys()
 
 
 class IdrefGetter:
     """Provides a target ids getter for layers with a `span` field"""
     def target_ids(self):
-        """Returns list of target ids covered by the layer's span"""
-        return get_span_target_ids(self)
-
-
-def get_span_target_ids(layer):
-    """Return the list of target ids covered by the span of a layer.
-
-    Defaults to empty list, also if span is missing.
-    Parameters
-    ----------
-    layer
-        the layer object"""
-    if layer.span is None:
-        return []
-    return [t.id for t in layer.span.targets]
+        """Return list of target ids covered by the layer's span"""
+        if self.span is None:
+            return []
+        return [t.id for t in self.span.targets]
 
 
 @dataclass
@@ -54,15 +43,17 @@ class AttributeLayer(AttributeGetter):
     """optional attributes (keys are subclass dependent)"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node(self.layer, None, [], self.attrs)
 
     @staticmethod
-    def get_obj(layer_name, node):
+    def object(layer_name, node):
+        """Create object from etree node"""
         return AttributeLayer(layer_name, node.attrib)
 
 
 def create_node(layer, text, children, attributes):
-    """Create an etree Element node from NAF objects
+    """Create an etree Element node from the text, children and attributes of NAF objects
 
     Parameters
     ----------

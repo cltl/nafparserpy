@@ -17,6 +17,7 @@ class TLink:
     reTlype: str
 
     def node(self):
+        """Create etree node from object"""
         attrib = {'id': self.id,
                   'from': self.from_idref,
                   'fromType': self.fromType,
@@ -26,7 +27,8 @@ class TLink:
         return create_node('tlink', None, [], attrib)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return TLink(node.get('id'),
                      node.get('from'),
                      node.get('fromType'),
@@ -42,11 +44,13 @@ class PredicateAnchor(AttributeGetter):
     """optional attributes ('id', 'anchorTime', 'beginPoint', 'endPoint')"""
 
     def node(self):
+        """Create etree node from object"""
         create_node('predicateAnchor', None, self.spans, self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        return PredicateAnchor([Span.get_obj(n) for n in node], node.attrib)
+    def object(node):
+        """Create object from etree node"""
+        return PredicateAnchor([Span.object(n) for n in node], node.attrib)
 
 
 @dataclass
@@ -58,9 +62,11 @@ class TemporalRelations:
     predicate_anchors: List[PredicateAnchor] = field(default_factory=list)
 
     def node(self):
+        """Create etree node from object"""
         return create_node('temporalRelations', None, self.tlinks + self.predicate_anchors, {})
 
     @staticmethod
-    def get_obj(node):
-        return TemporalRelations([TLink.get_obj(n) for n in node.findall('tlink')],
-                                 [PredicateAnchor.get_obj(n) for n in node.findall('predicateAnchor')])
+    def object(node):
+        """Create object from etree node"""
+        return TemporalRelations([TLink.object(n) for n in node.findall('tlink')],
+                                 [PredicateAnchor.object(n) for n in node.findall('predicateAnchor')])

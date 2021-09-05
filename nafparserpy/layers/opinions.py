@@ -12,12 +12,18 @@ class OpinionObj(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """list of optional attributes (subclass dependent)"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'type': self.type})
+
     def node(self):
+        """Create etree node from object"""
         return create_node(self.type, None, self.span, self.attrs)
 
     @staticmethod
-    def get_obj(type, node):
-        return OpinionObj(type, Span.get_obj(node.find('span')), node.attrib)
+    def object(type, node):
+        """Create object of type `opinion_holder`/`opinion_target`/`opinion_expression` from etree node"""
+        return OpinionObj(type, Span.object(node.find('span')), node.attrib)
 
 
 @dataclass
@@ -26,8 +32,9 @@ class OpinionHolder(OpinionObj):
 
     Optional attributes: 'type'"""
     @staticmethod
-    def get_obj(node):
-        return OpinionObj.get_obj('opinion_holder', node)
+    def object(node):
+        """Create object from etree node"""
+        return OpinionObj.object('opinion_holder', node)
 
 
 @dataclass
@@ -36,8 +43,9 @@ class OpinionTarget(OpinionObj):
 
     Optional attributes: 'type'"""
     @staticmethod
-    def get_obj(node):
-        return OpinionObj.get_obj('opinion_target', node)
+    def object(node):
+        """Create object from etree node"""
+        return OpinionObj.object('opinion_target', node)
 
 
 @dataclass
@@ -47,8 +55,9 @@ class OpinionExpression(OpinionObj):
     Optional attributes: 'polarity', 'strength', 'subjectivity', 'sentiment_semantic_type', 'sentiment_product_feature'
     """
     @staticmethod
-    def get_obj(node):
-        return OpinionObj.get_obj('opinion_expression', node)
+    def object(node):
+        """Create object from etree node"""
+        return OpinionObj.object('opinion_expression', node)
 
 
 @dataclass
@@ -60,6 +69,7 @@ class Opinion:
     target: OpinionTarget = None
 
     def node(self):
+        """Create etree node from object"""
         children = [self.expression]
         if self.holder is not None:
             children.append(self.holder)
@@ -68,12 +78,13 @@ class Opinion:
         return create_node('opinion', None, children, {})
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         # TODO test me
         return Opinion(node.get('id'),
-                       OpinionHolder.get_obj(node.find('opinion_holder')),
-                       OpinionTarget.get_obj(node.find('opinion_target')),
-                       OpinionExpression.get_obj(node.find('opinion_expression')),
+                       OpinionHolder.object(node.find('opinion_holder')),
+                       OpinionTarget.object(node.find('opinion_target')),
+                       OpinionExpression.object(node.find('opinion_expression')),
                        node.attrib)
 
 
@@ -84,8 +95,10 @@ class Opinions:
     """list of opinions"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('opinions', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Opinion.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Opinion` objects from etree node"""
+        return [Opinion.object(n) for n in node]

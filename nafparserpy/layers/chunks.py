@@ -1,27 +1,30 @@
 from dataclasses import dataclass
 from typing import List
 
-from nafparserpy.layers.utils import create_node
+from nafparserpy.layers.utils import create_node, AttributeGetter
 
 
 @dataclass
-class Chunk:
+class Chunk(AttributeGetter):
     """Represents a chunk"""
     id: str
     head: str
     phrase: str
-    case: str = None
-    """optional case"""
+    attrs: dict
+    """optional attributes: 'case'"""
+
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'id': self.id, 'head': self.head, 'phrase': self.phrase})
 
     def node(self):
-        attrs = {'id': self.id, 'head': self.head, 'phrase': self.phrase}
-        if self.case is not None:
-            attrs.update({'case': self.case})
-        return create_node('chunk', None, [], attrs)
+        """Create etree node from object"""
+        return create_node('chunk', None, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
-        return Chunk(node.get('id'), node.get('head'), node.get('phrase'), node.get('case'))
+    def object(node):
+        """Create object from etree node"""
+        return Chunk(node.get('id'), node.get('head'), node.get('phrase'), node.attrib)
 
 
 @dataclass
@@ -30,8 +33,10 @@ class Chunks:
     items: List[Chunk]
 
     def node(self):
+        """Create etree node from object"""
         return create_node('chunks', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Chunk.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Chunk` objects from etree node"""
+        return [Chunk.object(n) for n in node]

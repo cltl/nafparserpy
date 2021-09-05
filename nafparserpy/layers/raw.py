@@ -10,8 +10,10 @@ class Raw:
     """raw text"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('raw', self.text, [], {})
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Raw(node.text)

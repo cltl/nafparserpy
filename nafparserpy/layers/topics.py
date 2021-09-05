@@ -12,10 +12,12 @@ class Topic(AttributeGetter):
     """optional attributes ('source', 'method', 'confidence', 'uri')"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('topic', self.text, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Topic(node.text, node.attrib)
 
 
@@ -26,10 +28,11 @@ class Topics:
     """list of topics"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('topics', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        """returns list of topics"""
-        return [Topic.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Topic` objects from etree node"""
+        return [Topic.object(n) for n in node]
 

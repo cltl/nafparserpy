@@ -1,4 +1,4 @@
-`nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
+from nafparserpy.parser import get_lps`nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
 [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
 ## Introduction
@@ -84,7 +84,7 @@ We could also have passed tool/data dependencies to this processor, and optional
 
 The NAF header now holds one linguistic processor for the `entities` layer:
 ```python
-> len(naf.get('nafHeader').get_lps('entities'))
+> len(naf.get_lps('entities'))
 1
 ```
 
@@ -97,8 +97,8 @@ Retrieve the `coreferences` layer:
 ```python
 coreferences = naf.get('coreferences')
 ```
-Like `entities` and most NAF layers, the `coreferences` is a container element. The `get` method returns
-the list of `Coref` objects in the layer:
+Like `entities` and most NAF layers, the `coreferences` is a container element; we can index it to retrieve its `Coref` 
+elements:  
 ```python
 co1 = coreferences[0]
 ```
@@ -138,8 +138,12 @@ naf = NafParser(author='Noam Chomsky', filename='chomsky_colorless.naf')
 Author name and filename are `fileDesc` attributes. Let us verify that they are now in the NAF header:
 ```python
 header = naf.get('nafHeader')
+> header.fileDesc.has('author')
+True
 > header.fileDesc.get('author')
 Noam Chomsky
+> header.fileDesc.has('filename')
+True
 > header.fileDesc.get('filename')
 chomsky_colorless.naf
 ```
@@ -167,4 +171,14 @@ naf.write('tests/chomsky_colorless.naf')
 To write to stdout:
 ```
 > naf.write()
+<?xml version='1.0' encoding='UTF-8'?>
+<NAF xml:lang="en" version="3.3.a">
+  <nafHeader>
+    <fileDesc author="Noam Chomsky" filename="chomsky_colorless.naf"/>
+    <linguisticProcessors layer="raw">
+      <lp name="linguistic intuition" version="1.0"/>
+    </linguisticProcessors>
+  </nafHeader>
+  <raw><![CDATA[colorless green ideas sleep furiously]]></raw>
+</NAF>
 ```

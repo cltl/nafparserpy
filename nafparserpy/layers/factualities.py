@@ -13,13 +13,17 @@ class FactVal(AttributeGetter):
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence', 'source')"""
 
+    def __post_init__(self):
+        """Copy compulsory attributes to `attrs` field"""
+        self.attrs.update({'value': self.value, 'resource': self.resource})
+
     def node(self):
-        attrib = {'value': self.value, 'resource': self.resource}
-        attrib.update(self.attrs)
-        return create_node('factVal', None, [], attrib)
+        """Create etree node from object"""
+        return create_node('factVal', None, [], self.attrs)
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return FactVal(node.get('value'), node.get('resource'), node.attrib)
 
 
@@ -31,15 +35,15 @@ class Factuality(IdrefGetter):
     fact_vals: List[FactVal]
 
     def node(self):
-        attrib = {'id': self.id}
-        attrib.update(self.attrs)
-        return create_node('factuality', None, [self.span] + self.fact_vals)
+        """Create etree node from object"""
+        return create_node('factuality', None, [self.span] + self.fact_vals, {'id': self.id})
 
     @staticmethod
-    def get_obj(node):
+    def object(node):
+        """Create object from etree node"""
         return Factuality(node.get('id'),
-                          Span.get_obj(node.find('span')),
-                          [FactVal.get_obj(n) for n in node.findall('factVal')])
+                          Span.object(node.find('span')),
+                          [FactVal.object(n) for n in node.findall('factVal')])
 
 
 @dataclass
@@ -49,8 +53,10 @@ class Factualities:
     """list of factualities"""
 
     def node(self):
+        """Create etree node from object"""
         return create_node('factualities', None, self.items, {})
 
     @staticmethod
-    def get_obj(node):
-        return [Factuality.get_obj(n) for n in node]
+    def object(node):
+        """Create list of `Factuality` objects from etree node"""
+        return [Factuality.object(n) for n in node]
