@@ -5,59 +5,65 @@ from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class OpinionObj(AttributeGetter):
-    """Generic representation of opinion object (holder, target or expression)"""
-    type: str
+class OpinionHolder(AttributeGetter):
+    """Represents an opinion holder
+
+    Optional attributes: 'type'"""
     span: Span
     attrs: dict = field(default_factory=dict)
     """list of optional attributes (subclass dependent)"""
 
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'type': self.type})
-
     def node(self):
         """Create etree node from object"""
-        return create_node(self.type, None, self.span, self.attrs)
+        return create_node('opinion_holder', None, self.span, self.attrs)
 
-    @staticmethod
-    def object(type, node):
-        """Create object of type `opinion_holder`/`opinion_target`/`opinion_expression` from etree node"""
-        return OpinionObj(type, Span.object(node.find('span')), node.attrib)
-
-
-@dataclass
-class OpinionHolder(OpinionObj):
-    """Represents an opinion holder
-
-    Optional attributes: 'type'"""
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return OpinionObj.object('opinion_holder', node)
+        if node is None:
+            return None
+        return OpinionHolder(Span.object(node.find('span')), node.attrib)
 
 
 @dataclass
-class OpinionTarget(OpinionObj):
+class OpinionTarget(AttributeGetter):
     """Represents an opinion target
 
     Optional attributes: 'type'"""
+    span: Span
+    attrs: dict = field(default_factory=dict)
+    """list of optional attributes (subclass dependent)"""
+
+    def node(self):
+        """Create etree node from object"""
+        return create_node('opinion_target', None, self.span, self.attrs)
+
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return OpinionObj.object('opinion_target', node)
+        if node is None:
+            return None
+        return OpinionTarget(Span.object(node.find('span')), node.attrib)
 
 
 @dataclass
-class OpinionExpression(OpinionObj):
+class OpinionExpression(AttributeGetter):
     """Represents an opinion expression
 
     Optional attributes: 'polarity', 'strength', 'subjectivity', 'sentiment_semantic_type', 'sentiment_product_feature'
     """
+    span: Span
+    attrs: dict = field(default_factory=dict)
+    """list of optional attributes (subclass dependent)"""
+
+    def node(self):
+        """Create etree node from object"""
+        return create_node('opinion_expression', None, [self.span], self.attrs)
+
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return OpinionObj.object('opinion_expression', node)
+        return OpinionExpression(Span.object(node.find('span')), node.attrib)
 
 
 @dataclass
@@ -80,12 +86,10 @@ class Opinion:
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        # TODO test me
         return Opinion(node.get('id'),
-                       OpinionHolder.object(node.find('opinion_holder')),
-                       OpinionTarget.object(node.find('opinion_target')),
                        OpinionExpression.object(node.find('opinion_expression')),
-                       node.attrib)
+                       OpinionHolder.object(node.find('opinion_holder')),
+                       OpinionTarget.object(node.find('opinion_target')))
 
 
 @dataclass

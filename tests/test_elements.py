@@ -1,6 +1,9 @@
 import pytest
 
+from nafparserpy.layers.attribution import Statement, StatementSource, StatementTarget, StatementCue
 from nafparserpy.layers.causal_relations import CLink
+from nafparserpy.layers.elements import Span, ExternalRef
+from nafparserpy.layers.opinions import Opinion, OpinionExpression
 from nafparserpy.layers.terms import Term
 from nafparserpy.parser import NafParser
 from nafparserpy.layers.topics import *
@@ -11,6 +14,36 @@ text = 'colorless green ideas sleep furiously'
 text2 = 'said Noam Chomsky'
 
 naf = NafParser()
+
+
+def test_attribution():
+    statement = Statement('s1',
+                          [StatementTarget.create(['w1'])],
+                          [StatementSource.create(['w2'])],
+                          [StatementCue.create(['w3'])])
+    assert statement.target_spans() == [['w1']]
+    assert statement.source_spans() == [['w2']]
+    assert statement.cue_spans() == [['w3']]
+    statement = Statement.object(statement.node())
+    assert statement.target_spans() == [['w1']]
+    assert statement.source_spans() == [['w2']]
+    assert statement.cue_spans() == [['w3']]
+
+
+def test_causal_relations():
+    clink = CLink('a', 'b', 'c')
+    node = clink.node()
+    assert 'relType' not in node.attrib.keys()
+    assert not clink.has('relType')
+    clink = CLink.object(node)
+    assert not clink.has('relType')
+
+    clink = CLink('a', 'b', 'c', {'relType': 'some'})
+    node = clink.node()
+    assert 'relType' in node.attrib.keys()
+    assert clink.has('relType')
+    clink = CLink.object(node)
+    assert clink.has('relType')
 
 
 def test_naf_header():
@@ -75,13 +108,25 @@ def test_term_layer():
     assert naf.get('terms')[0].target_ids() == ['w1']
 
 
-def test_single_optional_attribute():
-    clink = CLink('a', 'b', 'c')
-    node = clink.node()
-    assert 'relType' not in node.attrib.keys()
-    assert not clink.has('relType')
+def test_opinions():
+    opinion = Opinion('o1', OpinionExpression(Span.create(['w1'])))
+    assert opinion.target is None
+    assert opinion.expression.span.target_ids() == ['w1']
+    assert not opinion.expression.has('polarity')
+    opinion = Opinion.object(opinion.node())
+    assert opinion.target is None
+    assert opinion.expression.span.target_ids() == ['w1']
+    assert not opinion.expression.has('polarity')
 
-    clink = CLink('a', 'b', 'c', {'relType': 'some'})
-    node2 = clink.node()
-    assert 'relType' in node2.attrib.keys()
-    assert clink.has('relType')
+
+def test_elements():
+    extref = ExternalRef('ref1', externalRefs=[ExternalRef('ref2'), ExternalRef('ref3')])
+    assert extref.reference == 'ref1'
+    subrefs = [e.reference for e in extref.externalRefs]
+    assert subrefs == ['ref2', 'ref3']
+
+    extref == ExternalRef(extref.node())
+    assert extref.reference == 'ref1'
+    subrefs = [e.reference for e in extref.externalRefs]
+    assert subrefs == ['ref2', 'ref3']
+

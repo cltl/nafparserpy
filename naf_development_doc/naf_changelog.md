@@ -12,7 +12,8 @@
 
 ### Changed
 
-* element declaration of: 'coreferences', 'wf', 'opinion', 'causalRelations', 'entity', 'mw', 'opinion_target', 'opinion_holder', 'opinion_expression'
+* element declaration of: 'causalRelations', 'component', 'coref', 'entity', 'externalRef', 'mark', 'mw', 'opinion',
+'opinion_expression', 'opinion_holder', 'opinion_target', 'predicate', 'role', 'statement', 'term', 'wf'
 * documentation of elements: 'wf', 'term', 'opinion', 'sentiment'
 
 

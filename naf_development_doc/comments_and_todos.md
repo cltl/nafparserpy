@@ -2,10 +2,8 @@
 
 ## Documentation in the DTD
 ### Problem
-The following layers are not documented:
-
-* causalRelations
-* temporalRelations
+Not all layers are (fully) documented in the NAF_v3.2 DTD.
+I have added documentation but it should be checked or completed.
 
 ### TODO
 Could you document elements that you have introduced / worked with?

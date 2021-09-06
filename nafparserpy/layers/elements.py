@@ -95,9 +95,7 @@ class ExternalRef(AttributeGetter):
 
     @staticmethod
     def object(node):
-        """Create object from etree node
-
-        FIXME does lxml includes the node itself in 'findall' ?"""
+        """Create object from etree node"""
         return ExternalRef(node.get('reference'),
                            Sentiment.object(node.find('sentiment')),
                            [ExternalRef.object(n) for n in node.findall('externalRef')],

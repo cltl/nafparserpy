@@ -9,7 +9,7 @@
 	of different types: declarations like (a|b|c)+ are replaced by declarations like (a,b?,c+)
 	- complements and tidies the documentation of elements; part of this documentation is copied or adapted from
 	 https://github.com/newsreader/NAF
-	- removes <factualityLayer>, which was marked as deprecated in v3.2
+	- removes <factualitylayer>, which was marked as deprecated in v3.2
 	-->
 <!ELEMENT NAF (nafHeader|raw|topics|text|terms|multiwords|deps|chunks|entities|coreferences|constituency|srl|opinions|timeExpressions|tunits|locations|dates|temporalRelations|causalRelations|markables|attribution|factualities)*>
 

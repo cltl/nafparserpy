@@ -1,4 +1,4 @@
-from nafparserpy.parser import get_lps`nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
+`nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
 [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
 ## Introduction
@@ -10,13 +10,17 @@ between object and tree manipulation.
 `nafparserpy` is compatible with Python 3.7 (for Python 3.6 you
 will need to install [dataclasses](https://pypi.org/project/dataclasses/)).
 
+
+### NAF version and DTD
 The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd).
+
+See [naf_development_doc](naf_development_doc) for changes with regard to NAF 3.2
 
 
 ### NAF tree handling and layer objects
 `nafparserpy` is restrictive when it comes to tree manipulation:
 
-* the parser allows the addition of full NAF layer objects to the NAF tree (`linguisticProcessors` excepted). The user
+* the parser allows to add full NAF layer objects to the NAF tree (`linguisticProcessors` excepted). The user
 application is responsible for creating these objects; the parser recursively creates and adds nodes for the full layer.
 * the parser creates layer objects when retrieving layers; these objects are decoupled from
 the lxml tree
@@ -182,3 +186,6 @@ To write to stdout:
   <raw><![CDATA[colorless green ideas sleep furiously]]></raw>
 </NAF>
 ```
+
+### More examples
+See the [test modules](tests) for more examples
