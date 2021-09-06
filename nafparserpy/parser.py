@@ -1,6 +1,7 @@
 """
 Wraps lxml to facilitate handling of NAF documents
 """
+import io
 from typing import Any
 
 from nafparserpy.layers.attribution import Attribution
@@ -103,10 +104,29 @@ class NafParser:
             self.root = self.tree.getroot()
 
     @staticmethod
-    def load(filename):
-        """Create a NAF document from a NAF file"""
-        filename = filename
-        tree = etree.parse(filename, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
+    def load(naf_file, validate_against_dtd=False):
+        """Create a NAF document from a NAF file
+
+        Parameters
+        ----------
+        naf_file : str
+            path to NAF file
+        validate_against_dtd : bool
+            validates input tree against DTD if True
+
+        Raises
+        ------
+        ValueError: if `validate_against_dtd` is True, and input file does not conform to the DTD
+        """
+        naf_file = naf_file
+        tree = etree.parse(naf_file, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
+
+        if validate_against_dtd:
+            with open('naf_v3.3.a.dtd') as infile:
+                dtd = etree.DTD(infile)
+                if not dtd.validate(tree.get_root()):
+                    raise ValueError("Input tree does not conform to DTD (NAF v3.3.a)")
+
         return NafParser(tree)
 
     def write(self, file_path):

@@ -16,6 +16,11 @@ dist/
 # Compiled Python bytecode
 *.py[cod]
 
+# setup.py
+.eggs/
+build/
+nafparserpy.egg-info/
+
 # Log files
 *.log
 

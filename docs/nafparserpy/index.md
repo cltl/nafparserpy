@@ -1,3 +1,5 @@
+Module nafparserpy
+==================
 `nafparserpy` is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
 [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
@@ -10,12 +12,10 @@ between object and tree manipulation.
 `nafparserpy` is compatible with Python 3.7 (for Python 3.6 you
 will need to install [dataclasses](https://pypi.org/project/dataclasses/)).
 
-
 ### NAF version and DTD
 The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd).
 
 See [naf_development_doc](naf_development_doc) for changes with regard to NAF 3.2
-
 
 ### NAF tree handling and layer objects
 `nafparserpy` is restrictive when it comes to tree manipulation:
@@ -31,15 +31,30 @@ Layer and element classes follow closely the NAF DTD:
 * NAF subelements appear as fields of the corresponding class
 * all attributes (compulsory and optional) appear in an `attrs` dict attribute
 
+### Documentation
+The documentation is configured to run with `pdoc`. See [below](#installation) for installing `pdoc`.
+To generate the documentation, run:
+
+```pdoc --html nafparserpy``` 
+This will generate html doc in `./html/nafparserpy`
 
 ## Installation
 To install the parser, run:
 ```
-pip install -e .
+pip install nafparserpy
+```
+To install `pdoc` along with the parser:
+```
+pip install nafparserpy[doc]
 ```
 
-## Example
+or
+```
+pip install pdoc3
+```
+if you have already installed the parser.
 
+## Example
 
 ### Adding and modifying layers
 
@@ -190,3 +205,8 @@ To write to stdout:
 
 ### More examples
 See the [test modules](tests) for more examples
+
+Sub-modules
+-----------
+* nafparserpy.layers
+* nafparserpy.parser
