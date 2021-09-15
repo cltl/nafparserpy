@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>nafparserpy.parser API documentation</title>
+<meta name="description" content="Wraps lxml to facilitate handling of NAF documents" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nafparserpy.parser</code></h1>
+</header>
+<section id="section-intro">
+<p>Wraps lxml to facilitate handling of NAF documents</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+Wraps lxml to facilitate handling of NAF documents
+&#34;&#34;&#34;
+import io
+from typing import Any
+
+from nafparserpy.layers.attribution import Attribution
+from nafparserpy.layers.causal_relations import CausalRelations
+from nafparserpy.layers.chunks import Chunks
+from nafparserpy.layers.constituency import Constituency
+from nafparserpy.layers.coreferences import Coreferences
+from nafparserpy.layers.deps import Deps
+from nafparserpy.layers.entities import Entities
+from nafparserpy.layers.factualities import Factualities
+from nafparserpy.layers.locations_dates import Locations, Dates
+from nafparserpy.layers.markables import Markables
+from nafparserpy.layers.multiwords import Multiwords
+from nafparserpy.layers.naf_header import *
+from nafparserpy.layers.opinions import Opinions
+from nafparserpy.layers.raw import Raw
+from nafparserpy.layers.srl import Srl
+from nafparserpy.layers.temporal_relations import TemporalRelations
+from nafparserpy.layers.terms import Terms
+from nafparserpy.layers.text import Text
+from nafparserpy.layers.time_expressions import TimeExpressions
+from nafparserpy.layers.topics import Topics
+from nafparserpy.layers.tunits import Tunits
+from lxml import etree
+
+__version__ = &#39;0.1&#39;
+__author__ = &#39;Sophie Arnoult&#39;
+
+NAF_VERSION = &#39;3.3.a&#39;
+
+layers = {&#39;nafHeader&#39;: NafHeader, &#39;fileDesc&#39;: FileDesc, &#39;public&#39;: Public, &#39;linguisticProcessors&#39;: LinguisticProcessors,
+          &#39;lp&#39;: LP, &#39;raw&#39;: Raw, &#39;topics&#39;: Topics, &#39;text&#39;: Text, &#39;terms&#39;: Terms, &#39;chunks&#39;: Chunks,
+          &#39;multiwords&#39;: Multiwords, &#39;deps&#39;: Deps, &#39;constituency&#39;: Constituency, &#39;coreferences&#39;: Coreferences,
+          &#39;srl&#39;: Srl, &#39;opinions&#39;: Opinions, &#39;timeExpressions&#39;: TimeExpressions, &#39;tunits&#39;: Tunits,
+          &#39;locations&#39;: Locations, &#39;dates&#39;: Dates, &#39;temporalRelations&#39;: TemporalRelations, &#39;entities&#39;: Entities,
+          &#39;causalRelations&#39;: CausalRelations, &#39;markables&#39;: Markables, &#39;attribution&#39;: Attribution,
+          &#39;factualities&#39;: Factualities}
+
+
+def split_naf_header_attrs(attrs):
+    &#34;&#34;&#34;Split input attributes in public or fileDesc attributes
+
+    Parameters
+    ----------
+    attrs : dict
+        dictionary of public/fileDesc attributes
+
+    Returns
+    -------
+    a tuple of attribute dictionaries for fileDesc and public
+
+    Raises
+    ------
+    KeyError: if the input dictionary contains keywords not pertaining to public/fileDesc attributes
+        &#34;&#34;&#34;
+    public_attrs = {}
+    filedesc_attrs = {}
+    public_keys = [&#39;publicId&#39;, &#39;uri&#39;]
+    filedesc_keys = [&#39;title&#39;, &#39;author&#39;, &#39;creationtime&#39;, &#39;filename&#39;, &#39;filetype&#39;, &#39;pages&#39;]
+    for k in attrs:
+        if k in public_keys:
+            public_attrs.update({k: attrs[k]})
+        elif k in filedesc_keys:
+            filedesc_attrs.update({k: attrs[k]})
+        else:
+            raise KeyError(&#39;unknown public/fileDesc key: {}&#39;.format(k))
+    return filedesc_attrs, public_attrs
+
+
+class NafParser:
+    def __init__(self, tree=None, lang=&#39;en&#39;, version=None, **attrs):
+        &#34;&#34;&#34;
+        Create a NAF document from an existing tree or from scratch.
+
+        Parameters
+        ----------
+        tree : etree
+            input tree
+        lang : str
+            document language, defaults to `en`. This parameter is ignored if tree is not None
+        version : str
+            NAF version, defaults to `parser.NAF_VERSION`; ignored if tree is not None
+        attrs : dict
+            nafHeader fileDesc and public attributes; ignored if tree is not None
+        &#34;&#34;&#34;
+        naf_version = NAF_VERSION
+        
+        if version is not None:
+            naf_version = version
+        if tree is None:
+            self.tree = etree.ElementTree(etree.Element(&#39;NAF&#39;))
+            self.root = self.tree.getroot()
+            self.root.set(&#39;{http://www.w3.org/XML/1998/namespace}lang&#39;, lang)
+            self.root.set(&#39;version&#39;, naf_version)
+            if attrs:
+                filedesc_attrs, public_attrs = split_naf_header_attrs(attrs)
+                self.add_naf_header(fileDesc_attrs=filedesc_attrs, public_attrs=public_attrs)
+        else:
+            self.tree = tree
+            self.root = self.tree.getroot()
+
+    @staticmethod
+    def load(naf_file, validate_against_dtd=False):
+        &#34;&#34;&#34;Create a NAF document from a NAF file
+
+        Parameters
+        ----------
+        naf_file : str
+            path to NAF file
+        validate_against_dtd : bool
+            validates input tree against DTD if True
+
+        Raises
+        ------
+        ValueError: if `validate_against_dtd` is True, and input file does not conform to the DTD
+        &#34;&#34;&#34;
+        naf_file = naf_file
+        tree = etree.parse(naf_file, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
+
+        if validate_against_dtd:
+            with open(&#39;naf_v3.3.a.dtd&#39;) as infile:
+                dtd = etree.DTD(infile)
+                if not dtd.validate(tree.get_root()):
+                    raise ValueError(&#34;Input tree does not conform to DTD (NAF v3.3.a)&#34;)
+
+        return NafParser(tree)
+
+    def write(self, file_path):
+        &#34;&#34;&#34;Write NAF tree to file or stdout if no file path is given&#34;&#34;&#34;
+        if file_path is None:
+            print(etree.tostring(self.root, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True))
+        else:
+            self.tree.write(file_path, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True)
+
+    def has_layer(self, layer: str):
+        &#34;&#34;&#34;Returns True if layer with given name exists&#34;&#34;&#34;
+        return self.root.findall(&#39;.//{}&#39;.format(layer))
+
+    def get(self, layer_name: str):
+        &#34;&#34;&#34;Return a layer object for the layer with the given layer-name.
+
+        Returns only the first object if more elements carry the same name.&#34;&#34;&#34;
+        if not self.has_layer(layer_name):
+            raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+        nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+        return layers[layer_name].object(nodes[0])
+
+    def getall(self, layer_name: str):
+        &#34;&#34;&#34;Return a list of layer objects for each layer carrying the given layer-name
+        &#34;&#34;&#34;
+        if not self.has_layer(layer_name):
+            raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+        nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+        return [layers[layer_name].object(node) for node in nodes]
+
+    def add_layer(self, layer_name: str, element: Any, exist_ok=False):
+        &#34;&#34;&#34;Add a layer to the NAF xml tree
+
+        Parameters
+        ----------
+        layer_name : str
+            naf layer name
+        element : Any
+            layer object
+        exist_ok : bool
+            allows replacement of existing layer
+
+        Raises
+        ------
+        ValueError: if layer already exists and `exist_ok` is False
+        &#34;&#34;&#34;
+        if self.has_layer(layer_name) and not exist_ok:
+            raise ValueError(&#39;Layer {} already exists&#39;.format(layer_name))
+        else:
+            if self.has_layer(layer_name):
+                self.root.remove(self.root.find(layer_name))
+            self.root.append(element.node())
+
+    def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
+        &#34;&#34;&#34;Create container layer from its elements.
+
+        This method can be applied to non-empty layers without attributes. This concerns almost all layers,
+        with the exception of `NafHeader`, `Raw` and `TemporalRelations`
+
+        Parameters
+        ----------
+        layer_name : str
+            naf layer name
+        elements : list
+            list of layer elements objects
+        exist_ok : bool
+            allows replacement of existing layer
+
+        Raises
+        ------
+        ValueError: if layer already exists and `exist_ok` is False
+        &#34;&#34;&#34;
+        self.add_layer(layer_name,
+                       layers[layer_name](elements),
+                       exist_ok=exist_ok)
+
+    def add_naf_header(self, fileDesc_attrs={}, public_attrs={}, linguistic_processors=[], exist_ok=False):
+        &#34;&#34;&#34;
+        Create and add `nafHeader` layer
+
+        Parameters
+        ----------
+        fileDesc_attrs : dict
+            `fileDesc` layer attributes
+        public_attrs : dict
+            `public` layer attributes
+        linguistic_processors : list[LinguisticProcessors]
+            list of `LinguisticProcessors` objects per layer
+        exist_ok : bool
+            allows replacement of existing layer
+        &#34;&#34;&#34;
+        self.add_layer(&#39;nafHeader&#39;, NafHeader.create(fileDesc_attrs, public_attrs, linguistic_processors), exist_ok)
+
+    def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={}):
+        &#34;&#34;&#34;Add a `linguistic processor` element to the linguistic processors list for the given layer.
+
+        Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
+
+        Parameters
+        ----------
+        layer : str
+            the name of the layer
+        name : str
+            the name of the linguistic processor
+        version : str
+            the version of the linguistic processor
+        lpDependencies : List(LPDependency)
+            list of linguistic processor dependencies
+        attributes : dict
+            optional linguistic processor attributes (&#39;timestamp&#39;, &#39;beginTimestamp&#39;, &#39;endTimestamp&#39;, &#39;hostname&#39;)&#34;&#34;&#34;
+        if not self.has_layer(&#39;nafHeader&#39;):
+            self.add_naf_header()
+        naf_header_node = self.root.find(&#39;nafHeader&#39;)
+        ling_processors_layer_node = self.root.xpath(&#39;//linguisticProcessors[@layer={}]&#39;.format(layer))
+        if not ling_processors_layer_node:
+            ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
+            naf_header_node.append(ling_processors_layer_node)
+        else:
+            ling_processors_layer_node.append(LP(name, version, lpDependencies, attributes).node())
+
+    def add_raw_layer(self, text: str, exist_ok=False):
+        &#34;&#34;&#34;Add (or replace) raw layer from text
+
+        Parameters
+        ----------
+        text : str
+            raw layer text
+        exist_ok : bool
+            allows replacement of existing layer&#34;&#34;&#34;
+        self.add_layer(&#39;raw&#39;, Raw(text), exist_ok)
+
+    def get_lps(self, layer_name):
+        &#34;&#34;&#34;Return list of linguistic processors for a given layer
+
+        Parameters
+        ----------
+        layer_name: str
+            layer name
+
+        Returns
+        -------
+        list of Lp objects
+
+        Raises
+        ------
+        ValueError: if the NAF header has no linguisticProcessors element for that layer&#34;&#34;&#34;
+
+        lprocessors = [x for x in self.getall(&#39;linguisticProcessors&#39;) if x.layer_name == layer_name]
+        if lprocessors:
+            return lprocessors[0].lps
+        else:
+            raise ValueError(&#39;Layer {} has no linguisticProcessors element&#39;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="nafparserpy.parser.split_naf_header_attrs"><code class="name flex">
+<span>def <span class="ident">split_naf_header_attrs</span></span>(<span>attrs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Split input attributes in public or fileDesc attributes</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>dictionary of public/fileDesc attributes</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>a tuple</code> of <code>attribute dictionaries for fileDesc and public</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>KeyError</code></strong> :&ensp;<code>if the input dictionary contains keywords not pertaining to public/fileDesc attributes</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def split_naf_header_attrs(attrs):
+    &#34;&#34;&#34;Split input attributes in public or fileDesc attributes
+
+    Parameters
+    ----------
+    attrs : dict
+        dictionary of public/fileDesc attributes
+
+    Returns
+    -------
+    a tuple of attribute dictionaries for fileDesc and public
+
+    Raises
+    ------
+    KeyError: if the input dictionary contains keywords not pertaining to public/fileDesc attributes
+        &#34;&#34;&#34;
+    public_attrs = {}
+    filedesc_attrs = {}
+    public_keys = [&#39;publicId&#39;, &#39;uri&#39;]
+    filedesc_keys = [&#39;title&#39;, &#39;author&#39;, &#39;creationtime&#39;, &#39;filename&#39;, &#39;filetype&#39;, &#39;pages&#39;]
+    for k in attrs:
+        if k in public_keys:
+            public_attrs.update({k: attrs[k]})
+        elif k in filedesc_keys:
+            filedesc_attrs.update({k: attrs[k]})
+        else:
+            raise KeyError(&#39;unknown public/fileDesc key: {}&#39;.format(k))
+    return filedesc_attrs, public_attrs</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nafparserpy.parser.NafParser"><code class="flex name class">
+<span>class <span class="ident">NafParser</span></span>
+<span>(</span><span>tree=None, lang='en', version=None, **attrs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a NAF document from an existing tree or from scratch.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>tree</code></strong> :&ensp;<code>etree</code></dt>
+<dd>input tree</dd>
+<dt><strong><code>lang</code></strong> :&ensp;<code>str</code></dt>
+<dd>document language, defaults to <code>en</code>. This parameter is ignored if tree is not None</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>NAF version, defaults to <code>parser.NAF_VERSION</code>; ignored if tree is not None</dd>
+<dt><strong><code>attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd>nafHeader fileDesc and public attributes; ignored if tree is not None</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NafParser:
+    def __init__(self, tree=None, lang=&#39;en&#39;, version=None, **attrs):
+        &#34;&#34;&#34;
+        Create a NAF document from an existing tree or from scratch.
+
+        Parameters
+        ----------
+        tree : etree
+            input tree
+        lang : str
+            document language, defaults to `en`. This parameter is ignored if tree is not None
+        version : str
+            NAF version, defaults to `parser.NAF_VERSION`; ignored if tree is not None
+        attrs : dict
+            nafHeader fileDesc and public attributes; ignored if tree is not None
+        &#34;&#34;&#34;
+        naf_version = NAF_VERSION
+        
+        if version is not None:
+            naf_version = version
+        if tree is None:
+            self.tree = etree.ElementTree(etree.Element(&#39;NAF&#39;))
+            self.root = self.tree.getroot()
+            self.root.set(&#39;{http://www.w3.org/XML/1998/namespace}lang&#39;, lang)
+            self.root.set(&#39;version&#39;, naf_version)
+            if attrs:
+                filedesc_attrs, public_attrs = split_naf_header_attrs(attrs)
+                self.add_naf_header(fileDesc_attrs=filedesc_attrs, public_attrs=public_attrs)
+        else:
+            self.tree = tree
+            self.root = self.tree.getroot()
+
+    @staticmethod
+    def load(naf_file, validate_against_dtd=False):
+        &#34;&#34;&#34;Create a NAF document from a NAF file
+
+        Parameters
+        ----------
+        naf_file : str
+            path to NAF file
+        validate_against_dtd : bool
+            validates input tree against DTD if True
+
+        Raises
+        ------
+        ValueError: if `validate_against_dtd` is True, and input file does not conform to the DTD
+        &#34;&#34;&#34;
+        naf_file = naf_file
+        tree = etree.parse(naf_file, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
+
+        if validate_against_dtd:
+            with open(&#39;naf_v3.3.a.dtd&#39;) as infile:
+                dtd = etree.DTD(infile)
+                if not dtd.validate(tree.get_root()):
+                    raise ValueError(&#34;Input tree does not conform to DTD (NAF v3.3.a)&#34;)
+
+        return NafParser(tree)
+
+    def write(self, file_path):
+        &#34;&#34;&#34;Write NAF tree to file or stdout if no file path is given&#34;&#34;&#34;
+        if file_path is None:
+            print(etree.tostring(self.root, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True))
+        else:
+            self.tree.write(file_path, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True)
+
+    def has_layer(self, layer: str):
+        &#34;&#34;&#34;Returns True if layer with given name exists&#34;&#34;&#34;
+        return self.root.findall(&#39;.//{}&#39;.format(layer))
+
+    def get(self, layer_name: str):
+        &#34;&#34;&#34;Return a layer object for the layer with the given layer-name.
+
+        Returns only the first object if more elements carry the same name.&#34;&#34;&#34;
+        if not self.has_layer(layer_name):
+            raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+        nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+        return layers[layer_name].object(nodes[0])
+
+    def getall(self, layer_name: str):
+        &#34;&#34;&#34;Return a list of layer objects for each layer carrying the given layer-name
+        &#34;&#34;&#34;
+        if not self.has_layer(layer_name):
+            raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+        nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+        return [layers[layer_name].object(node) for node in nodes]
+
+    def add_layer(self, layer_name: str, element: Any, exist_ok=False):
+        &#34;&#34;&#34;Add a layer to the NAF xml tree
+
+        Parameters
+        ----------
+        layer_name : str
+            naf layer name
+        element : Any
+            layer object
+        exist_ok : bool
+            allows replacement of existing layer
+
+        Raises
+        ------
+        ValueError: if layer already exists and `exist_ok` is False
+        &#34;&#34;&#34;
+        if self.has_layer(layer_name) and not exist_ok:
+            raise ValueError(&#39;Layer {} already exists&#39;.format(layer_name))
+        else:
+            if self.has_layer(layer_name):
+                self.root.remove(self.root.find(layer_name))
+            self.root.append(element.node())
+
+    def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
+        &#34;&#34;&#34;Create container layer from its elements.
+
+        This method can be applied to non-empty layers without attributes. This concerns almost all layers,
+        with the exception of `NafHeader`, `Raw` and `TemporalRelations`
+
+        Parameters
+        ----------
+        layer_name : str
+            naf layer name
+        elements : list
+            list of layer elements objects
+        exist_ok : bool
+            allows replacement of existing layer
+
+        Raises
+        ------
+        ValueError: if layer already exists and `exist_ok` is False
+        &#34;&#34;&#34;
+        self.add_layer(layer_name,
+                       layers[layer_name](elements),
+                       exist_ok=exist_ok)
+
+    def add_naf_header(self, fileDesc_attrs={}, public_attrs={}, linguistic_processors=[], exist_ok=False):
+        &#34;&#34;&#34;
+        Create and add `nafHeader` layer
+
+        Parameters
+        ----------
+        fileDesc_attrs : dict
+            `fileDesc` layer attributes
+        public_attrs : dict
+            `public` layer attributes
+        linguistic_processors : list[LinguisticProcessors]
+            list of `LinguisticProcessors` objects per layer
+        exist_ok : bool
+            allows replacement of existing layer
+        &#34;&#34;&#34;
+        self.add_layer(&#39;nafHeader&#39;, NafHeader.create(fileDesc_attrs, public_attrs, linguistic_processors), exist_ok)
+
+    def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={}):
+        &#34;&#34;&#34;Add a `linguistic processor` element to the linguistic processors list for the given layer.
+
+        Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
+
+        Parameters
+        ----------
+        layer : str
+            the name of the layer
+        name : str
+            the name of the linguistic processor
+        version : str
+            the version of the linguistic processor
+        lpDependencies : List(LPDependency)
+            list of linguistic processor dependencies
+        attributes : dict
+            optional linguistic processor attributes (&#39;timestamp&#39;, &#39;beginTimestamp&#39;, &#39;endTimestamp&#39;, &#39;hostname&#39;)&#34;&#34;&#34;
+        if not self.has_layer(&#39;nafHeader&#39;):
+            self.add_naf_header()
+        naf_header_node = self.root.find(&#39;nafHeader&#39;)
+        ling_processors_layer_node = self.root.xpath(&#39;//linguisticProcessors[@layer={}]&#39;.format(layer))
+        if not ling_processors_layer_node:
+            ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
+            naf_header_node.append(ling_processors_layer_node)
+        else:
+            ling_processors_layer_node.append(LP(name, version, lpDependencies, attributes).node())
+
+    def add_raw_layer(self, text: str, exist_ok=False):
+        &#34;&#34;&#34;Add (or replace) raw layer from text
+
+        Parameters
+        ----------
+        text : str
+            raw layer text
+        exist_ok : bool
+            allows replacement of existing layer&#34;&#34;&#34;
+        self.add_layer(&#39;raw&#39;, Raw(text), exist_ok)
+
+    def get_lps(self, layer_name):
+        &#34;&#34;&#34;Return list of linguistic processors for a given layer
+
+        Parameters
+        ----------
+        layer_name: str
+            layer name
+
+        Returns
+        -------
+        list of Lp objects
+
+        Raises
+        ------
+        ValueError: if the NAF header has no linguisticProcessors element for that layer&#34;&#34;&#34;
+
+        lprocessors = [x for x in self.getall(&#39;linguisticProcessors&#39;) if x.layer_name == layer_name]
+        if lprocessors:
+            return lprocessors[0].lps
+        else:
+            raise ValueError(&#39;Layer {} has no linguisticProcessors element&#39;)</code></pre>
+</details>
+<h3>Static methods</h3>
+<dl>
+<dt id="nafparserpy.parser.NafParser.load"><code class="name flex">
+<span>def <span class="ident">load</span></span>(<span>naf_file, validate_against_dtd=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create a NAF document from a NAF file</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>naf_file</code></strong> :&ensp;<code>str</code></dt>
+<dd>path to NAF file</dd>
+<dt><strong><code>validate_against_dtd</code></strong> :&ensp;<code>bool</code></dt>
+<dd>validates input tree against DTD if True</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>ValueError</code></strong> :&ensp;<code>if </code>validate_against_dtd<code> is True, and input file does not conform to the DTD</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def load(naf_file, validate_against_dtd=False):
+    &#34;&#34;&#34;Create a NAF document from a NAF file
+
+    Parameters
+    ----------
+    naf_file : str
+        path to NAF file
+    validate_against_dtd : bool
+        validates input tree against DTD if True
+
+    Raises
+    ------
+    ValueError: if `validate_against_dtd` is True, and input file does not conform to the DTD
+    &#34;&#34;&#34;
+    naf_file = naf_file
+    tree = etree.parse(naf_file, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
+
+    if validate_against_dtd:
+        with open(&#39;naf_v3.3.a.dtd&#39;) as infile:
+            dtd = etree.DTD(infile)
+            if not dtd.validate(tree.get_root()):
+                raise ValueError(&#34;Input tree does not conform to DTD (NAF v3.3.a)&#34;)
+
+    return NafParser(tree)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="nafparserpy.parser.NafParser.add_layer"><code class="name flex">
+<span>def <span class="ident">add_layer</span></span>(<span>self, layer_name: str, element: Any, exist_ok=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a layer to the NAF xml tree</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>layer_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>naf layer name</dd>
+<dt><strong><code>element</code></strong> :&ensp;<code>Any</code></dt>
+<dd>layer object</dd>
+<dt><strong><code>exist_ok</code></strong> :&ensp;<code>bool</code></dt>
+<dd>allows replacement of existing layer</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>ValueError</code></strong> :&ensp;<code>if layer already exists and </code>exist_ok<code> is False</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_layer(self, layer_name: str, element: Any, exist_ok=False):
+    &#34;&#34;&#34;Add a layer to the NAF xml tree
+
+    Parameters
+    ----------
+    layer_name : str
+        naf layer name
+    element : Any
+        layer object
+    exist_ok : bool
+        allows replacement of existing layer
+
+    Raises
+    ------
+    ValueError: if layer already exists and `exist_ok` is False
+    &#34;&#34;&#34;
+    if self.has_layer(layer_name) and not exist_ok:
+        raise ValueError(&#39;Layer {} already exists&#39;.format(layer_name))
+    else:
+        if self.has_layer(layer_name):
+            self.root.remove(self.root.find(layer_name))
+        self.root.append(element.node())</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.add_layer_from_elements"><code class="name flex">
+<span>def <span class="ident">add_layer_from_elements</span></span>(<span>self, layer_name: str, elements: list, exist_ok=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create container layer from its elements.</p>
+<p>This method can be applied to non-empty layers without attributes. This concerns almost all layers,
+with the exception of <code>NafHeader</code>, <code>Raw</code> and <code>TemporalRelations</code></p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>layer_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>naf layer name</dd>
+<dt><strong><code>elements</code></strong> :&ensp;<code>list</code></dt>
+<dd>list of layer elements objects</dd>
+<dt><strong><code>exist_ok</code></strong> :&ensp;<code>bool</code></dt>
+<dd>allows replacement of existing layer</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>ValueError</code></strong> :&ensp;<code>if layer already exists and </code>exist_ok<code> is False</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
+    &#34;&#34;&#34;Create container layer from its elements.
+
+    This method can be applied to non-empty layers without attributes. This concerns almost all layers,
+    with the exception of `NafHeader`, `Raw` and `TemporalRelations`
+
+    Parameters
+    ----------
+    layer_name : str
+        naf layer name
+    elements : list
+        list of layer elements objects
+    exist_ok : bool
+        allows replacement of existing layer
+
+    Raises
+    ------
+    ValueError: if layer already exists and `exist_ok` is False
+    &#34;&#34;&#34;
+    self.add_layer(layer_name,
+                   layers[layer_name](elements),
+                   exist_ok=exist_ok)</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.add_linguistic_processor"><code class="name flex">
+<span>def <span class="ident">add_linguistic_processor</span></span>(<span>self, layer: str, name: str, version: str, lpDependencies=[], attributes={})</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add a <code>linguistic processor</code> element to the linguistic processors list for the given layer.</p>
+<p>Creates a <code>nafHeader</code> layer and/or a <code>linguisticProcessors</code> layer if there is not one yet.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>layer</code></strong> :&ensp;<code>str</code></dt>
+<dd>the name of the layer</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>the name of the linguistic processor</dd>
+<dt><strong><code>version</code></strong> :&ensp;<code>str</code></dt>
+<dd>the version of the linguistic processor</dd>
+<dt><strong><code>lpDependencies</code></strong> :&ensp;<code>List(LPDependency)</code></dt>
+<dd>list of linguistic processor dependencies</dd>
+<dt><strong><code>attributes</code></strong> :&ensp;<code>dict</code></dt>
+<dd>optional linguistic processor attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={}):
+    &#34;&#34;&#34;Add a `linguistic processor` element to the linguistic processors list for the given layer.
+
+    Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
+
+    Parameters
+    ----------
+    layer : str
+        the name of the layer
+    name : str
+        the name of the linguistic processor
+    version : str
+        the version of the linguistic processor
+    lpDependencies : List(LPDependency)
+        list of linguistic processor dependencies
+    attributes : dict
+        optional linguistic processor attributes (&#39;timestamp&#39;, &#39;beginTimestamp&#39;, &#39;endTimestamp&#39;, &#39;hostname&#39;)&#34;&#34;&#34;
+    if not self.has_layer(&#39;nafHeader&#39;):
+        self.add_naf_header()
+    naf_header_node = self.root.find(&#39;nafHeader&#39;)
+    ling_processors_layer_node = self.root.xpath(&#39;//linguisticProcessors[@layer={}]&#39;.format(layer))
+    if not ling_processors_layer_node:
+        ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
+        naf_header_node.append(ling_processors_layer_node)
+    else:
+        ling_processors_layer_node.append(LP(name, version, lpDependencies, attributes).node())</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.add_naf_header"><code class="name flex">
+<span>def <span class="ident">add_naf_header</span></span>(<span>self, fileDesc_attrs={}, public_attrs={}, linguistic_processors=[], exist_ok=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Create and add <code>nafHeader</code> layer</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>fileDesc_attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd><code>fileDesc</code> layer attributes</dd>
+<dt><strong><code>public_attrs</code></strong> :&ensp;<code>dict</code></dt>
+<dd><code>public</code> layer attributes</dd>
+<dt><strong><code>linguistic_processors</code></strong> :&ensp;<code>list[LinguisticProcessors]</code></dt>
+<dd>list of <code>LinguisticProcessors</code> objects per layer</dd>
+<dt><strong><code>exist_ok</code></strong> :&ensp;<code>bool</code></dt>
+<dd>allows replacement of existing layer</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_naf_header(self, fileDesc_attrs={}, public_attrs={}, linguistic_processors=[], exist_ok=False):
+    &#34;&#34;&#34;
+    Create and add `nafHeader` layer
+
+    Parameters
+    ----------
+    fileDesc_attrs : dict
+        `fileDesc` layer attributes
+    public_attrs : dict
+        `public` layer attributes
+    linguistic_processors : list[LinguisticProcessors]
+        list of `LinguisticProcessors` objects per layer
+    exist_ok : bool
+        allows replacement of existing layer
+    &#34;&#34;&#34;
+    self.add_layer(&#39;nafHeader&#39;, NafHeader.create(fileDesc_attrs, public_attrs, linguistic_processors), exist_ok)</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.add_raw_layer"><code class="name flex">
+<span>def <span class="ident">add_raw_layer</span></span>(<span>self, text: str, exist_ok=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Add (or replace) raw layer from text</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>raw layer text</dd>
+<dt><strong><code>exist_ok</code></strong> :&ensp;<code>bool</code></dt>
+<dd>allows replacement of existing layer</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_raw_layer(self, text: str, exist_ok=False):
+    &#34;&#34;&#34;Add (or replace) raw layer from text
+
+    Parameters
+    ----------
+    text : str
+        raw layer text
+    exist_ok : bool
+        allows replacement of existing layer&#34;&#34;&#34;
+    self.add_layer(&#39;raw&#39;, Raw(text), exist_ok)</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.get"><code class="name flex">
+<span>def <span class="ident">get</span></span>(<span>self, layer_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a layer object for the layer with the given layer-name.</p>
+<p>Returns only the first object if more elements carry the same name.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get(self, layer_name: str):
+    &#34;&#34;&#34;Return a layer object for the layer with the given layer-name.
+
+    Returns only the first object if more elements carry the same name.&#34;&#34;&#34;
+    if not self.has_layer(layer_name):
+        raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+    nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+    return layers[layer_name].object(nodes[0])</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.get_lps"><code class="name flex">
+<span>def <span class="ident">get_lps</span></span>(<span>self, layer_name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return list of linguistic processors for a given layer</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>layer_name</code></strong> :&ensp;<code>str</code></dt>
+<dd>layer name</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code> of <code>Lp objects</code></dt>
+<dd>&nbsp;</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><strong><code>ValueError</code></strong> :&ensp;<code>if the NAF header has no linguisticProcessors element for that layer</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_lps(self, layer_name):
+    &#34;&#34;&#34;Return list of linguistic processors for a given layer
+
+    Parameters
+    ----------
+    layer_name: str
+        layer name
+
+    Returns
+    -------
+    list of Lp objects
+
+    Raises
+    ------
+    ValueError: if the NAF header has no linguisticProcessors element for that layer&#34;&#34;&#34;
+
+    lprocessors = [x for x in self.getall(&#39;linguisticProcessors&#39;) if x.layer_name == layer_name]
+    if lprocessors:
+        return lprocessors[0].lps
+    else:
+        raise ValueError(&#39;Layer {} has no linguisticProcessors element&#39;)</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.getall"><code class="name flex">
+<span>def <span class="ident">getall</span></span>(<span>self, layer_name: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return a list of layer objects for each layer carrying the given layer-name</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def getall(self, layer_name: str):
+    &#34;&#34;&#34;Return a list of layer objects for each layer carrying the given layer-name
+    &#34;&#34;&#34;
+    if not self.has_layer(layer_name):
+        raise ValueError(&#34;layer {} does not exist&#34;.format(layer_name))
+    nodes = self.root.findall(&#39;.//{}&#39;.format(layer_name))
+    return [layers[layer_name].object(node) for node in nodes]</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.has_layer"><code class="name flex">
+<span>def <span class="ident">has_layer</span></span>(<span>self, layer: str)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Returns True if layer with given name exists</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def has_layer(self, layer: str):
+    &#34;&#34;&#34;Returns True if layer with given name exists&#34;&#34;&#34;
+    return self.root.findall(&#39;.//{}&#39;.format(layer))</code></pre>
+</details>
+</dd>
+<dt id="nafparserpy.parser.NafParser.write"><code class="name flex">
+<span>def <span class="ident">write</span></span>(<span>self, file_path)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Write NAF tree to file or stdout if no file path is given</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def write(self, file_path):
+    &#34;&#34;&#34;Write NAF tree to file or stdout if no file path is given&#34;&#34;&#34;
+    if file_path is None:
+        print(etree.tostring(self.root, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True))
+    else:
+        self.tree.write(file_path, encoding=&#39;UTF-8&#39;, pretty_print=True, xml_declaration=True)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nafparserpy" href="index.html">nafparserpy</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="nafparserpy.parser.split_naf_header_attrs" href="#nafparserpy.parser.split_naf_header_attrs">split_naf_header_attrs</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nafparserpy.parser.NafParser" href="#nafparserpy.parser.NafParser">NafParser</a></code></h4>
+<ul class="">
+<li><code><a title="nafparserpy.parser.NafParser.add_layer" href="#nafparserpy.parser.NafParser.add_layer">add_layer</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.add_layer_from_elements" href="#nafparserpy.parser.NafParser.add_layer_from_elements">add_layer_from_elements</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.add_linguistic_processor" href="#nafparserpy.parser.NafParser.add_linguistic_processor">add_linguistic_processor</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.add_naf_header" href="#nafparserpy.parser.NafParser.add_naf_header">add_naf_header</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.add_raw_layer" href="#nafparserpy.parser.NafParser.add_raw_layer">add_raw_layer</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.get" href="#nafparserpy.parser.NafParser.get">get</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.get_lps" href="#nafparserpy.parser.NafParser.get_lps">get_lps</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.getall" href="#nafparserpy.parser.NafParser.getall">getall</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.has_layer" href="#nafparserpy.parser.NafParser.has_layer">has_layer</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.load" href="#nafparserpy.parser.NafParser.load">load</a></code></li>
+<li><code><a title="nafparserpy.parser.NafParser.write" href="#nafparserpy.parser.NafParser.write">write</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
