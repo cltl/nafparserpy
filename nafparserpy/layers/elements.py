@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List, Any
 
-from nafparserpy.layers.utils import AttributeGetter, AttributeLayer, IdrefGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, AttributeLayer, IdrefGetter, create_node, ExternalReferenceHolder
 
 
 @dataclass
@@ -110,7 +110,7 @@ class ExternalReferences:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('externalRefs', None, self.items, {})
+        return create_node('externalReferences', None, self.items, {})
 
     @staticmethod
     def object(node):
@@ -126,12 +126,12 @@ class ExternalReferences:
 
 
 @dataclass
-class Component(AttributeGetter, IdrefGetter):
+class Component(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a component"""
     id: str
     span: Span
     sentiment: Sentiment = None
-    externalReferences: ExternalReferences = ExternalReferences([])
+    external_references: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'netype', 'case', 'head')"""
 
@@ -145,8 +145,8 @@ class Component(AttributeGetter, IdrefGetter):
         children.append(self.span)
         if self.sentiment is not None:
             children.append(self.sentiment)
-        if self.externalReferences.items:
-            children.append(self.externalReferences)
+        if self.external_references.items:
+            children.append(self.external_references)
         create_node('component', None, children, self.attrs)
 
     @staticmethod

@@ -35,6 +35,15 @@ class IdrefGetter:
         return [t.id for t in self.span.targets]
 
 
+class ExternalReferenceHolder:
+    """Provides add/get method for external references"""
+    def add_external_ref(self, external_ref):
+        self.external_references.items.append(external_ref)
+
+    def get_external_refs(self):
+        return [x.reference for x in self.external_references.items]
+
+
 @dataclass
 class AttributeLayer(AttributeGetter):
     """A layer containing only attributes"""

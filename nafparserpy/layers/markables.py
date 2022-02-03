@@ -1,19 +1,19 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences, Sentiment
 
 
 @dataclass
-class Mark(AttributeGetter, IdrefGetter):
+class Mark(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a mark"""
     id: str
     span: Span
     """span of covered target ids"""
     sentiment: Sentiment = None
     """optional sentiment"""
-    externalReferences: ExternalReferences = ExternalReferences([])
+    external_references: ExternalReferences = ExternalReferences([])
     """optional externalReferences"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')"""
@@ -27,8 +27,8 @@ class Mark(AttributeGetter, IdrefGetter):
         children = [self.span]
         if self.sentiment is not None:
             children.append(self.sentiment)
-        if self.externalReferences.items:
-            children.append(self.externalReferences)
+        if self.external_references.items:
+            children.append(self.external_references)
         return create_node('mark', None, children, self.attrs)
 
     @staticmethod

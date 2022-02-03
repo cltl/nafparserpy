@@ -2,16 +2,16 @@ from dataclasses import dataclass, field
 from typing import List
 
 from nafparserpy.layers.elements import ExternalReferences, Component
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, create_node, ExternalReferenceHolder
 
 
 @dataclass
-class Mw(AttributeGetter):
+class Mw(AttributeGetter, ExternalReferenceHolder):
     """Represents a multiword expression"""
     id: str
     type: str
     components: List[Component]
-    externalRefs: ExternalReferences = ExternalReferences([])
+    external_references: ExternalReferences = ExternalReferences([])
     attrs: dict = field(default_factory=dict)
 
     def __post_init__(self):
@@ -20,7 +20,7 @@ class Mw(AttributeGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('mw', None, self.components + [self.externalRefs], self.attrs)
+        return create_node('mw', None, self.components + [self.external_references], self.attrs)
 
     @staticmethod
     def object(node):

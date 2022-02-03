@@ -1,18 +1,18 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Entity(AttributeGetter, IdrefGetter):
+class Entity(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a named entity"""
     id: str
     """Entity id"""
     span: Span
     """Span of idrefs covered by the entity"""
-    external_references: ExternalReferences = field(default_factory=ExternalReferences([]))
+    external_references: ExternalReferences = ExternalReferences([])
     """An optional list of external references"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('type', 'status', 'source')"""

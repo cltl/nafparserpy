@@ -1,18 +1,18 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import IdrefGetter, create_node, AttributeGetter
+from nafparserpy.layers.utils import IdrefGetter, create_node, AttributeGetter, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Coref(IdrefGetter, AttributeGetter):
+class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
     """Represents a coreference"""
     id: str
     status: str
     spans: List[Span]
     """list of coreferent mention spans"""
-    externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
+    external_references: ExternalReferences = ExternalReferences([])
     """optional external references"""
     attrs: dict = field(default_factory=dict)
     """optional attributes: 'type', 'status'"""
@@ -28,8 +28,8 @@ class Coref(IdrefGetter, AttributeGetter):
     def node(self):
         """Create etree node from object"""
         children = self.spans
-        if self.externalReferences.items:
-            children.append(self.externalReferences)
+        if self.external_references.items:
+            children.append(self.external_references)
         return create_node('coref', None, children, self.attrs)
 
     @staticmethod

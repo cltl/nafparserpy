@@ -1,7 +1,9 @@
 """
 Wraps lxml to facilitate handling of NAF documents
 """
+import datetime
 import io
+from time import timezone
 from typing import Any
 
 from nafparserpy.layers.attribution import Attribution
@@ -220,7 +222,7 @@ class NafParser:
         """
         self.add_layer('nafHeader', NafHeader.create(fileDesc_attrs, public_attrs, linguistic_processors), exist_ok)
 
-    def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={}):
+    def add_linguistic_processor(self, layer: str, name: str, version: str, add_time_stamp=True, lpDependencies=[], attributes={}):
         """Add a `linguistic processor` element to the linguistic processors list for the given layer.
 
         Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
@@ -233,6 +235,8 @@ class NafParser:
             the name of the linguistic processor
         version : str
             the version of the linguistic processor
+        add_time_stamp : bool
+            create time stamp
         lpDependencies : List(LPDependency)
             list of linguistic processor dependencies
         attributes : dict
@@ -241,6 +245,9 @@ class NafParser:
             self.add_naf_header()
         naf_header_node = self.root.find('nafHeader')
         ling_processors_layer_node = self.root.xpath('//linguisticProcessors[@layer={}]'.format(layer))
+        if add_time_stamp:
+            dt = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+            attributes['timestamp'] = dt
         if not ling_processors_layer_node:
             ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
             naf_header_node.append(ling_processors_layer_node)

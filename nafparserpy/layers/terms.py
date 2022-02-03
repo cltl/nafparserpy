@@ -1,19 +1,19 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Component, Span, ExternalReferences, Sentiment
 
 
 @dataclass
-class Term(AttributeGetter, IdrefGetter):
+class Term(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a term """
     id: str
     span: Span
     """span of covered idrefs"""
     components: List[Component] = field(default_factory=list)
     """optional list of morphemes in term"""
-    externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
+    external_references: ExternalReferences = ExternalReferences([])
     """optional ExternalReferences"""
     sentiment: Sentiment = None
     """optional sentiment"""
@@ -30,8 +30,8 @@ class Term(AttributeGetter, IdrefGetter):
         children = [self.span]
         if self.sentiment is not None:
             children.append(self.sentiment)
-        if self.externalReferences is not None:
-            children.append(self.externalReferences)
+        if self.external_references.items:
+            children.append(self.external_references)
         if self.components:
             children.extend(self.components)
         return create_node('term', None, children, self.attrs)
@@ -49,7 +49,7 @@ class Term(AttributeGetter, IdrefGetter):
     @staticmethod
     def create(term_id, target_ids, term_attrs):
         """creates a basic term with id, attributes and target ids"""
-        return Term(term_id, Span.create(target_ids), externalReferences=ExternalReferences([]), attrs=term_attrs)
+        return Term(term_id, Span.create(target_ids), external_references=ExternalReferences([]), attrs=term_attrs)
 
 
 @dataclass

@@ -1,16 +1,16 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Role(AttributeGetter):
+class Role(AttributeGetter, ExternalReferenceHolder):
     """Represents a predicate argument"""
     id: str
     span: Span
-    external_references: ExternalReferences = field(default_factory=ExternalReferences([]))
+    external_references: ExternalReferences = ExternalReferences([])
     """optional external references"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('confidence' and 'status')"""
@@ -21,7 +21,10 @@ class Role(AttributeGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('role', None, [self.span] + [self.external_references], self.attrs)
+        children = [self.span]
+        if self.external_references.items:
+            children.append(self.external_references)
+        return create_node('role', None, children, self.attrs)
 
     @staticmethod
     def object(node):
@@ -33,11 +36,11 @@ class Role(AttributeGetter):
 
 
 @dataclass
-class Predicate(AttributeGetter):
+class Predicate(AttributeGetter, ExternalReferenceHolder):
     """Represents a predicate"""
     id: str
     span: Span
-    externalReferences: ExternalReferences = field(default_factory=ExternalReferences([]))
+    external_references: ExternalReferences = ExternalReferences([])
     """optional external references"""
     roles: List[Role] = field(default_factory=list)
     """optional list of predicate arguments"""
@@ -51,8 +54,8 @@ class Predicate(AttributeGetter):
     def node(self):
         """Create etree node from object"""
         children = [self.span]
-        if self.externalReferences.items:
-            children.append(self.externalReferences)
+        if self.external_references.items:
+            children.append(self.external_references)
         if self.roles:
             children.extend(self.roles)
         return create_node('predicate', None, children, self.attrs)
