@@ -26,3 +26,8 @@ def test_parse():
     timestamp = naf.get_lps('entities')[0].get('timestamp')
     assert timestamp
 
+    entities = naf.get('entities')
+    entities.append(Entity.create('e1', 'LOC', ['w2']))
+    naf.add_linguistic_processor('entities', 'test', '0.2')
+    assert len(naf.get_lps('entities')) == 2
+    naf.write('tests/data/test.naf')

@@ -244,15 +244,15 @@ class NafParser:
         if not self.has_layer('nafHeader'):
             self.add_naf_header()
         naf_header_node = self.root.find('nafHeader')
-        ling_processors_layer_node = self.root.xpath('//linguisticProcessors[@layer={}]'.format(layer))
+        ling_processors_layer_nodes = [lp for lp in naf_header_node.findall('linguisticProcessors')
+                                       if lp.get('layer') == layer]
         if add_time_stamp:
-            dt = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
-            attributes['timestamp'] = dt
-        if not ling_processors_layer_node:
+            attributes['timestamp'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+        if not ling_processors_layer_nodes:
             ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
             naf_header_node.append(ling_processors_layer_node)
         else:
-            ling_processors_layer_node.append(LP(name, version, lpDependencies, attributes).node())
+            ling_processors_layer_nodes[0].append(LP(name, version, lpDependencies, attributes).node())
 
     def add_raw_layer(self, text: str, exist_ok=False):
         """Add (or replace) raw layer from text
@@ -285,5 +285,6 @@ class NafParser:
         if lprocessors:
             return lprocessors[0].lps
         else:
-            raise ValueError('Layer {} has no linguisticProcessors element')
+            return None
+            #raise ValueError('Layer {} has no linguisticProcessors element')
 
