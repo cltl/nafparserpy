@@ -4,10 +4,14 @@ from nafparserpy.layers.elements import Span
 from nafparserpy.layers.entities import Entity, Entities
 from nafparserpy.parser import NafParser
 
+testfile = 'tests/data/coreference.naf'
+out_file = 'tests/out/chomsky_colorless.naf'
+os.makedirs('tests/out', exist_ok=True)
+
 
 def test_coreference():
 
-    naf = NafParser.load('tests/data/coreference.naf')
+    naf = NafParser.load(testfile)
 
     # adding a layer
     e1 = Entity.create('e1', 'LOC', ['w10'])
@@ -45,5 +49,5 @@ def test_newdocument():
     naf.add_raw_layer('colorless green ideas sleep furiously')
     naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
 
-    naf.write('tests/chomsky_colorless.naf')
-    assert os.path.exists('tests/chomsky_colorless.naf')
+    naf.write(out_file)
+    assert os.path.exists(out_file)

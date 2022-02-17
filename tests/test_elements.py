@@ -5,6 +5,7 @@ from nafparserpy.layers.causal_relations import CLink
 from nafparserpy.layers.elements import Span, ExternalRef
 from nafparserpy.layers.opinions import Opinion, OpinionExpression
 from nafparserpy.layers.terms import Term
+from nafparserpy.layers.time_expressions import Timex3
 from nafparserpy.parser import NafParser
 from nafparserpy.layers.topics import *
 from nafparserpy.layers.text import *
@@ -12,7 +13,8 @@ import os
 
 text = 'colorless green ideas sleep furiously'
 text2 = 'said Noam Chomsky'
-
+out_file = 'tests/out/test.naf'
+os.makedirs('tests/out', exist_ok=True)
 naf = NafParser()
 
 
@@ -49,13 +51,12 @@ def test_causal_relations():
 def test_naf_header():
     naf.add_naf_header(fileDesc_attrs={'filename': 'test.naf'})
     assert naf.has_layer('nafHeader')
-    os.makedirs('tests/out', exist_ok=True)
-    naf.write('tests/out/test.naf')
+    naf.write(out_file)
     assert naf.has_layer('fileDesc')
     assert naf.get('fileDesc').get('filename') == 'test.naf'
     assert not naf.has_layer('linguisticProcessors')
     naf.add_linguistic_processor('raw', 'rawLp', '0.1')
-    naf.write('tests/out/test.naf')
+    naf.write(out_file)
     assert naf.has_layer('linguisticProcessors')
     lp1 = naf.getall('linguisticProcessors')[0].lps[0]
 
@@ -83,8 +84,7 @@ def test_topics_layer():
     assert not topic2.has('confidence')
     naf.add_layer_from_elements('topics', [topic1, topic2])
     assert naf.get('topics') == [topic1, topic2]
-    os.makedirs('tests/out', exist_ok=True)
-    naf.write('tests/out/test.naf')
+    naf.write(out_file)
 
 
 def test_text_layer():
@@ -130,3 +130,10 @@ def test_elements():
     subrefs = [e.reference for e in extref.externalRefs]
     assert subrefs == ['ref2', 'ref3']
 
+
+def test_timex():
+    timex = Timex3('t1', 'DATE', Span.create(['w1']), {'value': '2016'})
+    naf.add_layer_from_elements('timeExpressions', [timex])
+    assert naf.get('timeExpressions')[0].type == 'DATE'
+    assert naf.get('timeExpressions')[0].span.target_ids() == ['w1']
+    assert naf.get('timeExpressions')[0].get('value') == '2016'

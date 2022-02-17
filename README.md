@@ -36,7 +36,7 @@ Layer and element classes follow closely the NAF DTD:
 ## Installation
 To install the parser, run:
 ```
-pip install -e .
+pip install .
 ```
 
 ## Example
@@ -131,6 +131,18 @@ We now have 2 spans in the first `coref` element in the `coreferences` layer:
 2
 ```
 
+### Adding covered text as comments
+The parser is set to add the covered text of span elements as comments to span nodes.
+To disable this, one can set the `decorate` flag of the constructor to `False`:
+```python
+NafParser.load(file, decorate=False)
+``` 
+or
+```python
+naf = NafParser(tree, decorate=False)
+```
+Note however that comments coming from an input file/tree are preserved.
+
 ### Creating a NAF document from scratch
 What if you have no NAF document yet, only text?
 We will create a NAF document, with the text "Colorless green ideas sleep furiously". The author is Noam Chomsky,
@@ -171,7 +183,8 @@ naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
 
 Let us record this NAF document and write it to file:
 ```
-naf.write('tests/chomsky_colorless.naf')
+os.makedirs('tests/out', exist_ok=True)
+naf.write('tests/out/chomsky_colorless.naf')
 ```
 
 To write to stdout:

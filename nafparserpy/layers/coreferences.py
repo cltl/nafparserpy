@@ -27,7 +27,7 @@ class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
 
     def node(self):
         """Create etree node from object"""
-        children = self.spans
+        children = [s for s in self.spans]
         if self.external_references.items:
             children.append(self.external_references)
         return create_node('coref', None, children, self.attrs)

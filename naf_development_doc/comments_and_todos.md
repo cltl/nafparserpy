@@ -3,10 +3,10 @@
 ## Documentation in the DTD
 ### Problem
 Not all layers are (fully) documented in the NAF_v3.2 DTD.
-I have added documentation but it should be checked or completed.
+The documentation should be checked and/or completed.
 
 ### TODO
-Could you document elements that you have introduced / worked with?
+Document elements 
 
 ## Predicates and Roles
 
@@ -25,7 +25,7 @@ Elements with a span refer (by idref) to other elements in the documents. The do
 suggest that the target ids should be *term* ids, but many can directly refer to *wf* ids.
 
 ## Done
-I have removed references to 'term' ids in a number of comments, e.g. for opinion elements.
+Removed references to 'term' ids in a number of comments, e.g. for opinion elements.
 
 # Element sequence declarations
 ## Problem
@@ -53,7 +53,7 @@ To allow for different orders, the DTD should list all possible orders:
 ```
 
 ## Done
-I replaced many element declarations by restrictive declarations; all impose a strict order on subelements, except `opinion`.
+Replaced many element declarations by restrictive declarations; all impose a strict order on subelements, except `opinion`.
 
 ## TODO
 Verify element declarations of elements you are familiar with. Declarations should be as precise as possible. It should be clear for each element if there can be

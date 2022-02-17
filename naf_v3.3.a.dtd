@@ -1,7 +1,7 @@
 <!-- DTD NAF -->
 <!-- NAF is a document-level format for NLP annotations.
 
-	NAF 3.3.a (documented in this DTD) is a *development* version for NAF v3.3.
+	NAF 3.3.a (documented in this DTD) is a **development** version for NAF v3.3.
 
 	Compared to NAF 3.2, this version:
 	- adds a <lpDependency> element to represent data/tool dependencies of <lp> elements
@@ -687,9 +687,7 @@
 <!-- represent a temporal expression
 
 	Subelements:
-		- spans: a list of <span> elements
-		FIXME can there be several spans?
-		FIXME: does not this double up with beginPoint/endPoint?
+		- span: a <span> element
 
 	Attributes:
 		- id (REQUIRED)
@@ -708,7 +706,7 @@
         - mod: (optional) FIXME document
         - anchorTimeID: (optional) FIXME document
 	-->
-<!ELEMENT timex3 (span)*>
+<!ELEMENT timex3 (span)>
 <!ATTLIST timex3
           id ID #REQUIRED
           type CDATA #REQUIRED
