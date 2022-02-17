@@ -7,12 +7,10 @@ from nafparserpy.layers.elements import Span
 
 @dataclass
 class Timex3(AttributeGetter):
-    """Represents a time expression
-
-    TODO verify element specification in DTD for spans"""
+    """Represents a temporal expression """
     id: str
     type: str
-    spans: List[Span] = field(default_factory=list)
+    span: Span
     """optional list of spans"""
     attrs: dict = field(default_factory=dict)
     """optional attributes ('beginPoint', 'endPoint', 'quant', 'freq', 'functionInDocument', 'temporalFunction',
@@ -24,14 +22,14 @@ class Timex3(AttributeGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('timex3', None, self.spans, self.attrs)
+        return create_node('timex3', None, [self.span], self.attrs)
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
         return Timex3(node.get('id'),
                       node.get('type'),
-                      [Span.object(n) for n in node.findall('span')],
+                      Span.object(node.find('span')),
                       node.attrib)
 
 

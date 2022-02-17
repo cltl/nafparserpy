@@ -286,5 +286,26 @@ class NafParser:
             return lprocessors[0].lps
         else:
             return None
-            #raise ValueError('Layer {} has no linguisticProcessors element')
+
+    def targets2indices(self):
+        """map each word form or term id to its begin and end indices"""
+        id_map = {wf.id: (int(wf.offset), int(wf.offset) + int(wf.length))
+                  for wf in self.get('text')}
+        if self.has_layer('terms'):     # higher layer may reference to terms
+            # map term ids to begin/end indices through word-form ids
+            twf_map = {t.id: id_map[t.span.target_ids()[0]] for t in self.get('terms')}
+            id_map.update(twf_map)
+        return id_map
+
+    def add_comments(self):
+        """Add covered text as comment to all Span elements that have no comment yet"""
+        spans = [x for x in self.root.findall('.//span') if not [_ for _ in x.iter(tag=etree.Comment)]]
+        target_ids = [[t.get('id') for t in span.findall('target')] for span in spans]
+        if spans:
+            id_map = self.targets2indices()
+        for span_node, tid_span in zip(spans, target_ids):
+            begin, end = id_map[tid_span[0]][0], id_map[tid_span[-1]][1]
+            span_node.append(etree.Comment(self.get('raw').text[begin:end]))
+
+
 

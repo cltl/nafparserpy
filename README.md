@@ -131,6 +131,15 @@ We now have 2 spans in the first `coref` element in the `coreferences` layer:
 2
 ```
 
+### Adding comments
+Higher annotation layers are anchored to the raw text via target ids, which can identify text or term elements. 
+To improve readability, one can add the covered text as comments to span elements:
+```python
+naf.add_comments()
+os.makedirs('tests/out', exist_ok=True)
+naf.write('tests/out/coreference.naf')
+```
+
 ### Creating a NAF document from scratch
 What if you have no NAF document yet, only text?
 We will create a NAF document, with the text "Colorless green ideas sleep furiously". The author is Noam Chomsky,
@@ -171,7 +180,8 @@ naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
 
 Let us record this NAF document and write it to file:
 ```
-naf.write('tests/chomsky_colorless.naf')
+os.makedirs('tests/out', exist_ok=True)
+naf.write('tests/out/chomsky_colorless.naf')
 ```
 
 To write to stdout:

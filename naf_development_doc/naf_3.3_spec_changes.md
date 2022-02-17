@@ -186,3 +186,13 @@ v3.2
 <!ELEMENT opinion_target (span)+>
 <!ELEMENT opinion_expression (span)+>
 ```
+
+## Timex3 elements have a single span
+v3.3
+```html
+<!ELEMENT timex3 (span)>
+```
+v3.2
+```html
+<!ELEMENT timex3 (span)+>
+```

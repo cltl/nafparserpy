@@ -40,7 +40,7 @@ class Span:
         """Create object from etree node"""
         if node is None:
             return None
-        return Span([Target.object(n) for n in node], node.attrib)
+        return Span([Target.object(n) for n in node.findall('target')], node.attrib)
 
     @staticmethod
     def create(target_ids):
