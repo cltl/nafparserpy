@@ -9,7 +9,6 @@ from nafparserpy.layers.elements import Span, ExternalReferences
 class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
     """Represents a coreference"""
     id: str
-    status: str
     spans: List[Span]
     """list of coreferent mention spans"""
     external_references: ExternalReferences = ExternalReferences([])
@@ -19,7 +18,7 @@ class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
 
     def __post_init__(self):
         """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id, 'status': self.status})
+        self.attrs.update({'id': self.id})
 
     def target_ids(self):
         """Returns list of target ids covered for each of the layer's spans"""
@@ -36,7 +35,6 @@ class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
     def object(node):
         """Create object from etree node"""
         return Coref(node.get('id'),
-                     node.get('status'),
                      [Span.object(n) for n in node.findall('span')],
                      ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
                      node.attrib)

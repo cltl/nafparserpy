@@ -4,7 +4,7 @@ Wraps lxml to facilitate handling of NAF documents
 import datetime
 import io
 from time import timezone
-from typing import Any
+from typing import Any, Tuple, Dict
 
 from nafparserpy.layers.attribution import Attribution
 from nafparserpy.layers.causal_relations import CausalRelations
@@ -104,9 +104,11 @@ class NafParser:
             if attrs:
                 filedesc_attrs, public_attrs = split_naf_header_attrs(attrs)
                 self.add_naf_header(fileDesc_attrs=filedesc_attrs, public_attrs=public_attrs)
+            self.id_map = {}
         else:
             self.tree = tree
             self.root = self.tree.getroot()
+            self.id_map = self.targets2indices()
 
     @staticmethod
     def load(naf_file, validate_against_dtd=False, decorate=True):
@@ -294,8 +296,13 @@ class NafParser:
         else:
             return None
 
-    def targets2indices(self):
-        """map each word form or term id to its begin and end indices"""
+    def targets2indices(self) -> Dict[str, Tuple[int, int]]:
+        """Map each word form or term id to its begin and end indices
+
+        Returns
+        -------
+        map of target ids to start and end indices
+        """
         id_map = {wf.id: (int(wf.offset), int(wf.offset) + int(wf.length))
                   for wf in self.get('text')}
         if self.has_layer('terms'):     # higher layer may reference to terms
@@ -308,11 +315,43 @@ class NafParser:
         """Add covered text as comment to all Span elements that have no comment yet"""
         spans = [x for x in self.root.findall('.//span') if not [_ for _ in x.iter(tag=etree.Comment)]]
         target_ids = [[t.get('id') for t in span.findall('target')] for span in spans]
-        if spans:
-            id_map = self.targets2indices()
+        if spans and not self.id_map:
+            self.id_map = self.targets2indices()
         for span_node, tid_span in zip(spans, target_ids):
-            begin, end = id_map[tid_span[0]][0], id_map[tid_span[-1]][1]
+            begin, end = self.id_map[tid_span[0]][0], self.id_map[tid_span[-1]][1]
             span_node.append(etree.Comment(self.get('raw').text[begin:end]))
 
+    def covered_text(self, target_ids: List[str]) -> str:
+        """Return text covered by the target ids
+
+        Parameters
+        ----------
+        target_ids: List[str]
+            target ids
+
+        Returns
+        -------
+        covered text
+        """
+        start, end = self.start_end_indices(target_ids)
+        return self.get('raw').text[start:end]
+
+    def start_end_indices(self, target_ids: List[str]) -> Tuple[int, int]:
+        """Return the start and end indices of the span represented by the target ids
+
+        Parameters
+        ----------
+        target_ids: List[str]
+            target ids
+
+        Returns
+        -------
+        tuple of start and end indices
+        """
+        if not self.id_map:
+            self.id_map = self.targets2indices()
+            if not self.id_map:
+                raise ValueError('No target ids found')
+        return self.id_map[target_ids[0]][0], self.id_map[target_ids[-1]][1]
 
 

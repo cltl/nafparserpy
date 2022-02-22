@@ -63,7 +63,7 @@ class LP(AttributeGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('lp', None, [], self.attrs)
+        return create_node('lp', None, self.lpDependencies, self.attrs)
 
     @staticmethod
     def object(node):
