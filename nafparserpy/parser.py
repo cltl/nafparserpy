@@ -74,7 +74,7 @@ def split_naf_header_attrs(attrs):
 
 
 class NafParser:
-    def __init__(self, tree=None, lang='en', version=None, **attrs):
+    def __init__(self, tree=None, lang='en', version=None, decorate=True, **attrs):
         """
         Create a NAF document from an existing tree or from scratch.
 
@@ -86,9 +86,12 @@ class NafParser:
             document language, defaults to `en`. This parameter is ignored if tree is not None
         version : str
             NAF version, defaults to `parser.NAF_VERSION`; ignored if tree is not None
+        decorate : bool
+            adds covered text to span nodes
         attrs : dict
             nafHeader fileDesc and public attributes; ignored if tree is not None
         """
+        self.decorate = decorate
         naf_version = NAF_VERSION
         
         if version is not None:
@@ -106,7 +109,7 @@ class NafParser:
             self.root = self.tree.getroot()
 
     @staticmethod
-    def load(naf_file, validate_against_dtd=False):
+    def load(naf_file, validate_against_dtd=False, decorate=True):
         """Create a NAF document from a NAF file
 
         Parameters
@@ -115,6 +118,8 @@ class NafParser:
             path to NAF file
         validate_against_dtd : bool
             validates input tree against DTD if True
+        decorate : bool
+            adds covered text to span nodes
 
         Raises
         ------
@@ -129,7 +134,7 @@ class NafParser:
                 if not dtd.validate(tree.get_root()):
                     raise ValueError("Input tree does not conform to DTD (NAF v3.3.a)")
 
-        return NafParser(tree)
+        return NafParser(tree, decorate=decorate)
 
     def write(self, file_path):
         """Write NAF tree to file or stdout if no file path is given"""
@@ -181,6 +186,8 @@ class NafParser:
             if self.has_layer(layer_name):
                 self.root.remove(self.root.find(layer_name))
             self.root.append(element.node())
+            if self.decorate:
+                self.add_comments()
 
     def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
         """Create container layer from its elements.

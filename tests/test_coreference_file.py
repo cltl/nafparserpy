@@ -26,7 +26,13 @@ def test_parse():
     assert len(ext_refs) == 1
     assert 'wikidata' in ext_refs[0]
 
+    # no comments yet
+    spans = naf.root.findall('.//span')
+    assert all(x == 0 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
     naf.add_layer_from_elements('entities', [Entity.create('e0', 'PER', ['w1'])])
+    # comments added together with layer
+    assert all(x == 1 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
+
     naf.add_linguistic_processor('entities', 'test', '0.1', add_time_stamp=True)
     assert not naf.get('entities')[0].get_external_refs()
 
@@ -37,14 +43,6 @@ def test_parse():
     entities.append(Entity.create('e1', 'LOC', ['w2']))
     naf.add_linguistic_processor('entities', 'test', '0.2')
     assert len(naf.get_lps('entities')) == 2
-
-    # adding comments
-    spans = naf.root.findall('.//span')
-    assert all(x == 0 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
-    naf.add_comments()
-    assert all(x == 1 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
-    naf.add_comments()      # comments are added only once
-    assert all(x == 1 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
 
     naf.write(out_file)
 

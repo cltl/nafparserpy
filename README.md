@@ -36,7 +36,7 @@ Layer and element classes follow closely the NAF DTD:
 ## Installation
 To install the parser, run:
 ```
-pip install -e .
+pip install .
 ```
 
 ## Example
@@ -131,14 +131,18 @@ We now have 2 spans in the first `coref` element in the `coreferences` layer:
 2
 ```
 
-### Adding comments
-Higher annotation layers are anchored to the raw text via target ids, which can identify text or term elements. 
-To improve readability, one can add the covered text as comments to span elements:
+
+### Adding covered text as comments
+The parser is set to add the covered text of span elements as comments to span nodes.
+To disable this, one can set the `decorate` flag of the constructor to `False`:
 ```python
-naf.add_comments()
-os.makedirs('tests/out', exist_ok=True)
-naf.write('tests/out/coreference.naf')
+NafParser.load(file, decorate=False)
+``` 
+or
+```python
+naf = NafParser(tree, decorate=False)
 ```
+Note however that comments coming from an input file/tree are preserved.
 
 ### Creating a NAF document from scratch
 What if you have no NAF document yet, only text?
