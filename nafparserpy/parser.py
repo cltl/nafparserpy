@@ -303,6 +303,8 @@ class NafParser:
         -------
         map of target ids to start and end indices
         """
+        if not self.has_layer('text'):
+            return {}
         id_map = {wf.id: (int(wf.offset), int(wf.offset) + int(wf.length))
                   for wf in self.get('text')}
         if self.has_layer('terms'):     # higher layer may reference to terms
