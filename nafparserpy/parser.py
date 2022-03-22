@@ -188,6 +188,8 @@ class NafParser:
             if self.has_layer(layer_name):
                 self.root.remove(self.root.find(layer_name))
             self.root.append(element.node())
+            if layer_name in ('text', 'terms'):
+                self.reset_targets2indices()
             if self.decorate:
                 self.add_comments()
 
@@ -297,7 +299,7 @@ class NafParser:
             return None
 
     def targets2indices(self) -> Dict[str, Tuple[int, int]]:
-        """Map each word form or term id to its begin and end indices
+        """Map each word form, subtoken or term id to its begin and end indices
 
         Returns
         -------
@@ -305,9 +307,12 @@ class NafParser:
         """
         if not self.has_layer('text'):
             return {}
-        id_map = {wf.id: (int(wf.offset), int(wf.offset) + int(wf.length))
-                  for wf in self.get('text')}
-        if self.has_layer('terms'):     # higher layer may reference to terms
+        id_map = {}
+        for wf in self.get('text'):
+            id_map[wf.id] = (int(wf.offset), int(wf.offset) + int(wf.length))
+            if wf.subtokens:
+                id_map.update({st.id: (int(st.offset), int(st.offset) + int(st.length)) for st in wf.subtokens})
+        if self.has_layer('terms'):     # higher layers may reference to terms
             # map term ids to begin/end indices through word-form ids
             twf_map = {t.id: id_map[t.span.target_ids()[0]] for t in self.get('terms')}
             id_map.update(twf_map)
@@ -356,4 +361,12 @@ class NafParser:
                 raise ValueError('No target ids found')
         return self.id_map[target_ids[0]][0], self.id_map[target_ids[-1]][1]
 
+    def reset_targets2indices(self):
+        """Recomputes the mapping of all word forms, subtokens and terms to their start and end indices.
 
+        This mapping is computed in a restricted number of cases: when loading a existing NAF document, or when
+        retrieving the covered text on a newly created NAF document. The present function can be called when
+        adding layers for which the mapping will be relevant, such as subtokens or terms on a NAF document already
+        annotated with word forms.
+        """
+        self.id_map = self.targets2indices()
