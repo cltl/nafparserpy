@@ -3,6 +3,7 @@ Wraps lxml to facilitate handling of NAF documents
 """
 import datetime
 import io
+import re
 from time import timezone
 from typing import Any, Tuple, Dict
 
@@ -326,7 +327,10 @@ class NafParser:
             self.id_map = self.targets2indices()
         for span_node, tid_span in zip(spans, target_ids):
             begin, end = self.id_map[tid_span[0]][0], self.id_map[tid_span[-1]][1]
-            span_node.append(etree.Comment(self.get('raw').text[begin:end]))
+            comment = self.get('raw').text[begin:end]
+            comment = comment.replace('--', '-~')
+            comment = re.sub('-$', '~', comment)
+            span_node.append(etree.Comment(comment))
 
     def covered_text(self, target_ids: List[str]) -> str:
         """Return text covered by the target ids
