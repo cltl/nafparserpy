@@ -27,7 +27,7 @@ class Dep:
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return Dep(node.get('from'), node.get('to'), node.get('rfunc'), node.get('case'))
+        return Dep(node.get('from'), node.get('to'), node.get('rfunc'), node.attrib)
 
 
 @dataclass

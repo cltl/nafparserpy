@@ -2,9 +2,8 @@
 Wraps lxml to facilitate handling of NAF documents
 """
 import datetime
-import io
 import re
-from time import timezone
+from io import StringIO
 from typing import Any, Tuple, Dict
 
 from nafparserpy.layers.attribution import Attribution
@@ -74,6 +73,26 @@ def split_naf_header_attrs(attrs):
     return filedesc_attrs, public_attrs
 
 
+def validate_dtd(tree, dtd='naf_v3.3.a.dtd'):
+    """Validate tree against DTD
+
+    Parameters
+    ----------
+    tree : ElementTree
+        NAF tree
+    dtd : str
+        path to DTD
+
+    Raises
+    ------
+    ValueError : if tree is not valid
+    """
+    with open(dtd) as infile:
+        dtd = etree.DTD(infile)
+        if not dtd.validate(tree.get_root()):
+            raise ValueError(f"Input tree does not conform to DTD {dtd}")
+
+
 class NafParser:
     def __init__(self, tree=None, lang='en', version=None, decorate=True, **attrs):
         """
@@ -128,14 +147,10 @@ class NafParser:
         ------
         ValueError: if `validate_against_dtd` is True, and input file does not conform to the DTD
         """
-        naf_file = naf_file
         tree = etree.parse(naf_file, etree.XMLParser(remove_blank_text=True, strip_cdata=False))
 
         if validate_against_dtd:
-            with open('naf_v3.3.a.dtd') as infile:
-                dtd = etree.DTD(infile)
-                if not dtd.validate(tree.get_root()):
-                    raise ValueError("Input tree does not conform to DTD (NAF v3.3.a)")
+            validate_dtd(tree)
 
         return NafParser(tree, decorate=decorate)
 
@@ -255,16 +270,51 @@ class NafParser:
             optional linguistic processor attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')"""
         if not self.has_layer('nafHeader'):
             self.add_naf_header()
-        naf_header_node = self.root.find('nafHeader')
-        ling_processors_layer_nodes = [lp for lp in naf_header_node.findall('linguisticProcessors')
-                                       if lp.get('layer') == layer]
         if add_time_stamp:
             attributes['timestamp'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+        self.append_lp(layer, LP(name, version, lpDependencies, attributes))
+
+    def append_lp(self, layer: str, linguistic_processor: LP):
+        """Add a linguistic processor element to the linguistic processors list for the given layer.
+
+        Creates a `linguisticProcessors` layer if there is not one yet.
+
+        Parameters
+        ----------
+        layer : str
+            the name of the layer
+        linguistic_processor : LP
+            the linguistic processor
+        """
+        naf_header_node = self.root.find('nafHeader')
+        ling_processors_layer_nodes = [lps for lps in naf_header_node.findall('linguisticProcessors')
+                                       if lps.get('layer') == layer]
         if not ling_processors_layer_nodes:
-            ling_processors_layer_node = LinguisticProcessors(layer, [LP(name, version, lpDependencies, attributes)]).node()
+            ling_processors_layer_node = LinguisticProcessors(layer, [linguistic_processor]).node()
             naf_header_node.append(ling_processors_layer_node)
         else:
-            ling_processors_layer_nodes[0].append(LP(name, version, lpDependencies, attributes).node())
+            ling_processors_layer_nodes[0].append(linguistic_processor.node())
+
+    def extend_lps(self, layer: str, linguistic_processors: List[LP]):
+        """Add linguistic processor elements to the linguistic processors list for the given layer.
+
+        Creates a `linguisticProcessors` layer if there is not one yet.
+
+        Parameters
+        ----------
+        layer : str
+            the name of the layer
+        linguistic_processors : List[LP]
+            the linguistic processors
+        """
+        naf_header_node = self.root.find('nafHeader')
+        ling_processors_layer_nodes = [lps for lps in naf_header_node.findall('linguisticProcessors')
+                                       if lps.get('layer') == layer]
+        if not ling_processors_layer_nodes:
+            ling_processors_layer_node = LinguisticProcessors(layer, linguistic_processors).node()
+            naf_header_node.append(ling_processors_layer_node)
+        else:
+            ling_processors_layer_nodes[0].extend([lp.node() for lp in linguistic_processors])
 
     def add_raw_layer(self, text: str, exist_ok=False):
         """Add (or replace) raw layer from text
