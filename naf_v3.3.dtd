@@ -1,14 +1,11 @@
 <!-- DTD NAF -->
 <!-- NAF is a document-level format for NLP annotations.
 
-	NAF 3.3.a (documented in this DTD) is a **development** version for NAF v3.3.
-
 	Compared to NAF 3.2, this version:
 	- adds a <lpDependency> element to represent data/tool dependencies of <lp> elements
+	- adds an "id" attribute to <lp> elements, for unique identification of processing steps
 	- provides restrictive element declarations, aiming at precising counts of subelements
 	of different types: declarations like (a|b|c)+ are replaced by declarations like (a,b?,c+)
-	- complements and tidies the documentation of elements; part of this documentation is copied or adapted from
-	 https://github.com/newsreader/NAF
 	- removes <factualitylayer>, which was marked as deprecated in v3.2
 	-->
 <!ELEMENT NAF (nafHeader|raw|topics|text|terms|multiwords|deps|chunks|entities|coreferences|constituency|srl|opinions|timeExpressions|tunits|locations|dates|temporalRelations|causalRelations|markables|attribution|factualities)*>
@@ -93,14 +90,15 @@
          xs:dateTime format.
 		 - hostname (optional)
          -->
-<!ELEMENT lp (lpDependency)+>
+<!ELEMENT lp (lpDependency)*>
 <!ATTLIST lp
           name CDATA #REQUIRED
           version CDATA #REQUIRED
           timestamp CDATA #IMPLIED
           beginTimestamp CDATA #IMPLIED
           endTimestamp CDATA #IMPLIED
-          hostname CDATA #IMPLIED>
+          hostname CDATA #IMPLIED
+		  id CDATA #IMPLIED>
 
 <!-- LPDEPENDENCY ELEMENT -->
 <!-- <lpDependency> elements describe tool/data/model dependencies of linguistic processors.
@@ -109,7 +107,7 @@
 		- version: version of the dependency
 		- type: type of the dependency, e.g., 'tool', 'data', 'model'
 	-->
-<!ELEMENT lpDependency (EMPTY)>
+<!ELEMENT lpDependency EMPTY>
 <!ATTLIST lpDependency
 		name CDATA #REQUIRED
 		version CDATA #IMPLIED
@@ -167,7 +165,7 @@
         - length: the length (in characters) of the word form (optional)
         - xpath: in case of source xml files, the xpath expression identifying the original word form (optional)
         -->
-<!ELEMENT wf (#PCDATA,subtoken*)>
+<!ELEMENT wf (#PCDATA|subtoken)*>
 <!ATTLIST wf
           id ID #REQUIRED
           sent CDATA #IMPLIED
@@ -213,13 +211,13 @@
 		- lemma: lemma of the term (IMPLIED).
 		- pos: part of speech. (IMPLIED)
 		- morphofeat: morphosyntactic feature encoded as a single attribute.
-		- netype: FIXME document
+		- netype:
 		- case: declension case of the term (optional).
 		- head: if the term is a compound, the id of the head component (optional).
 		- component_of: if the term is part of multiword, i.e., referenced by a multiwords/mw element
     		than this attribute can be used to make reference to the multiword.
 		- compound_type: endocentric or exocentric
-	FIXME verify if element order is important/list possible orders-->
+	-->
 <!ELEMENT term (span,component*,externalReferences?,sentiment?)>
 <!ATTLIST term
           id ID #REQUIRED
@@ -325,10 +323,10 @@
        			r adverb
        	Examples of valid patterns: ``ENG-20-12345678-n'', ``SPA-16-017403-v'', etc.
      	- resource: indicates the identifier of the resource referred to (optional)
-       	- reftype: (optional) FIXME document
-       	- status: (optional) FIXME document
-       	- source: (optional) FIXME document
-       	- timestamp: (optional) FIXME document
+       	- reftype: (optional)
+       	- status: (optional)
+       	- source: (optional)
+       	- timestamp: (optional)
        	- confidence: a floating number between 0 and 1. Indicates the confidence weight of the association (optional)
        -->
 <!ELEMENT externalRef (sentiment?,externalRef*)>
@@ -361,12 +359,12 @@
 
     Attributes:
     	- id: unique identifier (REQUIRED and UNIQUE).
-    	- lemma: lemma of the term (REQUIRED)	FIXME is lemma also required in the case of multiword expressions?
-    	- pos: part of speech (REQUIRED)		FIXME idem
-        - morphofeat (optional)		FIXME document
-        - netype (optional)			FIXME idem
+    	- lemma: lemma of the term (REQUIRED)
+    	- pos: part of speech (REQUIRED)
+        - morphofeat (optional)
+        - netype (optional)
     	- case: declension case (optional)
-    	- head (optional)			FIXME idem
+    	- head (optional)
   -->
 <!ELEMENT component ((span,sentiment?,externalReferences?)
 					|(span,externalReferences?,sentiment?))>
@@ -396,12 +394,12 @@
 
 	Attributes:
     	- id: unique identifier (REQUIRED and UNIQUE)
-    	- type (optional) 		FIXME document
+    	- type (optional)
     	- lemma: lemma of the term (optional)
     	- pos: part of speech (optional)
-        - morphofeat (optional)		FIXME idem
-    	- case: declension case (optional)	FIXME idem
-    	- source (optional)			FIXME idem
+        - morphofeat (optional)
+    	- case: declension case (optional)
+    	- source (optional)
     	-->
 <!ELEMENT mark ((span,sentiment?,externalReferences?)
 				|(span,externalReferences?,sentiment?))>
@@ -470,7 +468,7 @@
    	 	- id: the id for the named entity (REQUIRED)
     	- type: type of the named entity. (optional)
     	- status: e.g., manual, system (optional)
-    	- source (optional) FIXME document
+    	- source (optional)
   -->
 <!ELEMENT entity (span,externalReferences?)>
 <!ATTLIST entity
@@ -497,8 +495,8 @@
 		- CO_ID, e.g. 'co1', 'co2', etc
 
     Attributes:
-      - id: unique id (REQUIRED)	FIXME should it be unique in the layer or in the document?
-      - status: e.g., 'manual', 'system' (optional)	FIXME verify documentation
+      - id: unique id (REQUIRED)
+      - status: e.g., 'manual', 'system' (optional)
       - type: type of the coref set ('entity', 'event', etc)
       -->
 <!ELEMENT coref (span+,externalReferences?)>
@@ -522,7 +520,7 @@
 		- edge: edge between nodes
 
 	Attributes:
-		- type: (optional) FIXME document-->
+		- type: (optional) -->
 <!ELEMENT tree (nt|t|edge)+>
 <!ATTLIST tree
           type CDATA #IMPLIED>
@@ -651,7 +649,7 @@
         - span: target ids covered by the element (REQUIRED).
 
     Attributes:
-    	- type: type of target (optional) FIXME give examples
+    	- type: type of target (optional)
         -->
 <!ELEMENT opinion_target (span)>
 <!ATTLIST opinion_target
@@ -699,12 +697,12 @@
         - freq: used for specifying sets that denote quantified times. It contains an integer value and a time
         granularity to represent any frequency contained in the set. Usual values are '2X' (twice-a-month),
         '3D' (three-days), etc.(optional)
-        - functionInDocument:  (optional) FIXME document
-        - temporalFunction: (optional) FIXME document
-        - value: (optional) FIXME document
-        - valueFromFunction: (optional) FIXME document
-        - mod: (optional) FIXME document
-        - anchorTimeID: (optional) FIXME document
+        - functionInDocument:  (optional)
+        - temporalFunction: (optional)
+        - value: (optional)
+        - valueFromFunction: (optional)
+        - mod: (optional)
+        - anchorTimeID: (optional)
 	-->
 <!ELEMENT timex3 (span)>
 <!ATTLIST timex3
@@ -722,13 +720,9 @@
           anchorTimeID IDREF #IMPLIED>
 
 <!-- TEMPORALRELATIONS LAYER -->
-<!-- TODO can element have more than 1 tlink and more than 1 predicateAnchor?
-	 FIXME document
-	 FIXME provide precise element declaration-->
 <!ELEMENT temporalRelations (tlink|predicateAnchor)*>
 
 <!-- TLINK ELEMENT -->
-<!-- FIXME document -->
 <!ELEMENT tlink EMPTY>
 <!ATTLIST tlink
           id ID #REQUIRED
@@ -739,8 +733,6 @@
           relType CDATA #REQUIRED>
 
 <!-- PREDICATEANCHOR ELEMENT -->
-<!-- TODO can predicateAnchor have more than 1 span?
- 	FIXME document-->
 <!ELEMENT predicateAnchor (span)+>
 <!ATTLIST predicateAnchor
           id ID #IMPLIED
@@ -749,11 +741,9 @@
           endPoint IDREF #IMPLIED>
 
 <!-- CAUSALRELATIONS LAYER -->
-<!-- FIXME document this layer-->
 <!ELEMENT causalRelations (clink)+>
 
 <!-- CLINK ELEMENT -->
-<!-- FIXME document -->
 <!ELEMENT clink EMPTY>
 <!ATTLIST clink
           id ID #REQUIRED
@@ -862,9 +852,7 @@ statement about the future (implying speculation).  -->
           offset CDATA #REQUIRED
           length CDATA #REQUIRED>
 
-<!-- FIXME document -->
 <!ELEMENT locations (#PCDATA)*>
-<!-- FIXME document -->
 <!ELEMENT dates (#PCDATA)*>
 
 

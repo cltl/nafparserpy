@@ -8,13 +8,13 @@ setup(
     author_email='s.i.arnoult@vu.nl',
     packages=find_packages(include=['nafparserpy', 'nafparserpy.layers']),
     install_requires=[
-        'lxml>=4.6.3'
+        'lxml>=4.9.0'
     ],
     extras_require={
         'doc': ['pdoc3'],
     },
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    package_data={'dtd': ['naf_v3.3.a.dtd']}
+    package_data={'dtd': ['naf_v3.3.dtd']}
 )
 

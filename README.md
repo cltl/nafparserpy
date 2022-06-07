@@ -1,10 +1,10 @@
-*nafparserpy* is a python [NAF](https://github.com/newsreader/NAF) parser that follows on
-[KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
+*nafparserpy* is a lightweight python XML wrapper for [NAF](https://github.com/cltl/NAF-4-Development/). 
 
 ## Introduction
-Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and
-provides convenience classes for handling NAF layers.
-Compared to KafNafParserPy, layer objects are decoupled from the underlying lxml etree, allowing for a clear separation
+*nafparserpy* follows on [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
+
+Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and provides convenience classes for handling NAF layers.
+Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree, allowing for a clear separation
 between object and tree manipulation.
 
 *nafparserpy* is compatible with Python 3.7 (for Python 3.6 you
@@ -13,10 +13,7 @@ will need to install [dataclasses](https://pypi.org/project/dataclasses/)).
 See the [pages](https://cltl.github.io/nafparserpy/) for the documentation.
 
 ### NAF version and DTD
-The currently supported NAF version is [3.3.a](naf_v3.3.a.dtd).
-
-See [naf_development_doc](naf_development_doc) for changes with regard to NAF 3.2
-
+The currently supported NAF version is [3.3](https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd).
 
 ### NAF tree handling and layer objects
 *nafparserpy* is restrictive when it comes to tree manipulation:
@@ -103,12 +100,13 @@ Retrieve the `coreferences` layer:
 ```python
 coreferences = naf.get('coreferences')
 ```
-Like `entities` and most NAF layers, the `coreferences` is a container element; we can index it to retrieve its `Coref` 
+Like `entities` and most NAF layers, the `coreferences` layer is a container element; we can index it to retrieve its `Coref` 
 elements:  
 ```python
 co1 = coreferences[0]
 ```
-`Coref` objects have a `spans` attribute listing their `span` subelements.
+NAF `coref` elements take one or more `span` children and optionally an `externalReferences` element. They are mapped to
+`Coref` objects, which have a `spans` attribute listing their `Span` subelements, and a possibly `ExternalReferences` attribute.
 Let us add a span over the terms 't12' and 't13':
 ```python
 co1.spans.append(Span.create(['t12', 't13']))
@@ -192,7 +190,7 @@ To write to stdout:
 ```
 > naf.write()
 <?xml version='1.0' encoding='UTF-8'?>
-<NAF xml:lang="en" version="3.3.a">
+<NAF xml:lang="en" version="3.3">
   <nafHeader>
     <fileDesc author="Noam Chomsky" filename="chomsky_colorless.naf"/>
     <linguisticProcessors layer="raw">

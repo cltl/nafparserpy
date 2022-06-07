@@ -32,7 +32,7 @@ from lxml import etree
 __version__ = '0.1'
 __author__ = 'Sophie Arnoult'
 
-NAF_VERSION = '3.3.a'
+NAF_VERSION = '3.3'
 
 layers = {'nafHeader': NafHeader, 'fileDesc': FileDesc, 'public': Public, 'linguisticProcessors': LinguisticProcessors,
           'lp': LP, 'raw': Raw, 'topics': Topics, 'text': Text, 'terms': Terms, 'chunks': Chunks,
@@ -73,7 +73,7 @@ def split_naf_header_attrs(attrs):
     return filedesc_attrs, public_attrs
 
 
-def validate_dtd(tree, dtd='naf_v3.3.a.dtd'):
+def validate_dtd(tree, dtd='naf_v3.3.dtd'):
     """Validate tree against DTD
 
     Parameters
