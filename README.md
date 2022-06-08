@@ -80,6 +80,7 @@ True
 
 We should also add a linguistic processor to the NAF header to explain how we came about these entities:
 Our linguistic processor is called 'linguistic intuition', version 1.0:
+
 ```python
 naf.add_linguistic_processor('entities', 'linguistic intuition', '1.0')
 ```
@@ -119,6 +120,7 @@ naf.add_layer_from_elements('coreferences', [co1], exist_ok=True)
 ```
 
 Let us add a linguistic processor to record this modification
+
 ```python
 naf.add_linguistic_processor('coreferences', 'linguistic intuition', '1.0')
 ```
@@ -176,8 +178,16 @@ naf.add_raw_layer('colorless green ideas sleep furiously')
 ```
 
 Add the corresponding linguistic processor:
+
 ```python
 naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
+```
+
+By default, the parser is set to keep previously defined linguistic processors for a given layer, so that each layer can have  
+several `lp` elements attached to it. To disable this and keep a single `lp` per layer, use the `replace` flag:
+
+```python
+naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0', replace=True)
 ```
 
 Let us record this NAF document and write it to file:

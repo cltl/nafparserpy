@@ -48,6 +48,10 @@ def test_newdocument():
 
     naf.add_raw_layer('colorless green ideas sleep furiously')
     naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
+    naf.add_linguistic_processor('raw', 'linguistic intuition', '1.1')
+    assert len(naf.get_lps('raw')) == 2
+    naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0', replace=True)
+    assert len(naf.get_lps('raw')) == 1
 
     naf.write(out_file)
     assert os.path.exists(out_file)
