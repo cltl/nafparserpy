@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, create_node, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class Timex3(AttributeGetter):
+class Timex3(AttributeGetter, IdrefGetter):
     """Represents a temporal expression """
     id: str
     type: str

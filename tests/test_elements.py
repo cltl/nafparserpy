@@ -111,11 +111,11 @@ def test_term_layer():
 def test_opinions():
     opinion = Opinion('o1', OpinionExpression(Span.create(['w1'])))
     assert opinion.target is None
-    assert opinion.expression.span.target_ids() == ['w1']
+    assert opinion.expression.target_ids() == ['w1']
     assert not opinion.expression.has('polarity')
     opinion = Opinion.object(opinion.node())
     assert opinion.target is None
-    assert opinion.expression.span.target_ids() == ['w1']
+    assert opinion.expression.target_ids() == ['w1']
     assert not opinion.expression.has('polarity')
 
 

@@ -1,11 +1,11 @@
 from dataclasses import dataclass
 from typing import List
-from nafparserpy.layers.utils import create_node
+from nafparserpy.layers.utils import create_node, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class StatementSource:
+class StatementSource(IdrefGetter):
     """Represents the source of a statement"""
     span: Span
     """span covered by the statement source"""
@@ -25,7 +25,7 @@ class StatementSource:
 
 
 @dataclass
-class StatementTarget:
+class StatementTarget(IdrefGetter):
     span: Span
     """span covered by the statement target"""
 
@@ -44,7 +44,7 @@ class StatementTarget:
 
 
 @dataclass
-class StatementCue:
+class StatementCue(IdrefGetter):
     span: Span
     """span covered by the statement cue"""
 

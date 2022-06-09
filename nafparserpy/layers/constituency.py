@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import create_node, AttributeGetter
+from nafparserpy.layers.utils import create_node, AttributeGetter, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
@@ -30,7 +30,7 @@ class Edge(AttributeGetter):
 
 
 @dataclass
-class T:
+class T(IdrefGetter):
     """Represents a terminal"""
     id: str
     span: Span

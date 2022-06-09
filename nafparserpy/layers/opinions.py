@@ -1,11 +1,11 @@
 from dataclasses import dataclass, field
 from typing import List
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import AttributeGetter, create_node, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class OpinionHolder(AttributeGetter):
+class OpinionHolder(AttributeGetter, IdrefGetter):
     """Represents an opinion holder
 
     Optional attributes: 'type'"""
@@ -26,7 +26,7 @@ class OpinionHolder(AttributeGetter):
 
 
 @dataclass
-class OpinionTarget(AttributeGetter):
+class OpinionTarget(AttributeGetter, IdrefGetter):
     """Represents an opinion target
 
     Optional attributes: 'type'"""
@@ -47,7 +47,7 @@ class OpinionTarget(AttributeGetter):
 
 
 @dataclass
-class OpinionExpression(AttributeGetter):
+class OpinionExpression(AttributeGetter, IdrefGetter):
     """Represents an opinion expression
 
     Optional attributes: 'polarity', 'strength', 'subjectivity', 'sentiment_semantic_type', 'sentiment_product_feature'

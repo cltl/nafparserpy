@@ -1,12 +1,12 @@
 from dataclasses import dataclass, field
 from typing import List
 
-from nafparserpy.layers.utils import AttributeGetter, create_node, ExternalReferenceHolder
+from nafparserpy.layers.utils import AttributeGetter, create_node, ExternalReferenceHolder, IdrefGetter
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Role(AttributeGetter, ExternalReferenceHolder):
+class Role(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a predicate argument"""
     id: str
     span: Span
@@ -36,7 +36,7 @@ class Role(AttributeGetter, ExternalReferenceHolder):
 
 
 @dataclass
-class Predicate(AttributeGetter, ExternalReferenceHolder):
+class Predicate(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Represents a predicate"""
     id: str
     span: Span
