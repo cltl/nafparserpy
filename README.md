@@ -4,16 +4,18 @@
 *nafparserpy* follows on [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy).
 
 Like KafNafParserPy, the parser wraps [lxml](https://lxml.de/) to handle NAF XML trees, and provides convenience classes for handling NAF layers.
-Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree, allowing for a clear separation
-between object and tree manipulation.
+Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree: the user is responsible for creating
+and handling NAF objects, while the parser handles tree manipulation.
 
-*nafparserpy* is compatible with Python 3.7 (for Python 3.6 you
+*nafparserpy* is compatible with Python 3.7+ (for Python 3.6 you
 will need to install [dataclasses](https://pypi.org/project/dataclasses/)).
 
 See the [pages](https://cltl.github.io/nafparserpy/) for the documentation.
 
 ### NAF version and DTD
 The currently supported NAF version is [3.3](https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd).
+
+See [NAF-4-Development](https://github.com/cltl/NAF-4-Development/) for more information.
 
 ### NAF tree handling and layer objects
 *nafparserpy* is restrictive when it comes to tree manipulation:

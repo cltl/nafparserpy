@@ -88,8 +88,8 @@ def validate_dtd(tree, dtd='naf_v3.3.dtd'):
     """
     with open(dtd) as infile:
         dtd = etree.DTD(infile)
-        if not dtd.validate(tree.get_root()):
-            raise ValueError(f"Input tree does not conform to DTD {dtd}")
+    if not dtd.validate(tree.getroot()):
+        raise ValueError(f"Input tree does not conform to DTD {dtd}")
 
 
 def remove_lps(ling_processors_layer_node):

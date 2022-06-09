@@ -55,7 +55,7 @@ class LP(AttributeGetter):
     version: str
     lpDependencies: List[LPDependency]
     attrs: dict = field(default_factory=dict)
-    """optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')"""
+    """optional attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname', 'id')"""
 
     def __post_init__(self):
         """Copy compulsory attributes to `attrs` field"""
