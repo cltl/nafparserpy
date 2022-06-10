@@ -45,4 +45,3 @@ def test_parse():
     assert len(naf.get_lps('entities')) == 2
 
     naf.write(out_file)
-

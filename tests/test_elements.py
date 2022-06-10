@@ -5,10 +5,10 @@ from nafparserpy.layers.causal_relations import CLink
 from nafparserpy.layers.elements import Span, ExternalRef
 from nafparserpy.layers.opinions import Opinion, OpinionExpression
 from nafparserpy.layers.terms import Term
+from nafparserpy.layers.text import Wf
 from nafparserpy.layers.time_expressions import Timex3
+from nafparserpy.layers.topics import Topic
 from nafparserpy.parser import NafParser
-from nafparserpy.layers.topics import *
-from nafparserpy.layers.text import *
 import os
 
 text = 'colorless green ideas sleep furiously'
@@ -110,11 +110,11 @@ def test_term_layer():
 
 def test_opinions():
     opinion = Opinion('o1', OpinionExpression(Span.create(['w1'])))
-    assert opinion.target is None
+    assert opinion.target.is_none()
     assert opinion.expression.target_ids() == ['w1']
     assert not opinion.expression.has('polarity')
     opinion = Opinion.object(opinion.node())
-    assert opinion.target is None
+    assert opinion.target.is_none()
     assert opinion.expression.target_ids() == ['w1']
     assert not opinion.expression.has('polarity')
 
