@@ -44,7 +44,7 @@ def split_naf_header_attrs(attrs):
     return filedesc_attrs, public_attrs
 
 
-def validate_dtd(tree, dtd='naf_v3.3.dtd'):
+def validate_dtd(tree, dtd='src/nafparserpy/naf_v3.3.dtd'):
     """Validate tree against DTD
 
     Parameters
