@@ -19,7 +19,7 @@ dist/
 # Compiled Python bytecode
 *.py[cod]
 
-# setup.py
+# build
 .eggs/
 build/
 nafparserpy.egg-info/

@@ -1,11 +1,36 @@
-# Usage
+# nafparserpy
+*nafparserpy* is a lightweight python XML wrapper for [NAF](https://github.com/cltl/NAF-4-Development/). 
 
-The following examples illustrate basic features of the parser:
-[toc]
+The parser wraps [lxml](https://lxml.de/) to handle NAF trees, providing convenience classes for NAF layers and elements. 
+The resulting objects are decoupled from the underlying `lxml` tree: the user is responsible for creating
+and handling NAF objects, while the parser handles tree manipulation.
 
-See the [test modules](tests) for more examples.
+## NAF version and DTD
+The currently supported NAF version is [3.3](https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd).
+Layer and element classes follow closely the NAF DTD:
 
-## Adding and modifying layers
+* compulsory NAF attributes appear as fields (object attributes)
+* NAF subelements appear as fields of the corresponding class
+* all attributes (compulsory and optional) appear in an `attrs` dict attribute
+
+See [NAF-4-Development](https://github.com/cltl/NAF-4-Development/) for more information on NAF.
+
+## Background
+`nafparserpy` follows on [KafNafParserPy](https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy) by wrapping
+[lxml](https://lxml.de/) to handle NAF XML trees, and providing convenience classes for handling NAF layers.
+Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree, so that the user is responsible for creating
+and handling NAF objects, while the parser handles tree manipulation:
+
+* the parser allows to add full NAF layer objects to the NAF tree. The user
+  application is responsible for creating these objects; the parser recursively creates and adds nodes for the full layer.
+* the parser creates layer objects when retrieving layers; these objects are decoupled from
+  the lxml tree
+
+## Example usage
+The following examples illustrate basic features of the parser. 
+See the [test modules](../tests) for more examples.
+
+### Adding and modifying layers
 
 In this example we will look at the file `tests/data/coreference.naf` and
 
@@ -17,7 +42,7 @@ We will start by loading the NAF document:
 naf = NafParser.load('tests/data/coreference.naf')
 ```
 
-### Adding layers
+#### Adding layers
 
 We want to add two entities, for the location *USA* and the person *Kitty Genovese*.
 
@@ -58,7 +83,7 @@ The NAF header now holds one linguistic processor for the `entities` layer:
 1
 ```
 
-### Modifying layers
+#### Modifying layers
 
 The `coreferences` layer links the term 'murder' to the event *murder of Kitty Genovese*.
 We will add 'Kitty Genovese' as corefering to the event.
@@ -98,7 +123,7 @@ We now have 2 spans in the first `coref` element in the `coreferences` layer:
 ```
 
 
-## Adding covered text as comments
+### Adding covered text as comments
 The parser is set to add the covered text of span elements as comments to span nodes.
 To disable this, one can set the `decorate` flag of the constructor to `False`:
 ```python
@@ -110,7 +135,7 @@ naf = NafParser(tree, decorate=False)
 ```
 Note however that comments coming from an input file/tree are preserved.
 
-## Creating a NAF document from scratch
+### Creating a NAF document from scratch
 What if you have no NAF document yet, only text?
 We will create a NAF document, with the text "Colorless green ideas sleep furiously". The author is Noam Chomsky,
 and we will call this document 'chomsky_colorless.naf'.

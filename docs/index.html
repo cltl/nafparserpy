@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.10.0" />
 <title>nafparserpy API documentation</title>
-<meta name="description" content="*nafparserpy* is a lightweight python XML wrapper for [NAF](https://github.com/cltl/NAF-4-Development/) …" />
+<meta name="description" content="nafparserpy
+*nafparserpy* is a lightweight python XML wrapper for [NAF](https://github.com/cltl/NAF-4-Development/) …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -22,37 +23,34 @@
 <h1 class="title">Package <code>nafparserpy</code></h1>
 </header>
 <section id="section-intro">
+<h1 id="nafparserpy">nafparserpy</h1>
 <p><em>nafparserpy</em> is a lightweight python XML wrapper for <a href="https://github.com/cltl/NAF-4-Development/">NAF</a>. </p>
-<h2 id="introduction">Introduction</h2>
-<p><em>nafparserpy</em> follows on <a href="https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy">KafNafParserPy</a>.</p>
-<p>Like KafNafParserPy, the parser wraps <a href="https://lxml.de/">lxml</a> to handle NAF XML trees, and provides convenience classes for handling NAF layers.
-Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree: the user is responsible for creating
+<p>The parser wraps <a href="https://lxml.de/">lxml</a> to handle NAF trees, providing convenience classes for NAF layers and elements.
+The resulting objects are decoupled from the underlying <code>lxml</code> tree: the user is responsible for creating
 and handling NAF objects, while the parser handles tree manipulation.</p>
-<p><em>nafparserpy</em> is compatible with Python 3.7+ (for Python 3.6 you
-will need to install <a href="https://pypi.org/project/dataclasses/">dataclasses</a>).</p>
-<p>See the <a href="https://cltl.github.io/nafparserpy/">pages</a> for the documentation.</p>
-<h3 id="naf-version-and-dtd">NAF version and DTD</h3>
-<p>The currently supported NAF version is <a href="https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd">3.3</a>.</p>
-<p>See <a href="https://github.com/cltl/NAF-4-Development/">NAF-4-Development</a> for more information.</p>
-<h3 id="naf-tree-handling-and-layer-objects">NAF tree handling and layer objects</h3>
-<p><em>nafparserpy</em> is restrictive when it comes to tree manipulation:</p>
-<ul>
-<li>the parser allows to add full NAF layer objects to the NAF tree (<code>linguisticProcessors</code> excepted). The user
-application is responsible for creating these objects; the parser recursively creates and adds nodes for the full layer.</li>
-<li>the parser creates layer objects when retrieving layers; these objects are decoupled from
-the lxml tree</li>
-</ul>
-<p>Layer and element classes follow closely the NAF DTD:</p>
+<h2 id="naf-version-and-dtd">NAF version and DTD</h2>
+<p>The currently supported NAF version is <a href="https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd">3.3</a>.
+Layer and element classes follow closely the NAF DTD:</p>
 <ul>
 <li>compulsory NAF attributes appear as fields (object attributes)</li>
 <li>NAF subelements appear as fields of the corresponding class</li>
 <li>all attributes (compulsory and optional) appear in an <code>attrs</code> dict attribute</li>
 </ul>
-<h2 id="installation">Installation</h2>
-<p>To install the parser, run:</p>
-<pre><code>pip install .
-</code></pre>
-<h2 id="example">Example</h2>
+<p>See <a href="https://github.com/cltl/NAF-4-Development/">NAF-4-Development</a> for more information on NAF.</p>
+<h2 id="background">Background</h2>
+<p><code><a title="nafparserpy" href="#nafparserpy">nafparserpy</a></code> follows on <a href="https://github.com/cltl/KafNafParserPy/tree/master/KafNafParserPy">KafNafParserPy</a> by wrapping
+<a href="https://lxml.de/">lxml</a> to handle NAF XML trees, and providing convenience classes for handling NAF layers.
+Unlike KafNafParserPy, layer objects are decoupled from the underlying lxml etree, so that the user is responsible for creating
+and handling NAF objects, while the parser handles tree manipulation:</p>
+<ul>
+<li>the parser allows to add full NAF layer objects to the NAF tree. The user
+application is responsible for creating these objects; the parser recursively creates and adds nodes for the full layer.</li>
+<li>the parser creates layer objects when retrieving layers; these objects are decoupled from
+the lxml tree</li>
+</ul>
+<h2 id="example-usage">Example usage</h2>
+<p>The following examples illustrate basic features of the parser.
+See the <a href="../tests">test modules</a> for more examples.</p>
 <h3 id="adding-and-modifying-layers">Adding and modifying layers</h3>
 <p>In this example we will look at the file <code>tests/data/coreference.naf</code> and</p>
 <ul>
@@ -95,8 +93,7 @@ We will add 'Kitty Genovese' as corefering to the event.</p>
 <pre><code class="language-python">coreferences = naf.get('coreferences')
 </code></pre>
 <p>Like <code>entities</code> and most NAF layers, the <code>coreferences</code> layer is a container element; we can index it to retrieve its <code>Coref</code>
-elements:
-</p>
+elements:</p>
 <pre><code class="language-python">co1 = coreferences[0]
 </code></pre>
 <p>NAF <code>coref</code> elements take one or more <code>span</code> children and optionally an <code>externalReferences</code> element. They are mapped to
@@ -174,14 +171,12 @@ naf.write('tests/out/chomsky_colorless.naf')
   &lt;raw&gt;&lt;![CDATA[colorless green ideas sleep furiously]]&gt;&lt;/raw&gt;
 &lt;/NAF&gt;
 </code></pre>
-<h3 id="more-examples">More examples</h3>
-<p>See the <a href="tests">test modules</a> for more examples</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-.. include:: ../../README.md
+.. include:: ../../docs/USAGE.md
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
@@ -209,13 +204,10 @@ naf.write('tests/out/chomsky_colorless.naf')
 <h1>Index</h1>
 <div class="toc">
 <ul>
-<li><a href="#introduction">Introduction</a><ul>
+<li><a href="#nafparserpy">nafparserpy</a><ul>
 <li><a href="#naf-version-and-dtd">NAF version and DTD</a></li>
-<li><a href="#naf-tree-handling-and-layer-objects">NAF tree handling and layer objects</a></li>
-</ul>
-</li>
-<li><a href="#installation">Installation</a></li>
-<li><a href="#example">Example</a><ul>
+<li><a href="#background">Background</a></li>
+<li><a href="#example-usage">Example usage</a><ul>
 <li><a href="#adding-and-modifying-layers">Adding and modifying layers</a><ul>
 <li><a href="#adding-layers">Adding layers</a></li>
 <li><a href="#modifying-layers">Modifying layers</a></li>
@@ -223,7 +215,8 @@ naf.write('tests/out/chomsky_colorless.naf')
 </li>
 <li><a href="#adding-covered-text-as-comments">Adding covered text as comments</a></li>
 <li><a href="#creating-a-naf-document-from-scratch">Creating a NAF document from scratch</a></li>
-<li><a href="#more-examples">More examples</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
