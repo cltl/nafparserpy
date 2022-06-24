@@ -1,12 +1,12 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node, ExternalReferenceHolder
+from nafparserpy.layers.utils import IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Entity(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
+class Entity(IdrefGetter, ExternalReferenceHolder):
     """Represents a named entity"""
     id: str
     """Entity id"""
@@ -14,19 +14,22 @@ class Entity(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
     """Span of idrefs covered by the entity"""
     external_references: ExternalReferences = ExternalReferences([])
     """An optional list of external references"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('type', 'status', 'source')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id})
+    type: Union[str, None] = None
+    """optional type"""
+    status: Union[str, None] = None
+    """optional status"""
+    source: Union[str, None] = None
+    """optional source"""
 
     def node(self):
         """Create etree node from object"""
         children = [self.span]
         if self.external_references.items:
             children.append(self.external_references)
-        return create_node('entity', None, children, self.attrs)
+        return create_node('entity',
+                           children=children,
+                           attributes={'id': self.id},
+                           optional_attrs={'type': self.type, 'status': self.status, 'source': self.source})
 
     @staticmethod
     def object(node):
@@ -34,11 +37,13 @@ class Entity(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
         return Entity(node.get('id'),
                       Span.object(node.find('span')),
                       ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
-                      node.attrib)
+                      node.get('type'),
+                      node.get('status'),
+                      node.get('source'))
 
     @staticmethod
     def create(entity_id, entity_type, target_ids):
-        return Entity(entity_id, Span.create(target_ids), ExternalReferences([]), {'type': entity_type})
+        return Entity(entity_id, Span.create(target_ids), type=entity_type)
 
 
 @dataclass
@@ -49,7 +54,7 @@ class Entities:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('entities', None, self.items, {})
+        return create_node('entities', children=self.items)
 
     @staticmethod
     def object(node):

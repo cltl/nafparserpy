@@ -1,5 +1,5 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
 from nafparserpy.layers.utils import create_node
 
@@ -13,21 +13,19 @@ class Dep:
     """id of 'to' node"""
     rfunc: str
     """dependency relation"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes: 'case'"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'from': self.from_idref, 'to': self.to, 'rfunc': self.rfunc})
+    case: Union[str, None] = None
+    """optional attribute: 'case'"""
 
     def node(self):
         """Create etree node from object"""
-        return create_node('dep', None, [], self.attrs)
+        return create_node('dep',
+                           attributes={'from': self.from_idref, 'to': self.to, 'rfunc': self.rfunc},
+                           optional_attrs={'case': self.case})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return Dep(node.get('from'), node.get('to'), node.get('rfunc'), node.attrib)
+        return Dep(node.get('from'), node.get('to'), node.get('rfunc'), node.get('case'))
 
 
 @dataclass
@@ -38,7 +36,7 @@ class Deps:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('deps', None, self.items, {})
+        return create_node('deps', children=self.items)
 
     @staticmethod
     def object(node):

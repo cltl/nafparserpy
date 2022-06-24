@@ -11,7 +11,7 @@ class Raw:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('raw', self.text, [], {})
+        return create_node('raw', text=self.text)
 
     @staticmethod
     def object(node):

@@ -1,35 +1,49 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node, ExternalReferenceHolder
+from nafparserpy.layers.utils import IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences, Sentiment
 
 
 @dataclass
-class Mark(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
+class Mark(IdrefGetter, ExternalReferenceHolder):
     """Represents a mark"""
     id: str
     span: Span
     """span of covered target ids"""
-    sentiment: Sentiment = Sentiment.create_none()
+    sentiment: Union[Sentiment, None] = None
     """optional sentiment"""
     external_references: ExternalReferences = ExternalReferences([])
     """optional externalReferences"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('type', 'lemma', 'pos', 'morphofeat', 'case', 'source')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id})
+    type: Union[str, None] = None
+    """optional attribute"""
+    lemma: Union[str, None] = None
+    """optional attribute"""
+    pos: Union[str, None] = None
+    """optional attribute"""
+    morphofeat: Union[str, None] = None
+    """optional attribute"""
+    case: Union[str, None] = None
+    """optional attribute"""
+    source: Union[str, None] = None
+    """optional attribute"""
 
     def node(self):
         """Create etree node from object"""
         children = [self.span]
-        if self.sentiment.is_none():
+        if self.sentiment is not None:
             children.append(self.sentiment)
         if self.external_references.items:
             children.append(self.external_references)
-        return create_node('mark', None, children, self.attrs)
+        return create_node('mark',
+                           children=children,
+                           attributes={'id': self.id},
+                           optional_attrs={'type': self.type,
+                                           'lemma': self.lemma,
+                                           'pos': self.pos,
+                                           'morphofeat': self.morphofeat,
+                                           'case': self.case,
+                                           'source': self.source})
 
     @staticmethod
     def object(node):
@@ -38,7 +52,12 @@ class Mark(AttributeGetter, IdrefGetter, ExternalReferenceHolder):
                     Span.object(node.find('span')),
                     Sentiment.object(node.find('sentiment')),
                     ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
-                    node.attrib)
+                    node.get('type'),
+                    node.get('lemma'),
+                    node.get('pos'),
+                    node.get('morphofeat'),
+                    node.get('case'),
+                    node.get('source'))
 
 
 @dataclass
@@ -48,7 +67,7 @@ class Markables:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('markables', None, self.items, {})
+        return create_node('markables', children=self.items)
 
     @staticmethod
     def object(node):

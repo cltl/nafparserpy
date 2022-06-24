@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import create_node
 
 
 @dataclass
@@ -23,7 +23,7 @@ class Subtoken:
 
 
 @dataclass
-class Wf(AttributeGetter):
+class Wf:
     """Represents a word's surface form"""
     text: str
     id: str
@@ -31,23 +31,29 @@ class Wf(AttributeGetter):
     length: str
     subtokens: List[Subtoken] = field(default_factory=list)
     """optional list of subtokens"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('sent', 'para', 'page', 'xpath')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id, 'offset': self.offset, 'length': self.length})
+    sent: Union[str, None] = None
+    """optional attribute"""
+    para: Union[str, None] = None
+    """optional attribute"""
+    page: Union[str, None] = None
+    """optional attribute"""
+    xpath: Union[str, None] = None
+    """optional attribute"""
 
     def node(self):
         """Create etree node from object"""
-        return create_node('wf', self.text, self.subtokens, self.attrs)
+        return create_node('wf',
+                           self.text,
+                           self.subtokens,
+                           {'id': self.id, 'offset': self.offset, 'length': self.length},
+                           {'sent': self.sent, 'para': self.para, 'page': self.page, 'xpath': self.xpath})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
         return Wf(node.text, node.get('id'), node.get('offset'), node.get('length'),
                   [Subtoken.object(n) for n in node],
-                  node.attrib)
+                  node.get('sent'), node.get('para'), node.get('page'), node.get('xpath'))
 
 
 @dataclass
@@ -58,7 +64,7 @@ class Text:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('text', None, self.items, {})
+        return create_node('text', children=self.items)
 
     @staticmethod
     def object(node):

@@ -5,46 +5,17 @@ import datetime
 import re
 from typing import Any, Tuple, Dict, List
 
-from nafparserpy.layers.naf_header import NafHeader, LP, LinguisticProcessors
+from nafparserpy.layers import factory
+from nafparserpy.layers.naf_header import NafHeader, LP, LinguisticProcessors, FileDesc, Public
 from nafparserpy.layers.raw import Raw
 from lxml import etree
 
 from nafparserpy.layers.factory import create_from_node, create_from_elements
 
-NAF_VERSION = '3.3'
+NAF_VERSION = '3.3.1'
 
 
-def split_naf_header_attrs(attrs):
-    """Split input attributes in public or fileDesc attributes
-
-    Parameters
-    ----------
-    attrs : dict
-        dictionary of public/fileDesc attributes
-
-    Returns
-    -------
-    a tuple of attribute dictionaries for fileDesc and public
-
-    Raises
-    ------
-    KeyError: if the input dictionary contains keywords not pertaining to public/fileDesc attributes
-        """
-    public_attrs = {}
-    filedesc_attrs = {}
-    public_keys = ['publicId', 'uri']
-    filedesc_keys = ['title', 'author', 'creationtime', 'filename', 'filetype', 'pages']
-    for k in attrs:
-        if k in public_keys:
-            public_attrs.update({k: attrs[k]})
-        elif k in filedesc_keys:
-            filedesc_attrs.update({k: attrs[k]})
-        else:
-            raise KeyError('unknown public/fileDesc key: {}'.format(k))
-    return filedesc_attrs, public_attrs
-
-
-def validate_dtd(tree, dtd='src/nafparserpy/naf_v3.3.dtd'):
+def validate_dtd(tree, dtd='src/nafparserpy/naf_v3.3.1.dtd'):
     """Validate tree against DTD
 
     Parameters
@@ -68,6 +39,11 @@ def remove_lps(ling_processors_layer_node):
     lps = [child for child in ling_processors_layer_node]
     for lp in lps:
         ling_processors_layer_node.remove(lp)
+
+
+def validate_layer_name(layer: str):
+    if layer not in factory.create_from_node:
+        raise ValueError(f'Unknown layer name. Layer name should be one of {factory.create_from_node.keys()}')
 
 
 class NafParser:
@@ -98,13 +74,13 @@ class NafParser:
             self.root.set('{http://www.w3.org/XML/1998/namespace}lang', lang)
             self.root.set('version', naf_version)
             if attrs:
-                filedesc_attrs, public_attrs = split_naf_header_attrs(attrs)
-                self.add_naf_header(fileDesc_attrs=filedesc_attrs, public_attrs=public_attrs)
+                self.add_naf_header(**attrs)
             self.id_map = {}
         else:
             self.tree = tree
             self.root = self.tree.getroot()
-            self.id_map = self.targets2indices()
+            if self.decorate:
+                self.id_map = self.targets2indices()
 
     @staticmethod
     def load(naf_file, validate_against_dtd=False, decorate=True):
@@ -145,20 +121,18 @@ class NafParser:
         """Return a layer object for the layer with the given layer-name.
 
         Returns only the first object if more elements carry the same name."""
-        if not self.has_layer(layer_name):
-            raise ValueError("layer {} does not exist".format(layer_name))
         nodes = self.root.findall('.//{}'.format(layer_name))
+        if not nodes:
+            raise ValueError("layer {} does not exist".format(layer_name))
         return create_from_node[layer_name](nodes[0])
 
     def getall(self, layer_name: str):
         """Return a list of layer objects for each layer carrying the given layer-name
         """
-        if not self.has_layer(layer_name):
-            raise ValueError("layer {} does not exist".format(layer_name))
         nodes = self.root.findall('.//{}'.format(layer_name))
         return [create_from_node[layer_name](node) for node in nodes]
 
-    def add_layer(self, layer_name: str, element: Any, exist_ok=False):
+    def add_layer(self, layer_name: str, element: Any, exist_ok=False, is_etree_element=False):
         """Add a layer to the NAF xml tree
 
         Parameters
@@ -169,20 +143,26 @@ class NafParser:
             layer object
         exist_ok : bool
             allows replacement of existing layer
+        is_etree_element : bool
+            element is etree Element (instead of Naf layer class object)
 
         Raises
         ------
         ValueError: if layer already exists and `exist_ok` is False
         """
+        validate_layer_name(layer_name)
         if self.has_layer(layer_name) and not exist_ok:
             raise ValueError('Layer {} already exists'.format(layer_name))
         else:
             if self.has_layer(layer_name):
                 self.root.remove(self.root.find(layer_name))
-            self.root.append(element.node())
-            if layer_name in ('text', 'terms'):
-                self.reset_targets2indices()
+            if is_etree_element:
+                self.root.append(element)
+            else:
+                self.root.append(element.node())
             if self.decorate:
+                if layer_name in ('text', 'terms'):
+                    self.reset_targets2indices()
                 self.add_comments()
 
     def add_layer_from_elements(self, layer_name: str, elements: list, exist_ok=False):
@@ -208,28 +188,59 @@ class NafParser:
                        create_from_elements[layer_name](elements),
                        exist_ok=exist_ok)
 
-    def add_naf_header(self, fileDesc_attrs={}, public_attrs={}, linguistic_processors=[], exist_ok=False):
+    def add_naf_header(self, linguistic_processors=[], exist_ok=False,
+                       title=None,
+                       author=None,
+                       creationtime=None,
+                       filename=None,
+                       filetype=None,
+                       pages=None,
+                       publicId=None,
+                       uri=None):
         """
         Create and add `nafHeader` layer
 
         Parameters
         ----------
-        fileDesc_attrs : dict
-            `fileDesc` layer attributes
-        public_attrs : dict
-            `public` layer attributes
         linguistic_processors : list[LinguisticProcessors]
             list of `LinguisticProcessors` objects per layer
         exist_ok : bool
             allows replacement of existing layer
+        title : Union[str, None],
+            optional attribute
+        author : Union[str, None],
+            optional attribute
+        creationtime : Union[str, None],
+            optional attribute
+        filename : Union[str, None],
+            optional attribute
+        filetype : Union[str, None],
+            optional attribute
+        pages : Union[str, None],
+            optional attribute
+        publicId : Union[str, None],
+            optional attribute
+        uri : Union[str, None]
+            optional attribute
         """
-        self.add_layer('nafHeader', NafHeader.create(fileDesc_attrs, public_attrs, linguistic_processors), exist_ok)
+        self.add_layer('nafHeader',
+                       NafHeader(FileDesc(title=title,
+                                          author=author,
+                                          creationtime=creationtime,
+                                          filename=filename,
+                                          filetype=filetype,
+                                          pages=pages),
+                                 Public(publicId=publicId, uri=uri),
+                                 linguistic_processors),
+                       exist_ok)
 
-    def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[], attributes={},
-                                 add_time_stamp=True, replace=False):
+    def add_linguistic_processor(self, layer: str, name: str, version: str, lpDependencies=[],
+                                 timestamp=None, beginTimestamp=None, endTimestamp=None, hostname=None,
+                                 id=None, add_timestamp=True, replace=False):
         """Add a `linguistic processor` element to the linguistic processors list for the given layer.
 
         Creates a `nafHeader` layer and/or a `linguisticProcessors` layer if there is not one yet.
+        If no timestamp is provided, `timestamp` will be assigned unless `add_time_stamp` is set to False.
 
         Parameters
         ----------
@@ -241,18 +252,34 @@ class NafParser:
             the version of the linguistic processor
         lpDependencies : List(LPDependency)
             list of linguistic processor dependencies
-        attributes : dict
-            optional linguistic processor attributes ('timestamp', 'beginTimestamp', 'endTimestamp', 'hostname')
-        add_time_stamp : bool
+        timestamp : Any
+            optional timestamp
+        beginTimestamp : Any
+            optional begin timestamp
+        endTimestamp : Any
+            optional end timestamp
+        hostname : Union[str, None]
+            optional hostname
+        id : Union[str, None]
+            optional process identifier
+        add_timestamp : bool
             create time stamp
         replace : bool
             replace or append to `lp` elements for that layer
         """
+        validate_layer_name(layer)
         if not self.has_layer('nafHeader'):
             self.add_naf_header()
-        if add_time_stamp:
-            attributes['timestamp'] = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
-        self.add_lp(layer, LP(name, version, lpDependencies, attributes), replace)
+        if add_timestamp and not any([timestamp, beginTimestamp, endTimestamp]):
+            timestamp = datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
+        self.add_lp(layer,
+                    LP(name, version, lpDependencies,
+                       timestamp=timestamp,
+                       beginTimestamp=beginTimestamp,
+                       endTimestamp=endTimestamp,
+                       hostname=hostname,
+                       id=id),
+                    replace)
 
     def add_lp(self, layer: str, linguistic_processor: LP, replace: bool):
         """Add a linguistic processor element to the linguistic processors list for the given layer.
@@ -292,7 +319,10 @@ class NafParser:
             the name of the layer
         linguistic_processors : List[LP]
             the linguistic processors
+        replace : bool
+            replace existing linguistic processor elements if True
         """
+        validate_layer_name(layer)
         naf_header_node = self.root.find('nafHeader')
         ling_processors_layer_nodes = [lps for lps in naf_header_node.findall('linguisticProcessors')
                                        if lps.get('layer') == layer]
@@ -348,13 +378,15 @@ class NafParser:
         if not self.has_layer('text'):
             return {}
         id_map = {}
-        for wf in self.get('text'):
-            id_map[wf.id] = (int(wf.offset), int(wf.offset) + int(wf.length))
-            if wf.subtokens:
-                id_map.update({st.id: (int(st.offset), int(st.offset) + int(st.length)) for st in wf.subtokens})
-        if self.has_layer('terms'):     # higher layers may reference to terms
+        for wf in self.root.findall('.//wf'):
+            id_map[wf.get('id')] = (int(wf.get('offset')), int(wf.get('offset')) + int(wf.get('length')))
+            if wf.findall('subtokens'):
+                id_map.update({st.get('id'): (int(st.get('offset')), int(st.get('offset')) + int(st.get('length')))
+                               for st in wf.findall('subtokens')})
+        if self.has_layer('terms'):  # higher layers may reference to terms
             # map term ids to begin/end indices through word-form ids
-            twf_map = {t.id: id_map[t.span.target_ids()[0]] for t in self.get('terms')}
+            twf_map = {t.get('id'): id_map[t.find('span').findall('target')[0].get('id')]
+                       for t in self.root.findall('.//term')}
             id_map.update(twf_map)
         return id_map
 
@@ -407,7 +439,7 @@ class NafParser:
     def reset_targets2indices(self):
         """Recomputes the mapping of all word forms, subtokens and terms to their start and end indices.
 
-        This mapping is computed in a restricted number of cases: when loading a existing NAF document, or when
+        This mapping is computed in a restricted number of cases: when loading an existing NAF document, or when
         retrieving the covered text on a newly created NAF document. The present function can be called when
         adding layers for which the mapping will be relevant, such as subtokens or terms on a NAF document already
         annotated with word forms.

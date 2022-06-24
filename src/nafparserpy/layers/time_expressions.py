@@ -1,28 +1,39 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, create_node, IdrefGetter
+from nafparserpy.layers.utils import create_node, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class Timex3(AttributeGetter, IdrefGetter):
+class Timex3(IdrefGetter):
     """Represents a temporal expression """
     id: str
     type: str
     span: Span
     """optional list of spans"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('beginPoint', 'endPoint', 'quant', 'freq', 'functionInDocument', 'temporalFunction',
-    'value', 'valueFromFunction', 'mod', 'anchorTimeID')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id, 'type': self.type})
+    beginPoint: Union[str, None] = None
+    endPoint: Union[str, None] = None
+    quant: Union[str, None] = None
+    freq: Union[str, None] = None
+    functionInDocument: Union[str, None] = None
+    temporalFunction: Union[str, None] = None
+    value: Union[str, None] = None
+    valueFromFunction: Union[str, None] = None
+    mod: Union[str, None] = None
+    anchorTimeID: Union[str, None] = None
 
     def node(self):
         """Create etree node from object"""
-        return create_node('timex3', None, [self.span], self.attrs)
+        return create_node('timex3',
+                           children=[self.span],
+                           attributes={'id': self.id, 'type': self.type},
+                           optional_attrs={'beginPoint': self.beginPoint, 'endPoint': self.endPoint,
+                                           'quant': self.quant, 'freq': self.freq,
+                                           'functionInDocument': self.functionInDocument,
+                                           'temporalFunction': self.temporalFunction,
+                                           'value': self.value, 'valueFromFunction': self.valueFromFunction,
+                                           'mod': self.mod, 'anchorTimeID': self.anchorTimeID})
 
     @staticmethod
     def object(node):
@@ -30,7 +41,9 @@ class Timex3(AttributeGetter, IdrefGetter):
         return Timex3(node.get('id'),
                       node.get('type'),
                       Span.object(node.find('span')),
-                      node.attrib)
+                      node.get('beginPoint'), node.get('endPoint'), node.get('quant'), node.get('freq'),
+                      node.get('functionInDocument'), node.get('temporalFunction'),
+                      node.get('value'), node.get('valueFromFunction'), node.get('mod'), node.get('anchorTimeID'))
 
 
 @dataclass
@@ -41,7 +54,7 @@ class TimeExpressions:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('timeExpressions', None, self.items, {})
+        return create_node('timeExpressions', children=self.items)
 
     @staticmethod
     def object(node):

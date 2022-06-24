@@ -1,30 +1,31 @@
 from dataclasses import dataclass, field
-from typing import List
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, IdrefGetter, create_node
+from nafparserpy.layers.utils import IdrefGetter, create_node
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class FactVal(AttributeGetter):
+class FactVal:
     """Represents a factuality value"""
     value: str
     resource: str
     attrs: dict = field(default_factory=dict)
-    """optional attributes ('confidence', 'source')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'value': self.value, 'resource': self.resource})
+    confidence: Union[str, None] = None
+    """optional attribute"""
+    source: Union[str, None] = None
+    """optional attribute"""
 
     def node(self):
         """Create etree node from object"""
-        return create_node('factVal', None, [], self.attrs)
+        return create_node('factVal',
+                           attributes={'value': self.value, 'resource': self.resource},
+                           optional_attrs={'confidence': self.confidence, 'source': self.source})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return FactVal(node.get('value'), node.get('resource'), node.attrib)
+        return FactVal(node.get('value'), node.get('resource'), node.get('confidence'), node.get('source'))
 
 
 @dataclass
@@ -36,7 +37,7 @@ class Factuality(IdrefGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('factuality', None, [self.span] + self.fact_vals, {'id': self.id})
+        return create_node('factuality', children=[self.span] + self.fact_vals, attributes={'id': self.id})
 
     @staticmethod
     def object(node):
@@ -54,7 +55,7 @@ class Factualities:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('factualities', None, self.items, {})
+        return create_node('factualities', children=self.items)
 
     @staticmethod
     def object(node):

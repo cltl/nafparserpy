@@ -1,24 +1,27 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import create_node
 
 
 @dataclass
-class Topic(AttributeGetter):
+class Topic:
     """Represents a topic"""
     text: str
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('source', 'method', 'confidence', 'uri')"""
+    source: Union[str, None] = None
+    method: Union[str, None] = None
+    confidence: Union[str, None] = None
+    uri: Union[str, None] = None
 
     def node(self):
         """Create etree node from object"""
-        return create_node('topic', self.text, [], self.attrs)
+        return create_node('topic', text=self.text, optional_attrs={'source': self.source, 'method': self.method,
+                                                                    'confidence': self.confidence, 'uri': self.uri})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return Topic(node.text, node.attrib)
+        return Topic(node.text, node.get('source'), node.get('method'), node.get('confidence'), node.get('uri'))
 
 
 @dataclass
@@ -29,7 +32,7 @@ class Topics:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('topics', None, self.items, {})
+        return create_node('topics', children=self.items)
 
     @staticmethod
     def object(node):

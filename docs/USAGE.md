@@ -5,13 +5,18 @@ The parser wraps [lxml](https://lxml.de/) to handle NAF trees, providing conveni
 The resulting objects are decoupled from the underlying `lxml` tree: the user is responsible for creating
 and handling NAF objects, while the parser handles tree manipulation.
 
+The parser converts `lxml` etree elements to convenience classes with `object()` methods, and back from convenience 
+objects to etree elements with `node()` methods. While the parser mostly exposes convenience objects, it is also 
+possible to access the underlying `lxml` tree through the `tree` and `root` attributes of the `NafParser` class.
+
 ## NAF version and DTD
-The currently supported NAF version is [3.3](https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.dtd).
+The currently supported NAF version is [3.3.1](https://github.com/cltl/NAF-4-Development/blob/master/resources/dtd/naf_v3.3.1.dtd).
 Layer and element classes follow closely the NAF DTD:
 
-* compulsory NAF attributes appear as fields (object attributes)
-* NAF subelements appear as fields of the corresponding class
-* all attributes (compulsory and optional) appear in an `attrs` dict attribute
+* XML attributes appear as attributes in NAF objects
+  * optional attributes are optional for the constructor too
+* XML subelements also appear as attributes of the corresponding class
+* With a few exceptions, attributes and elements have the same name in the NAF classes. 
 
 See [NAF-4-Development](https://github.com/cltl/NAF-4-Development/) for more information on NAF.
 
@@ -122,6 +127,32 @@ We now have 2 spans in the first `coref` element in the `coreferences` layer:
 2
 ```
 
+#### Adding elements incrementally
+It is possible to add elements to a layer incrementally by working with the underlying `lxml.etree` elements.
+Suppose that we want to copy the `text` layer of our example file to a new naf file. We can first retrieve the `text`
+ layer tokens and create a new naf file:
+```python
+naf = NafParser.load('tests/data/coreference.naf')
+wfs = naf.get('text')
+naf2 = NafParser(filename='coreference_copy.naf')
+```
+As before we can create a new `text` layer in *naf2* with:
+```python
+naf2.add_layer_from_elements('text', wfs)
+```
+If we instead want to add elements incrementally, we will first create an `etree` Element for the `text` layer,
+then incrementally append `etree` Elements for each `wf` object, and finally append the `text` layer Element to the naf
+root:
+```python
+from nafparserpy.layers.utils import create_node
+# create an etree Element with name 'text'
+text_node = create_node('text')
+for wf in wfs:
+    # append the etree Element for each wf
+    text_node.append(wf.node())
+# add the layer as an etree element
+naf2.add_layer('text', text_node, is_etree_element=True)
+```
 
 ### Adding covered text as comments
 The parser is set to add the covered text of span elements as comments to span nodes.
@@ -148,18 +179,16 @@ naf = NafParser(author='Noam Chomsky', filename='chomsky_colorless.naf')
 Author name and filename are `fileDesc` attributes. Let us verify that they are now in the NAF header:
 ```python
 header = naf.get('nafHeader')
-> header.fileDesc.has('author')
+> header.fileDesc.author is not None
 True
-> header.fileDesc.get('author')
+> header.fileDesc.author
 Noam Chomsky
-> header.fileDesc.has('filename')
-True
-> header.fileDesc.get('filename')
+> header.fileDesc.filename
 chomsky_colorless.naf
 ```
 Alternatively, and because `fileDesc` is the only element of its kind in NAF documents, we can directly retrieve it:
 ```python
-> naf.get('fileDesc').get('author')
+> naf.get('fileDesc').author
 Noam Chomsky
 ```
 
@@ -174,8 +203,8 @@ Add the corresponding linguistic processor:
 naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')
 ```
 
-By default, the parser is set to keep previously defined linguistic processors for a given layer, so that each layer can have  
-several `lp` elements attached to it. To disable this and keep a single `lp` per layer, use the `replace` flag:
+By default, the parser is set to keep previously defined linguistic processors for a given layer, so that each layer 
+can have several `lp` elements attached to it. To disable this and keep a single `lp` per layer, use the `replace` flag:
 
 ```python
 naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0', replace=True)
@@ -191,11 +220,11 @@ To write to stdout:
 ```
 > naf.write()
 <?xml version='1.0' encoding='UTF-8'?>
-<NAF xml:lang="en" version="3.3">
+<NAF xml:lang="en" version="3.3.1">
   <nafHeader>
     <fileDesc author="Noam Chomsky" filename="chomsky_colorless.naf"/>
     <linguisticProcessors layer="raw">
-      <lp name="linguistic intuition" version="1.0"/>
+      <lp name="linguistic intuition" version="1.0" timestamp="2022-07-01T11:04:05+00:00"/>
     </linguisticProcessors>
   </nafHeader>
   <raw><![CDATA[colorless green ideas sleep furiously]]></raw>

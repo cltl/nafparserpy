@@ -12,7 +12,7 @@ class StatementSource(IdrefGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('statement_source', None, [self.span], {})
+        return create_node('statement_source', children=[self.span])
 
     @staticmethod
     def object(node):
@@ -31,7 +31,7 @@ class StatementTarget(IdrefGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('statement_target', None, [self.span], {})
+        return create_node('statement_target', children=[self.span])
 
     @staticmethod
     def object(node):
@@ -50,7 +50,7 @@ class StatementCue(IdrefGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('statement_cue', None, [self.span], {})
+        return create_node('statement_cue', children=[self.span])
 
     @staticmethod
     def object(node):
@@ -72,7 +72,7 @@ class Statement:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('statement', None, self.sources + self.targets + self.cues, {})
+        return create_node('statement', children=self.sources + self.targets + self.cues, attributes={'id': self.id})
 
     @staticmethod
     def object(node):
@@ -100,7 +100,7 @@ class Attribution:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('attribution', None, self.items, {})
+        return create_node('attribution', children=self.items)
 
     @staticmethod
     def object(node):

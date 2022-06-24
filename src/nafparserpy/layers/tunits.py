@@ -1,30 +1,28 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import AttributeGetter, create_node
+from nafparserpy.layers.utils import create_node
 
 
 @dataclass
-class Tunit(AttributeGetter):
+class Tunit:
     """Represents a text unit"""
     id: str
     offset: str
     length: str
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('type', 'xpath')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id, 'offset': self.offset, 'length': self.length})
+    type: Union[str, None] = None
+    xpath: Union[str, None] = None
 
     def node(self):
         """Create etree node from object"""
-        return create_node('tunit', None, [], self.attrs)
+        return create_node('tunit',
+                           attributes={'id': self.id, 'offset': self.offset, 'length': self.length},
+                           optional_attrs={'type': self.type, 'xpath': self.xpath})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return Tunit(node.get('id'), node.get('offset'), node.get('length'), node.attrib)
+        return Tunit(node.get('id'), node.get('offset'), node.get('length'), node.get('type'), node.get('xpath'))
 
 
 @dataclass
@@ -35,7 +33,7 @@ class Tunits:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('tunits', None, self.items, {})
+        return create_node('tunits', children=self.items)
 
     @staticmethod
     def object(node):

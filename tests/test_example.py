@@ -41,10 +41,11 @@ def test_coreference():
 def test_newdocument():
     naf = NafParser(author='Noam Chomsky', filename='chomsky_colorless.naf')
     header = naf.get('nafHeader')
-    assert header.fileDesc.get('filename') == 'chomsky_colorless.naf'
+    assert header.fileDesc.filename is not None
+    assert header.fileDesc.filename == 'chomsky_colorless.naf'
 
-    assert header.fileDesc.get('author') == 'Noam Chomsky'
-    assert naf.get('fileDesc').get('author') == 'Noam Chomsky'
+    assert header.fileDesc.author == 'Noam Chomsky'
+    assert naf.get('fileDesc').author == 'Noam Chomsky'
 
     naf.add_raw_layer('colorless green ideas sleep furiously')
     naf.add_linguistic_processor('raw', 'linguistic intuition', '1.0')

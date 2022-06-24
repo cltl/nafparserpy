@@ -7,6 +7,8 @@
 	- provides restrictive element declarations, aiming at precising counts of subelements
 	of different types: declarations like (a|b|c)+ are replaced by declarations like (a,b?,c+)
 	- removes <factualitylayer>, which was marked as deprecated in v3.2
+
+	Compared to NAF 3.3, this version allows one and only one `span` sub-element for `chunk` elements
 	-->
 <!ELEMENT NAF (nafHeader|raw|topics|text|terms|multiwords|deps|chunks|entities|coreferences|constituency|srl|opinions|timeExpressions|tunits|locations|dates|temporalRelations|causalRelations|markables|attribution|factualities)*>
 
@@ -444,7 +446,7 @@
     -   phrase: type of the phrase (REQUIRED)
     -   case: declension case (optional)
   -->
-<!ELEMENT chunk (span)+>
+<!ELEMENT chunk (span)>
 <!ATTLIST chunk
           id ID #REQUIRED
           head IDREF #REQUIRED

@@ -8,7 +8,7 @@ class Locations:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('locations', self.text, [], {})
+        return create_node('locations', text=self.text)
 
     @staticmethod
     def object(node):
@@ -21,7 +21,7 @@ class Dates:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('dates', self.text, [], {})
+        return create_node('dates', text=self.text)
 
     @staticmethod
     def object(node):

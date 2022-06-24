@@ -36,33 +36,31 @@ def test_causal_relations():
     clink = CLink('a', 'b', 'c')
     node = clink.node()
     assert 'relType' not in node.attrib.keys()
-    assert not clink.has('relType')
+    assert not clink.relType
     clink = CLink.object(node)
-    assert not clink.has('relType')
+    assert not clink.relType
 
-    clink = CLink('a', 'b', 'c', {'relType': 'some'})
+    clink = CLink('a', 'b', 'c', relType='some')
     node = clink.node()
     assert 'relType' in node.attrib.keys()
-    assert clink.has('relType')
+    assert clink.relType
     clink = CLink.object(node)
-    assert clink.has('relType')
+    assert clink.relType
 
 
 def test_naf_header():
-    naf.add_naf_header(fileDesc_attrs={'filename': 'test.naf'})
+    naf.add_naf_header(filename='test.naf')
     assert naf.has_layer('nafHeader')
     naf.write(out_file)
     assert naf.has_layer('fileDesc')
-    assert naf.get('fileDesc').get('filename') == 'test.naf'
+    assert naf.get('fileDesc').filename == 'test.naf'
     assert not naf.has_layer('linguisticProcessors')
     naf.add_linguistic_processor('raw', 'rawLp', '0.1')
     naf.write(out_file)
     assert naf.has_layer('linguisticProcessors')
     lp1 = naf.getall('linguisticProcessors')[0].lps[0]
 
-    # NOTE compulsory attributes appear both as fields and attributes
     assert lp1.name == 'rawLp'
-    assert lp1.get('name') == 'rawLp'
     assert naf.get('nafHeader') is not None
 
 
@@ -78,23 +76,23 @@ def test_raw_layer():
 
 
 def test_topics_layer():
-    topic1 = Topic(text, {'source': 'unk', 'method': 'unk', 'uri': 'unk', 'confidence': '0'})
-    assert topic1.get('confidence') == '0'
+    topic1 = Topic(text, source='unk', method='unk', uri='unk', confidence='0')
+    assert topic1.confidence == '0'
     topic2 = Topic(text2)
-    assert not topic2.has('confidence')
+    assert not topic2.confidence
     naf.add_layer_from_elements('topics', [topic1, topic2])
     assert naf.get('topics') == [topic1, topic2]
     naf.write(out_file)
 
 
 def test_text_layer():
-    wf1 = Wf('colorless', 'w1', str(0), str(9), attrs={'sent': str(1)})
+    wf1 = Wf('colorless', 'w1', str(0), str(9), sent=str(1))
     naf.add_layer_from_elements('text', [wf1])
-    assert naf.get('text')[0].get('id') == 'w1'
+    assert naf.get('text')[0].id == 'w1'
 
 
 def test_term_layer():
-    t1 = Term.create('t1', ['w1'], {'lemma': 'in', 'pos': 'ADP'})
+    t1 = Term.create('t1', ['w1'], lemma='in', pos='ADP')
     naf.add_layer_from_elements('terms', [t1])
     terms = naf.get('terms')
     assert len(terms) == 1
@@ -110,13 +108,13 @@ def test_term_layer():
 
 def test_opinions():
     opinion = Opinion('o1', OpinionExpression(Span.create(['w1'])))
-    assert opinion.target.is_none()
+    assert opinion.target is None
     assert opinion.expression.target_ids() == ['w1']
-    assert not opinion.expression.has('polarity')
+    assert opinion.expression.polarity is None
     opinion = Opinion.object(opinion.node())
-    assert opinion.target.is_none()
+    assert opinion.target is None
     assert opinion.expression.target_ids() == ['w1']
-    assert not opinion.expression.has('polarity')
+    assert opinion.expression.polarity is None
 
 
 def test_elements():
@@ -132,8 +130,8 @@ def test_elements():
 
 
 def test_timex():
-    timex = Timex3('t1', 'DATE', Span.create(['w1']), {'value': '2016'})
+    timex = Timex3('t1', 'DATE', Span.create(['w1']), value='2016')
     naf.add_layer_from_elements('timeExpressions', [timex])
     assert naf.get('timeExpressions')[0].type == 'DATE'
     assert naf.get('timeExpressions')[0].span.target_ids() == ['w1']
-    assert naf.get('timeExpressions')[0].get('value') == '2016'
+    assert naf.get('timeExpressions')[0].value == '2016'

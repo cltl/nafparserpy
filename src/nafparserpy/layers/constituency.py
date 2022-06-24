@@ -1,32 +1,32 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import create_node, AttributeGetter, IdrefGetter
+from nafparserpy.layers.utils import create_node, IdrefGetter
 from nafparserpy.layers.elements import Span
 
 
 @dataclass
-class Edge(AttributeGetter):
+class Edge:
     """Represents an edge"""
     from_idref: str
-    """id of 'from' node (note that the field name differs from the NAF attribute 'from')"""
+    """id of 'from' node """
     to: str
     """id of 'to' node"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes ('id' and 'head')"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'from': self.from_idref, 'to': self.to})
+    id: Union[str, None] = None
+    """optional id"""
+    head: Union[str, None] = None
+    """optional head"""
 
     def node(self):
         """Create etree node from object"""
-        return create_node('edge', None, [], self.attrs)
+        return create_node('edge',
+                           attributes={'from': self.from_idref, 'to': self.to},
+                           optional_attrs={'id': self.id, 'head': self.head})
 
     @staticmethod
     def object(node):
         """Create object from etree node"""
-        return Edge(node.get('from'), node.get('to'), node.attrib)
+        return Edge(node.get('from'), node.get('to'), node.get('id'), node.get('head'))
 
 
 @dataclass
@@ -37,7 +37,7 @@ class T(IdrefGetter):
 
     def node(self):
         """Create etree node from object"""
-        return create_node('t', None, [self.span], {'id': self.id})
+        return create_node('t', children=[self.span], attributes={'id': self.id})
 
     @staticmethod
     def object(node):
@@ -53,7 +53,7 @@ class Nt:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('nt', None, [], {'id': self.id, 'label': self.label})
+        return create_node('nt', attributes={'id': self.id, 'label': self.label})
 
     @staticmethod
     def object(node):
@@ -73,7 +73,7 @@ class Tree:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('tree', None, self.nts + self.ts + self.edges, {})
+        return create_node('tree', children=self.nts + self.ts + self.edges)
 
     @staticmethod
     def object(node):
@@ -91,7 +91,7 @@ class Constituency:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('constituency', None, self.items, {})
+        return create_node('constituency', children=self.items)
 
     @staticmethod
     def object(node):

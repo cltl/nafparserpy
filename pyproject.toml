@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nafparserpy"
-version = "0.2.1"
+version = "0.3.0"
 description = "lxml wrapper for NAF"
 authors = [
     {name = "Sophie Arnoult"},
@@ -16,12 +16,14 @@ maintainers = [
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
-    "Intended Audience :: Developers"
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License"
 ]
 readme = "README.md"
 requires-python = ">=3.7"
 dependencies = ["lxml"]
-license = {file = "LICENSE"}
+license = {text = "Apache License 2.0"}
+
 [project.optional-dependencies]
 test = ["pytest"]
 

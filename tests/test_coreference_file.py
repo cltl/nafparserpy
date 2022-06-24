@@ -15,7 +15,7 @@ def test_parse():
     for layer in ['nafHeader', 'raw', 'text', 'terms', 'coreferences']:
         assert naf.has_layer(layer)
     assert len(naf.get('nafHeader').linguisticProcessors) == 4
-    assert not naf.get('public').has('filename')
+    assert not naf.get('fileDesc').filename
     assert len(naf.get('text')) == 17
     assert len(naf.get('coreferences')) == 1
     coref0 = naf.get('coreferences')[0]
@@ -33,10 +33,10 @@ def test_parse():
     # comments added together with layer
     assert all(x == 1 for x in [len([_ for _ in s.iter(tag=etree.Comment)]) for s in spans])
 
-    naf.add_linguistic_processor('entities', 'test', '0.1', add_time_stamp=True)
+    naf.add_linguistic_processor('entities', 'test', '0.1')
     assert not naf.get('entities')[0].get_external_refs()
 
-    timestamp = naf.get_lps('entities')[0].get('timestamp')
+    timestamp = naf.get_lps('entities')[0].timestamp
     assert timestamp
 
     entities = naf.get('entities')

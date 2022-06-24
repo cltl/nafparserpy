@@ -1,24 +1,22 @@
-from dataclasses import dataclass, field
-from typing import List
+from dataclasses import dataclass
+from typing import List, Union
 
-from nafparserpy.layers.utils import IdrefGetter, create_node, AttributeGetter, ExternalReferenceHolder
+from nafparserpy.layers.utils import IdrefGetter, create_node, ExternalReferenceHolder
 from nafparserpy.layers.elements import Span, ExternalReferences
 
 
 @dataclass
-class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
+class Coref(IdrefGetter, ExternalReferenceHolder):
     """Represents a coreference"""
     id: str
     spans: List[Span]
     """list of coreferent mention spans"""
     external_references: ExternalReferences = ExternalReferences([])
     """optional external references"""
-    attrs: dict = field(default_factory=dict)
-    """optional attributes: 'type', 'status'"""
-
-    def __post_init__(self):
-        """Copy compulsory attributes to `attrs` field"""
-        self.attrs.update({'id': self.id})
+    type: Union[str, None] = None
+    """optional type"""
+    status: Union[str, None] = None
+    """optional status"""
 
     def target_ids(self):
         """Returns list of target ids covered for each of the layer's spans"""
@@ -29,7 +27,10 @@ class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
         children = [s for s in self.spans]
         if self.external_references.items:
             children.append(self.external_references)
-        return create_node('coref', None, children, self.attrs)
+        return create_node('coref',
+                           children=children,
+                           attributes={'id': self.id},
+                           optional_attrs={'type': self.type, 'status': self.status})
 
     @staticmethod
     def object(node):
@@ -37,7 +38,8 @@ class Coref(IdrefGetter, AttributeGetter, ExternalReferenceHolder):
         return Coref(node.get('id'),
                      [Span.object(n) for n in node.findall('span')],
                      ExternalReferences(ExternalReferences.object(node.find('externalReferences'))),
-                     node.attrib)
+                     type=node.get('type'),
+                     status=node.get('status'))
 
 
 @dataclass
@@ -48,7 +50,7 @@ class Coreferences:
 
     def node(self):
         """Create etree node from object"""
-        return create_node('coreferences', None, self.items, {})
+        return create_node('coreferences', children=self.items)
 
     @staticmethod
     def object(node):
